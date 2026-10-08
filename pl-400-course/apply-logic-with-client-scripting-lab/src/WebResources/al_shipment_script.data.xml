@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{d3e5a7b1-4f8c-4a3e-9b62-7e4f1a2c3d5e}</WebResourceId>
+  <Name>al_shipment_script.js</Name>
+  <DisplayName>al_shipment_script.js</DisplayName>
+  <WebResourceType>3</WebResourceType>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/al_shipment_script.js</FileName>
+</WebResource>

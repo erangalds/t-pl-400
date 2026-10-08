@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="al_shipmentdispatch_clienthubid_account" />
+  <EntityRelationship Name="business_unit_al_shipmentdispatch" />
+  <EntityRelationship Name="lk_al_shipmentdispatch_createdby" />
+  <EntityRelationship Name="lk_al_shipmentdispatch_modifiedby" />
+  <EntityRelationship Name="owner_al_shipmentdispatch" />
+  <EntityRelationship Name="team_al_shipmentdispatch" />
+  <EntityRelationship Name="TransactionCurrency_al_ShipmentDispatch" />
+  <EntityRelationship Name="user_al_shipmentdispatch" />
+</EntityRelationships>
