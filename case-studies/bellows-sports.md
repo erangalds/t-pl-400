@@ -138,6 +138,9 @@ UR04
 ```
 
 ## Q387
+
+![Q387](/dump-questions/question-images/bellows-sports/q387.png)
+
 ### Question
 
 You need to select connectors for the app.
@@ -170,92 +173,51 @@ Select and Place:
 
 <br>
 
-You are spot on: **it is impossible to know the answer from that screenshot alone because the question is part of a larger Case Study.**
-
-Practice test sites and dumps (like the CertyIQ screenshot you shared) often extract individual drag-and-drop or multiple-choice questions without attaching the scenario text that preceded them.
 
 
-### The Missing Context: The "Bellows Sports" Case Study
+### Answer
+### Solution
 
-On the actual exam, this question appears under **Case Study 1: Bellows Sports**. In the real exam interface, there is a left-hand navigation pane with tabs like **Background**, **Current Environment**, and **Requirements**.
+| Requirement | Connector Choice |
+| --- | --- |
+| **View full registration records.** | **Use a native application function.** |
+| **View customer names.** | **Use an AppSource connector.** |
+| **View daily registrations.** | **Use a native application function.** |
 
-Here are the specific pieces of text from those tabs that give away the answers:
+---
 
-#### 1. Why "Create a custom connector" for Registration Records?
+### Detailed Breakdown & Analysis
 
-* **Case Study Text:**
-> *"The company uses a proprietary cloud-based accounting system."*
-> *"When a customer record is updated, the system must look up the account number for the customer in the accounting system."*
+#### 1. View full registration records: **Use a native application function.**
 
+* **Analysis:** The registration records, accounts, and tournament data are housed directly within Microsoft Dataverse / Dynamics 365 Customer Service.
+* To view these records within Power Apps, you do not need an external integration, third-party connector, or custom connector; you interact with them natively using the out-of-the-box Microsoft Dataverse capabilities (e.g., standard views, forms, and galleries connected directly to the entity).
 
-* **The Reason:** Because the accounting and external tournament backend is a **proprietary** cloud service, Microsoft doesn't provide a ready-made connector for it in Power Automate or Power Apps. To communicate with a bespoke/proprietary API, developers must build a **Custom Connector**.
+#### 2. View customer names: **Use an AppSource connector.**
 
-
-#### 2. Why "Use an AppSource connector" for Customer Names?
-
-* **Case Study Text:**
-> *"Customer information is stored in the Accounts entity."*
+* **Analysis:** Under **Data automation**, the requirement states:
 > *"Customer name must be added to Dynamics 365 Finance automatically after it is entered."*
 
 
-* **The Reason:** Dynamics 365 apps and standard Dataverse connections are distributed as standard certified enterprise connectors (available via Microsoft's catalog / AppSource). Connecting to existing Dynamics 365 / Dataverse business entities uses standard pre-built **AppSource / certified connectors**.
+* Connecting Dataverse/Power Apps to Dynamics 365 Finance & Operations or external business systems is typically handled via pre-built standard connectors available on Microsoft AppSource / Microsoft Power Platform ecosystem (such as the standard Dynamics 365 Finance and Operations connector, Dual-write, or AppSource certified integrations), rather than writing custom REST wrappers from scratch.
+
+#### 3. View daily registrations: **Use a native application function.**
+
+* **Analysis:** Under **Data automation**, the case study notes:
+> *"You must produce a report that details the number of registrations for a day and send the report as a PDF to the management team."*
 
 
-#### 3. Why "Use a native application function" for Daily Registrations?
+* Generating standard aggregations, daily registration summaries, or Power BI/SSRS reports within Dynamics 365 / Dataverse relies directly on native reporting and dashboard functions (or scheduled Power Automate cloud flows using built-in Dataverse aggregation triggers and the Word/PDF conversion connector action). No custom connector is required.
 
-* **Case Study Text:**
-> *"You must produce a report that details the number of registrations for a day..."*
+---
 
+### Key Observations on the Case Study
 
-* **The Reason:** In a canvas app, counting or filtering daily totals (e.g., using `CountRows(Filter(...))` or date range aggregations) doesn't require an external integration call or a specialized connector—it is computed on-screen using **native application functions** (built-in Power Fx formulas).
+This scenario tests standard Microsoft **PL-400 (Power Platform Developer)** architectural patterns:
 
-### What to Look Out For in Exam Prep
-
-Whenever you see a question that:
-
-1. Says something generic like *"You need to select connectors for **the app**"* without describing what the app does, or
-2. Refers to entities or systems you were never told about (like *"registration records"* or *"the company's accounting system"*),
-
-it almost certainly belongs to one of Microsoft's standard recurring case studies (such as **Bellows Sports** or **Adventure Works Cycles**). Whenever you encounter one without its prompt, checking the case study scenario will instantly clarify the context.
-
-This question is part of the **Bellows Sports** case study from the PL-400 exam.
-
-The correct selections for each requirement are:
-
-* **View full registration records:** **Create a custom connector.**
-* **View customer names:** **Use an AppSource connector.**
-* **View daily registrations:** **Use a native application function.**
-
-
-### Step-by-Step Breakdown
-
-#### 1. Context from the Bellows Sports Case Study
-
-* **External Proprietary System:** Bellows Sports tracks financial and registration details across external systems, including a proprietary cloud-based accounting and event management service that exposes RESTful endpoints.
-* **Core Dataverse Tables:** Customer data is synchronized with standard Dynamics 365 / Dataverse entities (such as the standard `Account` table).
-* **Reporting / Aggregation:** Daily metrics and registration rollups must be tabulated and delivered to management.
-
-
-#### 2. Requirement Details & Mapping
-
-* **View full registration records $\rightarrow$ `Create a custom connector.**`
-* Full registration records reside in the proprietary cloud-based backend service.
-* Because there is no pre-built Microsoft or commercial third-party connector for a bespoke/proprietary cloud API, developers must wrap the service's REST API into an OpenAPI definition to **Create a custom connector**.
-
-
-* **View customer names $\rightarrow$ `Use an AppSource connector.**`
-* Customer accounts and profiles are maintained in standard Dynamics 365 / Dataverse tables (`Accounts` / `Contacts`).
-* Pre-built, certified connectors published directly by Microsoft or partners on Microsoft AppSource (specifically the standard **Microsoft Dataverse / Dynamics 365** connector family) provide access to standard entity profiles without needing custom API endpoints.
-
-
-* **View daily registrations $\rightarrow$ `Use a native application function.**`
-* Aggregating the daily registration count and displaying summary figures within the app or canvas interface is accomplished using built-in Power Fx aggregation functions (such as `CountRows()`, `Filter()`, or `Sum()`).
-* Because this is calculated directly by the canvas client engine using existing retrieved collections or views, it uses a **native application function** rather than requiring external connector hops.
-
-
-### Why the Other Option is Excluded
-
-* **Create a connector with a Postman collection:** While importing a Postman collection is a valid *method* to generate a custom connector, the prompt asks for the *type* of connector architecture to employ. "Create a custom connector" represents the definitive connector classification.
+1. **Leveraging Native Features First:** When interacting with core entities (Accounts, custom Tournament entities) or displaying standard reports and entity views, always prioritize native model-driven and canvas application functions over custom API endpoints.
+2. **Third-Party & ERP Integrations:** Integration with external ERPs (Dynamics 365 Finance) or specialized extensions should leverage existing AppSource connectors or Microsoft-provided connectors.
+3. **Custom Connectors vs. Postman:** While the case study mentions a proprietary cloud-based accounting system (which would use a custom connector if querying account numbers directly via REST), the specific reporting and viewing tasks in this question map directly to the platform's native capabilities and standard AppSource-supported integrations.
 
 
 

@@ -95,7 +95,9 @@ Customer satisfaction surveys are recorded with Microsoft Forms Pro. Survey repl
 ---
 
 ## Q402
-![Q402](/dump-questions/question-images/q402.png)
+
+![Q402](/dump-questions/question-images/adventure-works/q402.png)
+
 ### Question
 
 You need to improve warehouse counting efficiency.
@@ -158,7 +160,9 @@ A Cloud Flow is a headless backend orchestration tool. A worker cannot directly 
 
 
 ## Q403
-![403](/dump-questions/question-images/q403.png)
+
+![403](/dump-questions/question-images/adventure-works/q403.png)
+
 ### Question
 
 You need to replace the bicycle inspection forms.
@@ -220,7 +224,8 @@ This question is part of the **Adventure Works Cycles** case study. In this scen
 
 ## Q405
 
-![Q405](/dump-questions/question-images/q405.png)
+![Q405](/dump-questions/question-images/adventure-works/q405.png)
+
 ### Question
 
 You need to ensure that Adventure Works Cycles can track information from visitors to bike fairs.
@@ -274,12 +279,9 @@ A Business Process Flow (BPF) provides visual stage-gating guidance for CRM user
 
 ## Q410
 
-![Q410](/dump-questions/question-images/q410.png)
-
+![Q410](/dump-questions/question-images/adventure-works/q410.png)
 
 ### Question
-
-
 
 You need to improve warehouse counting efficiency.
 
@@ -324,7 +326,7 @@ What should you create?
 
 ## Q411
 
-![Q411](/dump-questions/question-images/q411.png)
+![Q411](/dump-questions/question-images/adventure-works/q411.png)
 
 ### Question
 
@@ -383,7 +385,7 @@ Which two solutions should you use? Each answer presents part of the solution.
 
 ## Q412
 
-![alt text](/dump-questions/question-images/q412.png)
+![Q412](/dump-questions/question-images/adventure-works/q412.png)
 
 ### Question
 
@@ -395,15 +397,11 @@ Which two options can you use? Each correct answer presents a complete solution.
 
 * **A.** LookUp to Filter
 
-
 * **B.** Filter to LookUp
-
 
 * **C.** Search to LookUp
 
-
 * **D.** LookUp to Search
-
 
 
 ### Answer
@@ -457,7 +455,7 @@ In Power Fx, `LookUp` is strictly designed to retrieve **the first record** that
 
 ## Q413
 
-![Q413](/dump-questions/question-images/q413.png)
+![Q413](/dump-questions/question-images/adventure-works/q413.png)
 
 ### Question
 
@@ -530,7 +528,7 @@ The notification logic is implemented in a **Power Automate cloud flow** that qu
 
 ## Q414
 
-![Q414](/dump-questions/question-images/q414.png)
+![Q414](/dump-questions/question-images/adventure-works/q414.png)
 
 ### Question
 
@@ -577,7 +575,7 @@ Power Automate flows are headless background orchestrators. A flow cannot serve 
 
 ## Q415
 
-![Q415](/dump-questions/question-images/q415.png)
+![Q415](/dump-questions/question-images/adventure-works/q415.png)
 
 ### Question
 
@@ -643,7 +641,7 @@ In Dataverse / Dynamics 365 Model-Driven forms and mobile controls, visual contr
 
 ## Q433
 
-![Q433](/dump-questions/question-images/q433.png)
+![Q433](/dump-questions/question-images/adventure-works/q433.png)
 
 You need to reduce response time for the information email on the website.
 
@@ -704,7 +702,7 @@ Archiving emails into Azure Blob storage is an infrastructure storage/backup pat
 
 ## Q437
 
-![Q437](/dump-questions/question-images/q437.png)
+![Q437](/dump-questions/question-images/adventure-works/q437.png)
 
 You need to resolve CustomerB's issues with the check-in application.
 
@@ -773,7 +771,7 @@ Similarly, moving from `Search` to `LookUp` forces the formula to return only a 
 
 ## Q438
 
-![Q438](/dump-questions/question-images/q438.png)
+![Q438](/dump-questions/question-images/adventure-works/q438.png)
 
 
 ### Question
@@ -848,7 +846,7 @@ This question continues the **Adventure Works Cycles** case study, specifically 
 
 ## Q439
 
-![Q439](/dump-questions/question-images/q439.png)
+![Q439](/dump-questions/question-images/adventure-works/q439.png)
 
 ### Question 
 
@@ -900,7 +898,7 @@ A Power Automate flow is a backend orchestration engine; it does not provide an 
 
 ## Q440
 
-![Q440](/dump-questions/question-images/q440.png)
+![Q440](/dump-questions/question-images/adventure-works/q440.png)
 
 ### Question
 
