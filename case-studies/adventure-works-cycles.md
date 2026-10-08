@@ -95,6 +95,7 @@ Customer satisfaction surveys are recorded with Microsoft Forms Pro. Survey repl
 ---
 
 ## Q402
+![Q402](/dump-questions/question-images/q402.png)
 ### Question
 
 You need to improve warehouse counting efficiency.
@@ -112,26 +113,22 @@ What should you create?
 
 * **D.** a canvas app that scans barcodes to allow a warehouse worker to select inventory counts
 
-### 1. Is this part of a case study?
-
-
-In the case study background text for this scenario:
-
-* **Current Environment:** Warehouse workers walk around the warehouse physically recording item counts onto manual paper sheets or journal entries, leading to delays and transcription errors.
-* **Technical Asset:** All warehouse inventory items and storage bins are tagged with **barcodes**.
-* **Requirement:**
-> *"Warehouse counting must be performed by using a **mobile app that scans barcodes** on boxes."*
-
-
 
 ### Answer
 
 **Correct Answer:** **D. a canvas app that scans barcodes to allow a warehouse worker to select inventory counts**
 
-
 ### How to Approach This Question Without the Case Study Text
 
-Even if you encounter this question without knowing the case study, you can determine the correct answer by applying core Power Platform architectural principles:
+In the case study background text for this scenario:
+
+* **Current Environment:** Warehouse workers walk around the warehouse physically recording item counts onto manual paper sheets or journal entries, leading to delays and transcription errors.
+
+* **Technical Asset:** All warehouse inventory items and storage bins are tagged with **barcodes**.
+
+* **Requirement:**
+
+> *"Warehouse counting must be performed by using a **mobile app that scans barcodes** on boxes."* 
 
 #### Step 1: Identify the Persona and Working Context
 
@@ -161,6 +158,7 @@ A Cloud Flow is a headless backend orchestration tool. A worker cannot directly 
 
 
 ## Q403
+![403](/dump-questions/question-images/q403.png)
 ### Question
 
 You need to replace the bicycle inspection forms.
@@ -179,7 +177,8 @@ Which two solutions should you use? Each answer presents part of the solution.
 
 * **D.** a model-driven app based on customer service entities
 
-**Correct Answers:**
+### Answer
+**Correct Selections**
 
 * **A. a flow that maps inspection data to Dynamics 365 Field Service**
 * **C. a canvas app that guides the technician through the inspection**
@@ -218,60 +217,10 @@ This question is part of the **Adventure Works Cycles** case study. In this scen
 * **D. a model-driven app based on customer service entities:**
 * Bicycle tune-up and inspection operations belong to **Field Service** (dispatch, maintenance, onsite service), not standard Customer Service (which deals with cases, SLAs, and call center ticket queues). Furthermore, Model-Driven apps do not provide the flexible, step-by-step interactive inspection experience that a dedicated Canvas app provides.
 
-## Q404
-### Question
-You need to correct the portal query issues.
-
-Which code should you use? To answer, select the appropriate options in the answer area.
-
-**NOTE:** Each correct selection is worth one point.
-
-Hot Area:
-
-| Portal issue | Code change |
-| --- | --- |
-| **New registrations**<br> | [ `GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport` <br><br> `GET [Organization URI]/api/data/v9.1/accounts?$apply=name, sport` <br><br> `GET [Organization URI]/api/data/v9.1/accounts?$filter=name, sport` ]|
-| **All registered users**<br> | [ `$apply=groupby(sport ne null)` <br><br> `$filter = name, sport` <br><br> `$orderby = name, sport` ]|
-|
-
-**Correct Selections:**
-
-* **New registrations:** **`GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`**
-* **All registered users:** **`$apply=groupby(sport ne null)`** *(or `$orderby = name, sport` depending on how the dropdown options are rendered)*
-
-Yes, **this question returns directly to the Bellows Sports case study!**
-
-### Step-by-Step Breakdown
-
-#### 1. Case Study Requirements & Reported Issues
-
-In the Bellows Sports case study under **Issues $\rightarrow$ Portal**:
-
-> *"The query for all registered users must return the data categorized by division. Queries must return only the Name and Sport fields. Queries return all fields. The query is as follows:*
-> `GET [Organization URI]/api/data/v9.1/accounts?&$orderby=Name, sport&$filter=sport ne null`"
-
-There are two distinct problems identified in the portal queries:
-
-1. **Returning unwanted columns:** Instead of returning only the required fields (`Name` and `Sport`), the current query returns *all* entity fields.
-2. **Missing aggregation / grouping:** The data is expected to be categorized/grouped by division (sport), but the current query only applies a simple `$orderby` and `$filter`.
-
-
-#### 2. First Dropdown: New registrations (Limiting Columns)
-
-* In OData / Dataverse Web API, to specify which columns/attributes are returned in the response payload and avoid returning all fields, you use the **`$select`** system query option.
-* Specifying `$select=name, sport` instructs Dataverse to project only those two columns in the JSON output, resolving the performance and payload issue where queries returned all fields.
-* Therefore, the first dropdown choice is:
-**`GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`**
-
-
-#### 3. Second Dropdown: All registered users (Categorization / Grouping)
-
-* The requirement states: *"The query for all registered users must return the data categorized by division."*
-* In the OData v4 specification supported by the Dataverse Web API, data aggregation and grouping are implemented using the **`$apply`** query option with the **`groupby`** transformation (e.g., `$apply=groupby(...)`).
-* In some dump revisions, community answers debate between `$apply=groupby(...)` (for true server-side aggregation/categorization) and `$orderby = name, sport` (for visual grouping by sorting). However, the official intended OData syntax for categorization/grouping in the exam key is **`$apply=groupby(...)`**.
-
 
 ## Q405
+
+![Q405](/dump-questions/question-images/q405.png)
 ### Question
 
 You need to ensure that Adventure Works Cycles can track information from visitors to bike fairs.
@@ -288,6 +237,8 @@ What should you create?
 * **C.** a Power Automate flow to capture customer data from the bike fair Power Apps app in SharePoint and create a lead in Microsoft Teams.
 
 * **D.** a business process flow in Dynamics 365 Sales for capturing leads.
+
+### Answer
 
 **Correct Answer:** **A. a Power Automate flow that connects with the bike fair Power Apps app to create a lead in Dynamics 365 Sales**
 
@@ -322,6 +273,10 @@ A Business Process Flow (BPF) provides visual stage-gating guidance for CRM user
 
 
 ## Q410
+
+![Q410](/dump-questions/question-images/q410.png)
+
+
 ### Question
 
 
@@ -337,6 +292,8 @@ What should you create?
 * **C.** A Power BI dashboard that shows the inventory counting variances
 
 * **D.** a canvas app that scans barcodes to allow a warehouse worker to select inventory counts
+
+### Answer
 
 **Correct Answer:** **D. a canvas app that scans barcodes to allow a warehouse worker to select inventory counts**
 
@@ -366,7 +323,10 @@ What should you create?
 * **C. A Power BI dashboard that shows the inventory counting variances:** Dashboards visualize retrospective or analytical data for management after counts take place; they cannot be used to perform physical inventory counting.
 
 ## Q411
-### Question: 411
+
+![Q411](/dump-questions/question-images/q411.png)
+
+### Question
 
 You need to replace the bicycle inspection forms.
 
@@ -383,9 +343,7 @@ Which two solutions should you use? Each answer presents part of the solution.
 * **D.** a model-driven app based on customer service entities
 
 
-**Case Study Confirmation:**
-
-Yes, your suspicion is spot on—this is indeed part of the **Adventure Works Cycles** case study.
+### Answer
 
 **Correct Selections:**
 
@@ -424,7 +382,10 @@ Yes, your suspicion is spot on—this is indeed part of the **Adventure Works Cy
 
 
 ## Q412
-### Question: 412
+
+![alt text](/dump-questions/question-images/q412.png)
+
+### Question
 
 You need to resolve CustomerB's issues with the check-in application.
 
@@ -444,12 +405,8 @@ Which two options can you use? Each correct answer presents a complete solution.
 * **D.** LookUp to Search
 
 
-### Case Study Identification
 
-**Yes, this is part of the Adventure Works Cycles case study.** It directly addresses the customer check-in tablet app deployed in their retail bike shops.
-
-
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -499,6 +456,9 @@ In Power Fx, `LookUp` is strictly designed to retrieve **the first record** that
 
 
 ## Q413
+
+![Q413](/dump-questions/question-images/q413.png)
+
 ### Question
 
 DRAG DROP -
@@ -512,8 +472,6 @@ Which components should you test for each step? To answer, drag the appropriate 
 **Select and Place:**
 
 #### Components
-
-
 
 * action
 
@@ -571,6 +529,9 @@ The notification logic is implemented in a **Power Automate cloud flow** that qu
 * Calculating, aggregating, or counting an array of records returned by Dataverse (using actions such as *Filter array*, *Compose*, or `length()` parsing) falls under the **data operation** category in Power Automate.
 
 ## Q414
+
+![Q414](/dump-questions/question-images/q414.png)
+
 ### Question
 
 You need to improve the efficiency of counting warehouse inventory.
@@ -579,20 +540,13 @@ What should you create?
 
 * **A.** a model-driven app that allows the user to key in inventory counts
 
-
 * **B.** a Power BI dashboard that shows the inventory counting variances
-
 
 * **C.** a flow that updates the warehouse counts as the worker performs the count
 
-
 * **D.** a canvas app that scans barcodes to allow a warehouse worker to select inventory counts
 
-### Case Study Identification
-
-**Yes, this is part of the Adventure Works Cycles case study.** It is the exact warehouse inventory management requirement seen earlier in the question set, framed around replacing manual pen-and-paper tracking.
-
-### The Verdict
+### Answer
 
 **Correct Answer:** **D. a canvas app that scans barcodes to allow a warehouse worker to select inventory counts**
 
@@ -622,8 +576,10 @@ Power Automate flows are headless background orchestrators. A flow cannot serve 
 
 
 ## Q415
-### Question
 
+![Q415](/dump-questions/question-images/q415.png)
+
+### Question
 
 HOTSPOT -
 
@@ -645,13 +601,10 @@ What should you use? To answer, select the appropriate options from the answer a
 | Purpose of visit | **[ Select an option ]**<br><br><br>• Linear gauge<br><br>• Flip switch<br><br>• Radial knob<br><br>• Option set|
 |
 
-### Case Study Identification
-
-**Yes, this question is part of the Adventure Works Cycles case study.**
 
 It relates to configuring the touch-friendly mobile / tablet forms used at the front desk and kiosks in their retail bike shops, where staff track customer check-ins, store visits, and marketing preferences.
 
-### The Verdict
+### Answer
 
 * **Mailing list opt-in/opt-out:** **Flip switch**
 * **Number of store visits:** **Linear gauge**
@@ -690,6 +643,8 @@ In Dataverse / Dynamics 365 Model-Driven forms and mobile controls, visual contr
 
 ## Q433
 
+![Q433](/dump-questions/question-images/q433.png)
+
 You need to reduce response time for the information email on the website.
 
 What should you create?
@@ -699,15 +654,10 @@ What should you create?
 * **C.** A Power Apps app that displays the number of email received in a dashboard
 * **D.** A logic app that moves all emails received to Azure Blob storage
 
-### Case Study Identification
 
-This is the **Adventure Works Cycles** case study, a common testlet in the PL-400 (and PL-200) certification exams focusing on migrating bicycle manufacturing, retail, and field service workloads to the Power Platform.
-
-
-### The Verdict
+### Answer
 
 **Correct Answer:** **B. a flow that creates a notification in Microsoft Teams**
-
 
 ### Step-by-Step Breakdown
 
@@ -753,7 +703,8 @@ Archiving emails into Azure Blob storage is an infrastructure storage/backup pat
 
 
 ## Q437
-# Question 437 (CertyIQ)
+
+![Q437](/dump-questions/question-images/q437.png)
 
 You need to resolve CustomerB's issues with the check-in application.
 
@@ -766,11 +717,8 @@ Which two options can you use? Each correct answer presents a complete solution.
 - **C.** Change Search to LookUp
 - **D.** Change LookUp to Search
 
-### Case Study Identification
 
-This question returns to the **Adventure Works Cycles** case study, focusing specifically on resolving an issue in the retail store check-in Canvas app.
-
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -821,7 +769,13 @@ This is the exact opposite of what is needed. Replacing `Filter` with `LookUp` w
 * **C. Change Search to LookUp:**
 Similarly, moving from `Search` to `LookUp` forces the formula to return only a single record instead of returning all matches.
 
+
+
 ## Q438
+
+![Q438](/dump-questions/question-images/q438.png)
+
+
 ### Question
 
 **DRAG DROP**
@@ -854,11 +808,11 @@ Which components should you test for each step? To answer, drag the appropriate 
 
 This question continues the **Adventure Works Cycles** case study, specifically troubleshooting an automated notification flow that failed to trigger a text alert.
 
-### The Verdict
+### Answer
 
 * **outbound text:** **action**
 * **nine customers in the store:** **condition**
-* **number of customers in the store:** **expression**
+* **number of customers in the store:** **edata operation**
 
 ### Step-by-Step Breakdown
 
@@ -888,11 +842,14 @@ This question continues the **Adventure Works Cycles** case study, specifically 
 
 
 * **number of customers in the store $\rightarrow$ `expression**`
-* To determine the current volume of waiting customers from the check-in list or array returned by Dataverse, the flow must calculate the tally (e.g., using a formula like `length(body('Get_checkins')?['value'])`).
-* Computing, aggregating, or referencing calculated values dynamically within a Power Automate step is handled via an **expression**.
+* To obtain the number of records returned from a trigger or query (e.g., getting checked-in customers), Power Automate developers commonly use a built-in step from the Data Operation connector group—such as a Compose action, Filter array, or initializing a count variable. Because the question asks to match components against workflow steps/actions you would inspect and test in the designer, Microsoft mapped this step to the action category: `data operation`.
+* Computing, aggregating, or referencing calculated values dynamically within a Power Automate step is handled via an **data operation**.
 
 
 ## Q439
+
+![Q439](/dump-questions/question-images/q439.png)
+
 ### Question 
 
 You need to improve the efficiency of counting warehouse inventory.
@@ -904,11 +861,9 @@ What should you create?
 - **C.** A flow that updates the warehouse counts as the worker performs the count
 - **D.** A canvas app that scans barcodes to allow a warehouse worker to select inventory counts
 
-### Case Study Identification
 
-This question continues the **Adventure Works Cycles** case study.
 
-### The Verdict
+### Answer
 
 **Correct Answer:** **D. a canvas app that scans barcodes to allow a warehouse worker to select inventory counts**
 
@@ -944,6 +899,9 @@ A Power Automate flow is a backend orchestration engine; it does not provide an 
 
 
 ## Q440
+
+![Q440](/dump-questions/question-images/q440.png)
+
 ### Question
 
 **HOTSPOT**
@@ -962,11 +920,8 @@ What should you use? To answer, select the appropriate options from the answer a
 | Number of store visits | - Linear gauge<br>- Flip switch<br>- Pen control<br>- Input mask |
 | Purpose of visit | - Linear gauge<br>- Flip switch<br>- Radial knob<br>- Option set |
 
-### Case Study Identification
 
-This question continues the **Adventure Works Cycles** case study, specifically mapping custom UI/visualization controls to requirements for the customer check-in Canvas / Mobile app.
-
-### The Verdict
+### Answer
 
 * **Mailing list opt-in/opt-out:** **Flip switch**
 

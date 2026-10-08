@@ -1144,32 +1144,28 @@ Under the **Registration form** section of the Bellows Sports case study:
 
 ## Q404
 ## Question: 404
-
-**HOTSPOT**
-
+![alt text](/dump-questions/question-images/q404.png)
+### Question
 You need to correct the portal query issues.
 
 Which code should you use? To answer, select the appropriate options in the answer area.
 
 **NOTE:** Each correct selection is worth one point.
 
-**Hot Area:**
-
-### Answer Area
+Hot Area:
 
 | Portal issue | Code change |
-|---|---|
-| New registrations | Dropdown:<br>- `GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`<br>- `GET [Organization URI]/api/data/v9.1/accounts?$apply=name, sport`<br>- `GET [Organization URI]/api/data/v9.1/accounts?$filter=name, sport` |
-| All registered users | Dropdown:<br>- `$apply=groupby(sport ne null)`<br>- `$filter = name, sport`<br>- `$orderby = name, sport` |
+| --- | --- |
+| **New registrations**<br> | [ `GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport` <br><br> `GET [Organization URI]/api/data/v9.1/accounts?$apply=name, sport` <br><br> `GET [Organization URI]/api/data/v9.1/accounts?$filter=name, sport` ]|
+| **All registered users**<br> | [ `$apply=groupby(sport ne null)` <br><br> `$filter = name, sport` <br><br> `$orderby = name, sport` ]|
+
 
 <br>
 
-**Correct Selections:**
+### Answer
 
 * **New registrations:** **`GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`**
 * **All registered users:** **`$apply=groupby(sport ne null)`** *(or `$orderby = name, sport` depending on how the dropdown options are rendered)*
-
-Yes, **this question returns directly to the Bellows Sports case study!**
 
 
 
