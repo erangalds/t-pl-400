@@ -1,6 +1,9 @@
 # PL 400 Dump Answers
 
 ## Q1
+![Q1](./question-images/q1.png)
+
+<br>
 **D. Add the maintenance history app to the Power BI dashboard.**
 
 ---
