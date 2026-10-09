@@ -21063,55 +21063,76 @@ This scenario tests standard Microsoft **PL-400 (Power Platform Developer)** arc
 
 ## Q388
 
-**Correct Answer:** **A. catch(error) alert("Caught error: " + error.message);** (typically formatted with braces `{ alert(...) }`)
+![Q388](/dump-questions/question-images/bellows-sports/q388.png)
 
-Yes, **this question is also part of the Bellows Sports case study** (often paired under the registration form scripting section).
+The script from the exhibit and its corresponding question (which asks how to complete error handling at line `UR04` / `UR06`):
+
+### Full Structure of `UpdateRecord.js`
+
+```javascript
+UR01 
+UR02 var data = {
+         "name" : "Updated Account ",
+         "creditonhold": true,
+         "description" : "This is an account update",
+         "revenue" : 10000,
+         "Division" : 2
+     };
+UR03 Xrm.WebApi.updateRecord("account", "5531d753-95af-e711-a94e-000d3a11e605", data).then(
+         function success(result) {
+             console.log("Account updated");
+             // ...perform operations on record update
+         },
+UR04     function (error) {
+             console.log(error.message);
+         }
+     );
+
+```
 
 ---
 
-### Step-by-Step Breakdown
+### Associated Exam Question Context
 
-#### 1. Context & The Case Study Missing Exhibit
+This code snippet is used to test asynchronous promise error handling with `Xrm.WebApi.updateRecord` in the Client API:
 
-In the full case study, an exhibit displays the code for **`UpdateRecord.js`**, a client-side JavaScript web resource running on the tournament registration form.
-
-The code block contains a standard client-side `try { ... }` block executing a Dataverse Web API / Xrm operation (around lines UR01–UR05). Line **UR06** is the placeholder for closing the block with appropriate exception handling.
-
----
-
-#### 2. Why Option A is Correct
-
-* The file is a **JavaScript** (`.js`) client script running in the browser.
-* Standard JavaScript error handling syntax uses `try { ... } catch (error) { ... }`.
-* An `Error` object in JavaScript exposes the standard property **`error.message`**.
-* Displaying the error to the user via an alert or modal notification (`alert("Caught error: " + error.message);`) is standard vanilla JavaScript syntax.
-
----
-
-#### 3. Why the Other Options are Incorrect (Syntactical Mismatches)
-
-* **B. `Exception exception = Server.GetLastError() ; if(exception != null)**`
-* This is backend **ASP.NET / C#** server-side code (specifically from legacy ASP.NET Web Forms), not client-side JavaScript.
+* **Question:**
+*"You need to handle errors in `UpdateRecord.js`. Which code segment should you add at line UR04 (or UR06)?"*
+* **Options provided on the exam:**
+* `catch(error) { alert("Caught error: " + error.message);}`
+* `Exception exception = Server.GetLastError(); if(exception != null)}` *(C# / ASP.NET syntax)*
+* `catch(exception e){ console.writeline(e)}` *(C# syntax)*
+* **`function (error) { console.log(error.message); }`**
 
 
-* **C. `catch(exception e) console.writeline(e)**`
-* In JavaScript, typed exception catches like `catch(exception e)` do not exist (that is C# syntax).
-* Furthermore, `console.writeline()` does not exist in JavaScript (C# uses `Console.WriteLine()`, while JavaScript uses `console.log()` or `console.error()`).
 
+#### Why `function (error) { ... }` completes the code
 
-* **D. `function (error) console.log(error.message)**`
-* This defines an anonymous callback function, not an exception handler following a synchronous `try` statement block.
+`Xrm.WebApi.updateRecord(...)` returns an ES6 Promise (`Promise.then(successCallback, errorCallback)`).
 
+Because the line immediately preceding `UR04` ends with a comma after the success callback:
+
+```javascript
+    function success(result) {
+        console.log("Account updated");
+        // ...perform operations on record update
+    }, // <--- Note the trailing comma
+UR04
+
+```
+
+It is expecting the second argument of `.then()`, which is the **rejection/error callback function** (`function (error) { console.log(error.message); }`) before closing the method call with `);`. Placing a standard `catch(...)` block directly after a parameter separator comma would produce a JavaScript syntax error.
 
 ## Q389
+
+![Q389](/dump-questions/question-images/bellows-sports/q389.png)
+
+### Answer
+
 **Correct Answers:**
 
 * **C. Azure Function that uses a listener**
 * **D. Power Automate flow**
-
-Yes, this is another question directly from the **Bellows Sports** case study!
-
----
 
 ### Step-by-Step Breakdown
 
@@ -21153,7 +21174,9 @@ Because the files land on an external **FTP server**, the automation needs a mec
 
 
 ## Q390
-Yes, **this question is also part of the Bellows Sports case study**!
+
+![Q390](/dump-questions/question-images/bellows-sports/q390.png)
+
 
 The correct business rule actions are:
 
@@ -21193,8 +21216,10 @@ In the tournament registration requirements for Bellows Sports:
 * Like weight, height has no bearing on soccer team placements and should not be shown on the form for this sport, so visibility is set to **No**.
 
 ## Q391
-Yes, **this is another question tied to the Bellows Sports case study** (specifically the sales and marketing lead-management section).
 
+![Q391](/dump-questions/question-images/bellows-sports/q391.png)
+
+### Answer 
 The correct selections for each function are:
 
 * **Create a Slack notification from a lead:** **Power Automate**
@@ -21203,8 +21228,6 @@ The correct selections for each function are:
 
 * **Ensure appropriate information is added to leads:** **Business process flow**
 
-
----
 
 ### Step-by-Step Breakdown
 
@@ -21224,37 +21247,28 @@ In the lead and referral tracking specifications for Bellows Sports:
 
 * Power Automate features a native **Slack connector** with actions such as "Post message (V2)".
 
-
 * Business rules and Business Process Flows operate inside the Dataverse client/server boundary and cannot post messages to external third-party chat platforms like Slack.
-
-
-
 
 * **Change the priority field $\rightarrow$ `Business rule**`
 
 * Business rules natively provide the **Set Field Value** action.
 
-
 * When criteria on the lead are met (e.g., Estimated Value is high or Lead Source matches a specific criteria), a Business rule dynamically updates or sets the value of the `Priority` column directly on the form and at the entity level without needing custom code.
-
-
-
 
 * **Ensure appropriate information is added to leads $\rightarrow$ `Business process flow**`
 
 * The primary purpose of a **Business Process Flow (BPF)** is to guide users through defined stages (e.g., Qualify $\rightarrow$ Develop $\rightarrow$ Propose) and mandate that specific stage-gate data steps are completed before users can advance to the next stage.
-
 
 * This guarantees that reps do not skip required fields or advance leads without capturing the necessary qualifying information.
 
 
 ## Q392
 
-**Yes, this is another question directly from the Bellows Sports case study.**
+![Q392](/dump-questions/question-images/bellows-sports/q392.png)
+
+### Answer 
 
 **Correct Answer:** **B. formContext.data.addOnLoad(myFunction)**
-
----
 
 ### Step-by-Step Breakdown
 
@@ -21264,46 +21278,36 @@ In the requirements for the **Registration form** under the Bellows Sports case 
 
 * > *"Information about upcoming tournaments must be pre-located into the registration form **when the registration form loads**."*
 
-
 * > *"The following code runs when the registration form loads."*
 
 
-
 The client-side business logic must wire up event handling to populate or refresh tournament event data as soon as the record form data is loaded and ready.
-
----
 
 #### 2. Why Option B is Correct
 
 * In the Power Apps Client API (`Xrm`), the modern way to programmatically bind a callback to run after the record's underlying data finishes loading is **`formContext.data.addOnLoad(handlerFunction)`**.
 * This triggers your custom function (`myFunction`) whenever the form data is initialized or refreshed, allowing you to pre-populate upcoming tournament lists, locations, and schedules into form fields or controls without blocking the initial UI draw.
 
----
 
 ### Why the Other Options are Incorrect
 
 * **A. `formContext.data.entity.addOnSave(myFunction)`:**
 * This binds an event handler to run right before or when the record is **saved**, not when the form data loads.
-
-
 * **C. `formContext.data.removeOnLoad(myFunction)`:**
 * This unregisters/removes an existing handler from the data `onLoad` pipeline rather than adding one.
-
-
 * **D. `addOnPreProcessStatusChange`:**
 * This is an event method on the Business Process Flow stage API (`formContext.data.process`), used to intercept status transitions (active, abandoned, finished), not general form loading.
-
-
 * **E. `formContext.data.isValid()`:**
 * This is an evaluation method that returns a Boolean (`true`/`false`) indicating whether all mandatory fields and validations on the form are valid; it is not an event registration method.
 
 
 ## Q393
-**Yes, this is directly from the Bellows Sports case study.**
+
+![Q393](/dump-questions/question-images/bellows-sports/q393.png)
+
+### Answer
 
 **Correct Answer:** **A. formContext.data.addOnLoad(myFunction)**
-
----
 
 ### Step-by-Step Breakdown
 
@@ -21313,51 +21317,38 @@ In the requirements for the **Registration form** under the Bellows Sports case 
 
 * > *"Information about upcoming tournaments must be pre-populated into the registration form when the registration form loads."*
 
-
 * Notice the question text here: *"You need to add the script to populate event data on the form."*
 
 * In practice exam pools and question dumps, this specific requirement is often presented with slight prompt variations (e.g., Question 392 asked *"add the script for the registration form event handling"*, while Question 393 asks *"add the script to populate event data on the form"*). Both target the same line in the exhibit code.
 
 
-
----
-
 #### 2. Why Option A is Correct
 
 * To execute code that populates field or grid data once the form context and record data are available, you register an event handler on the data load event using **`formContext.data.addOnLoad(myFunction)`**.
 
-
 * When the record data finishes loading, `myFunction` executes to retrieve upcoming event/tournament data and populate it directly into the form fields.
 
-
-
----
 
 ### Why the Other Options are Incorrect
 
 * **B. `formContext.data.removeOnLoad(myFunction)`:**
 * This unhooks/removes a previously registered event handler from the `OnLoad` event queue. It does not register a script to populate data.
-
-
-
-
 * **C. `formContext.data.entity.addOnSave(myFunction)`:**
 * This registers an event listener to fire right before or during the record **save** operation. You populate event data when opening/loading the form, not when saving it.
-
-
-
-
 * **D. `addOnPreProcessStatusChange`:**
 * This method belongs to the Business Process Flow stage transition API (`formContext.data.process`), used to intercept status transitions (e.g., advancing or aborting a stage), not general form loading.
-
-
 * **E. `formContext.data.isValid()`:**
 * This is a validation inspection method that checks whether the form data contains unhandled validation errors and returns a Boolean (`true`/`false`). It does not attach or trigger any data-loading logic.
 
 ## Q394
+
+
+![Q394](/dump-questions/question-images/bellows-sports/q394.png)
+
+### Answer
+
 **Correct Answer:** **D. function (error) console.log(error.message)**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -21385,8 +21376,6 @@ UR06
 
 ```
 
----
-
 #### 2. Why Option D is Correct
 
 * The Dataverse Client API method `Xrm.WebApi.updateRecord(...)` returns a native JavaScript **Promise** object.
@@ -21405,32 +21394,25 @@ function (error) {
 
 ```
 
-
 This completes the Promise argument structure and handles asynchronous errors returned when the record update fails.
 
-
-
----
 
 ### Why the Other Options are Incorrect
 
 * **A. `catch(error) alert("Caught error: " + error.message);**`
 * A `catch` statement cannot be passed as an argument inside a function call like `.then(successCallback, [catch])`. It is only valid immediately following a `try { ... }` block (which would be used if the question targeted an outer `try/catch` block, typically placed at line UR06).
-
-
-
-
 * **B. `Exception exception = Server.GetLastError(); if(exception != null)**`
 * This is backend C# code from legacy ASP.NET Web Forms, completely invalid in client-side JavaScript.
-
-
-
-
 * **C. `Catch(exception e) console.writeline(e)**`
 * In JavaScript, typed exception catches (`exception e`) and `console.writeline` do not exist (they are C# syntax). Placing this inside `.then()` causes a fatal JavaScript parser error.
 
 
 ## Q395
+
+![Q395](/dump-questions/question-images/bellows-sports/q395.png)
+
+### Answer
+
 **Correct Answers:**
 
 * **C. Azure Function that uses a listener**
@@ -21440,7 +21422,6 @@ This completes the Promise argument structure and handles asynchronous errors re
 
 This is the exact question asking for **two** options!
 
----
 
 ### Step-by-Step Breakdown
 
@@ -21452,42 +21433,35 @@ In the **Bellows Sports** case study, athlete referrals follow this workflow:
 * **Requirement:** *"Referrals must be imported into the system as soon as they are available."*
 * Because the source file lands on an external FTP server outside Dataverse, the solution must detect new files as soon as they appear on the FTP site and process the rows into Dataverse records automatically.
 
----
 
 #### 2. Why Option D is Correct
 
 * **Power Automate** includes an out-of-the-box **FTP / SFTP connector**.
-
-
 * It provides the trigger: **"When a file is added or modified"**.
 * As soon as the Excel referral sheet arrives on the FTP site, the flow triggers, reads the data, and imports the records into Dataverse.
 
----
 
 #### 3. Why Option C is Correct
 
 * An **Azure Function** can be configured with an event-driven listener (such as polling an FTP endpoint, an event grid/trigger mechanism, or an external queue listener).
 
-
 * When new files or messages arrive, the listener fires the function code to parse the payload and batch-insert the referral rows into Dataverse using the Dataverse SDK.
 
-
-
----
 
 ### Why the Other Options are Incorrect
 
 * **A. Azure Function that uses the Discovery service:**
 * The Discovery service is used to discover organization endpoints/URLs available to a user in a tenant. It has no ability to monitor external FTP uploads or automate incoming data feeds.
-
-
-
-
 * **B. workflow extension:**
 * A custom workflow extension/activity runs within the internal Dataverse process engine and only responds to actions happening *inside* Dataverse tables. It cannot listen for or react to external files arriving on an FTP server.
 
 
 ## Q396
+
+![Q396](/dump-questions/question-images/bellows-sports/q396.png)
+
+### Answer
+
 The correct business rule actions are:
 
 * **Weight:** **Set visibility action to No.**
@@ -21497,8 +21471,6 @@ The correct business rule actions are:
 * **Height:** **Set visibility action to No.**
 
 
----
-
 ### Step-by-Step Breakdown
 
 #### 1. Pinpointing the Requirement in the Case Study
@@ -21507,20 +21479,17 @@ In the case study section under **Registration form** $\rightarrow$ **requiremen
 
 | Division | Requirement |
 | --- | --- |
-| **Baseball** | Capture the age and weight of the player. The height field must not display.
-
- |
-| **Hockey** | Capture the age, height, and weight of the player.
-
- |
+| **Baseball** | Capture the age and weight of the player. The height field must not display.|
+| **Hockey** | Capture the age, height, and weight of the player.|
 | **Soccer** | **Capture the age of the player. The height and weight fields must not display.**<br> |
+
+<br>
 
 The question asks specifically:
 
 > *"You need to determine how to implement rules for players who register for a **soccer** tournament. Which business rule actions should you use?"*
 > 
 
----
 
 #### 2. Mapping to Business Rule Actions
 
@@ -21528,27 +21497,15 @@ The question asks specifically:
 
 * The requirement specifies to **capture** the player's age. To ensure the registrant cannot submit the form without entering their age, the business rule sets the requirement level to **Business Required**.
 
-
-
-
 * **Weight $\rightarrow$ `Set visibility action to No.**`
 
 * The rule explicitly states: *"The height and weight fields must not display."*
 
 * To dynamically hide the field on the form when Soccer is selected, apply the **Set Visibility** action and configure it to **No**.
 
-
-
-
 * **Height $\rightarrow$ `Set visibility action to No.**`
 
 * Height must also be hidden for soccer registrations. Use the **Set Visibility** action configured to **No**.
-
-
-
-
-
----
 
 ### Why the Other Options are Excluded
 
@@ -21556,6 +21513,7 @@ The question asks specifically:
 
 
 * **Set Field Value action to No:** This sets a two-option (Boolean) column value to "No" / false. Weight, height, and age are numeric/text fields, not boolean flags.
+
 
 
 ## Q397
@@ -21704,6 +21662,11 @@ In APIM `<rate-limit>` and `<rate-limit-by-key>` policies, the `renewal-period` 
 Therefore, **Option C** is the only policy that successfully restricts and reduces the Azure consumption rate.
 
 ## Q399
+
+![Q399](/dump-questions/question-images/bellows-sports/q399.png)
+
+### Answer 
+
 The correct drag-and-drop actions are:
 
 * **Resolve rendering issue for New and Save buttons:** **Add &ribbondebug=true to the end of the application URL.**
@@ -21711,7 +21674,6 @@ The correct drag-and-drop actions are:
 * **Add email button for registration form:** **Use Ribbon Workbench.**
 
 
----
 
 ### Step-by-Step Breakdown
 
@@ -21723,61 +21685,45 @@ From the scenario text visible in the exhibit:
 > *"The captions for the New and Save buttons do not render properly on the form."*
 > 
 
-
 * **Requirements $\rightarrow$ Registration form:**
 > *"The form must include a custom button that sends an email confirmation to the player after the player registers. The button must not be visible until after the form is saved."*
 > 
 
 
-
----
-
 #### 2. Why "Add &ribbondebug=true to the end of the application URL." Resolves the Rendering Issue
 
 * In Model-Driven Apps / Dataverse, the ribbon/command bar uses the **Command Checker** diagnostic utility to inspect ribbon definitions, rule evaluations, display rules, and command localization/captions.
 
-
 * Adding `&ribbondebug=true` to the end of the Model-Driven App URL enables Command Checker mode.
-
 
 * Selecting the problematic buttons opens a diagnostic flyout that details why the button text/caption fails to render, allowing you to troubleshoot and resolve the issue directly in the runtime context.
 
----
 
 #### 3. Why "Use Ribbon Workbench." is Used to Add the Email Button
 
 * The requirement states that the button:
 1. Executes custom client-side logic (sending an email confirmation).
 
-
 2. Must dynamically hide while a record is new/unsaved and only appear once the record is saved.
-
-
 
 
 * Implementing conditional button visibility based on whether the record has been saved requires an **`EnableRule`** with a **`FormStateRule`** (specifically state `Create` vs. `Existing`), which is configured visually using the industry-standard **Ribbon Workbench** tool by Scott Durow.
 
 
-
----
-
 ### Why the Other Options are Incorrect
 
 * **Modify the RibbonWSS.xsd file:**
 * `RibbonWSS.xsd` is Microsoft's read-only XML Schema Definition file used to validate the schema structure of ribbon customizations. Modifying the schema definition file locally has no effect on running Dataverse apps and is unsupported.
-
-
-
-
 * **Export the XML file:**
 * While customizing ribbon definitions can involve exporting solutions, simply exporting an XML file neither diagnoses rendering failures nor implements the visibility rule for the email button.
 
-
 ## Q400
 
-**Correct Answer:** **B. formContext.data.addOnLoad(myFunction)**
+![Q400](/dump-questions/question-images/bellows-sports/q400.png)
 
----
+### Answer
+
+**Correct Answer:** **B. formContext.data.addOnLoad(myFunction)**
 
 ### Step-by-Step Breakdown
 
@@ -21794,38 +21740,33 @@ Under the **Registration form** section of the Bellows Sports case study:
 *"You need to add the script for the registration form event handling. Which code segment should you use?"*
 
 
----
-
 #### 2. Why Option B is Correct
 
 * In the modern Dataverse Client API (`Xrm`), registering a handler on data initialization/refresh is done via **`formContext.data.addOnLoad(myFunction)`**.
 
-
 * This attaches the callback function `myFunction` so that when the record data finishes loading, it executes to populate the upcoming tournament and location information.
 
-
-
----
 
 ### Why the Other Options are Incorrect
 
 * **A. `formContext.data.entity.addOnSave(myFunction)`:** Attaches an event handler to run on record **save**, not when the form loads.
 
-
 * **C. `formContext.data.removeOnLoad(myFunction)`:** Removes a previously registered handler from the `onLoad` event rather than adding one.
 
-
 * **D. `addOnPreProcessStatusChange`:** A method on the Business Process Flow stage API (`formContext.data.process`), not a form data load handler.
-
 
 * **E. `formContext.data.isValid()`:** A validation method that returns a boolean (`true`/`false`) indicating whether the data passes validation checks; it does not bind an event handler.
 
 
 
 ## Q401
+
+![Q401](/dump-questions/question-images/bellows-sports/q401.png)
+
+### Answer
+
 **Correct Answer:** **A. formContext.data.addOnLoad(myFunction)**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -21842,29 +21783,20 @@ Under the **Registration form** section of the Bellows Sports case study:
 *"You need to add the script to populate event data on the form. Which code segment should you use?"*
 
 
----
-
 #### 2. Why Option A is Correct
 
 * In the modern Dataverse Client API (`Xrm`), registering an event handler to run after the record's underlying data is initialized or refreshed is done via **`formContext.data.addOnLoad(myFunction)`**.
 
-
 * By passing `myFunction` into `addOnLoad`, the function runs automatically once the form data is available, executing the necessary logic to retrieve and populate tournament/event data into the registration form.
 
-
-
----
 
 ### Why the Other Options are Incorrect
 
 * **B. `formContext.data.removeOnLoad(myFunction)`:** Removes a previously registered event listener from the form data `onLoad` pipeline instead of adding one.
 
-
 * **C. `formContext.data.entity.addOnSave(myFunction)`:** Registers an event listener to run before or during the record **save** operation, not when the form is loaded to display initial event data.
 
-
 * **D. `addOnPreProcessStatusChange`:** An event method on the Business Process Flow stage API (`formContext.data.process`) used to intercept stage/status changes rather than form load events.
-
 
 * **E. `formContext.data.isValid()`:** An evaluation method that returns a boolean (`true`/`false`) indicating whether all data validations on the form pass; it does not bind or trigger an event handler.
 
@@ -21975,46 +21907,66 @@ This question is part of the **Adventure Works Cycles** case study. In this scen
 * Bicycle tune-up and inspection operations belong to **Field Service** (dispatch, maintenance, onsite service), not standard Customer Service (which deals with cases, SLAs, and call center ticket queues). Furthermore, Model-Driven apps do not provide the flexible, step-by-step interactive inspection experience that a dedicated Canvas app provides.
 
 ## Q404
-**Correct Selections:**
 
-* **New registrations:** **`GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`**
-* **All registered users:** **`$apply=groupby(sport ne null)`** *(or `$orderby = name, sport` depending on how the dropdown options are rendered)*
+![Q404](/dump-questions/question-images/bellows-sports/q404.png)
 
-Yes, **this question returns directly to the Bellows Sports case study!**
 
----
+### Answer
+### Case Study Identification
+
+This question connects directly to the **Bellows Sports** case study, specifically resolving the issues reported under **Portal**:
+
+> *"The query for all registered users must return the data categorized by division. Queries must return only the Name and Sport fields. Queries return all fields. The query is as follows:*
+> ```http
+> GET [Organization URI]/api/data/v9.1/accounts?
+> &$orderby=Name, sport
+> &$filter=sport ne null
+> ```"[cite: 15]
+> 
+> ```
+> 
+> 
+
+### The Verdict
+
+* **New registrations:** `GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`
+
+* **All registered users:** `$orderby = name, sport`
+
 
 ### Step-by-Step Breakdown
 
-#### 1. Case Study Requirements & Reported Issues
+#### 1. New registrations $\rightarrow$ `GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`
 
-In the Bellows Sports case study under **Issues $\rightarrow$ Portal**:
+* **Problem / Requirement:**
+* *"Queries must return only the Name and Sport fields. Queries return all fields."*
 
-> *"The query for all registered users must return the data categorized by division. Queries must return only the Name and Sport fields. Queries return all fields. The query is as follows:*
-> `GET [Organization URI]/api/data/v9.1/accounts?&$orderby=Name, sport&$filter=sport ne null`"
 
-There are two distinct problems identified in the portal queries:
 
-1. **Returning unwanted columns:** Instead of returning only the required fields (`Name` and `Sport`), the current query returns *all* entity fields.
-2. **Missing aggregation / grouping:** The data is expected to be categorized/grouped by division (sport), but the current query only applies a simple `$orderby` and `$filter`.
+* **Reasoning:**
+* In the Dataverse Web API (OData v4), omitting `$select` returns all attributes on the entity.
 
----
 
-#### 2. First Dropdown: New registrations (Limiting Columns)
+* To restrict the returned payload to only specific fields/columns, the **`$select`** system query option must be specified:
 
-* In OData / Dataverse Web API, to specify which columns/attributes are returned in the response payload and avoid returning all fields, you use the **`$select`** system query option.
-* Specifying `$select=name, sport` instructs Dataverse to project only those two columns in the JSON output, resolving the performance and payload issue where queries returned all fields.
-* Therefore, the first dropdown choice is:
-**`GET [Organization URI]/api/data/v9.1/accounts?$select=name, sport`**
+$$\text{GET [Organization URI]/api/data/v9.1/accounts?\$select=name, sport}$$
 
----
 
-#### 3. Second Dropdown: All registered users (Categorization / Grouping)
+* Neither `$apply` (data aggregation) nor `$filter` (record row filtering) limits column projection.
 
-* The requirement states: *"The query for all registered users must return the data categorized by division."*
-* In the OData v4 specification supported by the Dataverse Web API, data aggregation and grouping are implemented using the **`$apply`** query option with the **`groupby`** transformation (e.g., `$apply=groupby(...)`).
-* In some dump revisions, community answers debate between `$apply=groupby(...)` (for true server-side aggregation/categorization) and `$orderby = name, sport` (for visual grouping by sorting). However, the official intended OData syntax for categorization/grouping in the exam key is **`$apply=groupby(...)`**.
 
+#### 2. All registered users $\rightarrow$ `$orderby = name, sport`
+
+* **Problem / Requirement:**
+* *"The query for all registered users must return the data categorized by division."*
+
+
+
+* **Reasoning:**
+* In standard OData querying within Power Pages / Dataverse portals, grouping or categorizing flat entity result sets sequentially for display is achieved by ordering the dataset by category using **`$orderby = name, sport`** (or ordering by the categorical fields).
+
+
+* The option `$apply=groupby(sport ne null)` is syntactically invalid OData (a boolean filter expression cannot be passed as a grouping property), and `$filter = name, sport` is invalid filter syntax.
 
 ## Q405
 
@@ -22159,7 +22111,9 @@ The case study explicitly mandates:
 
 ## Q407
 
-### Correct Selections
+
+
+### Answer
 
 * **Division:** **Option Set** (Choice)
 * **End date:** **Date Only**
@@ -22282,8 +22236,13 @@ Key points from the requirements visible in the explanation:
 * If you use `LookUp` for a search UI, it discards every match after the first one, making it impossible for the salesperson to see and choose among multiple locations with the same name. `LookUp` is intended for detail forms or single-record lookups, not multi-result searches.
 
 
-
 ## Q409
+
+![Q409](/dump-questions/question-images/bellows-sports/q409.png)
+
+
+### Answer
+
 **Correct Answers:**
 
 * **A. LookUp to Filter**
@@ -22291,34 +22250,23 @@ Key points from the requirements visible in the explanation:
 * **D. LookUp to Search**
 
 
----
-
 ### Step-by-Step Breakdown
 
 #### 1. Context & Root Cause (Adventure Works Cycles)
 
 * In the check-in app (a Power Apps Canvas app), customers look up their information by last name.
 
-
 * CustomerB reports that the app returns only a single search result when entering their name, and it corresponds to another individual with the same last name.
-
 
 * The app was originally written using `LookUp(...)`, which evaluates a condition and returns **only the first record** it encounters. When multiple individuals share a last name, `LookUp` drops every subsequent match.
 
-
-
----
 
 #### 2. Why Option A (`LookUp to Filter`) is Correct
 
 * `Filter(source, condition)` returns a **table/collection containing all records** that satisfy the filter condition.
 
-
 * Swapping the formula from `LookUp` to `Filter` allows the search gallery to present all customers sharing that last name, enabling CustomerB to locate their specific profile.
 
-
-
----
 
 #### 3. Why Option D (`LookUp to Search`) is Correct
 
@@ -22326,12 +22274,10 @@ Key points from the requirements visible in the explanation:
 * Swapping from `LookUp` to `Search` provides full multi-record results matching the query string, resolving the issue where only one record is shown.
 
 
-
----
-
 ### Why Options B and C are Incorrect
 
 * **B (`Filter to LookUp`) & C (`Search to LookUp`):** Both options replace a multi-record function with `LookUp`, which would enforce the very single-record limitation causing CustomerB's problem.
+
 
 
 ## Q410
@@ -23564,17 +23510,13 @@ From the **Users** section of the scenario text:
 
 
 ## Q430
-### Case Study Identification
 
-This is the **Bellows Sports** case study, a core PL-400/PL-200 scenario featuring event registration, Dataverse security modeling, Solution Checker issues, and client scripting.
+![Q430](/dump-questions/question-images/bellows-sports/q430.png)
 
----
-
-### The Verdict
+### Answer
 
 **Correct Answer:** **C. Interns have the Environment Maker security role but need the Common Data Service User security role.**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -23588,9 +23530,6 @@ This is the **Bellows Sports** case study, a core PL-400/PL-200 scenario featuri
 > *"Interns can create apps but cannot interact with their own data."*
 
 
-
----
-
 #### 2. Understanding Role Privilege Boundaries in Dataverse
 
 * **Environment Maker:**
@@ -23602,14 +23541,9 @@ This is the **Bellows Sports** case study, a core PL-400/PL-200 scenario featuri
 * This role is specifically designed to provide essential security privileges to create, read, update, and delete records that a user owns in Dataverse tables.
 
 
-
----
-
 #### 3. Why Option C is Correct
 
 Because the interns were granted only the **Environment Maker** role, they were able to build and package Power Apps; however, when running the apps, they lacked data-level permissions to read or write records, manifesting as *"cannot interact with their own data"*. Assigning them the **Common Data Service User** role gives them the required record ownership privileges to interact with their data.
-
----
 
 ### Why the Other Options are Incorrect
 
@@ -23619,22 +23553,18 @@ Because the interns were granted only the **Environment Maker** role, they were 
 
 
 ## 431
+
+![Q431](/dump-questions/question-images/bellows-sports/q431.png)
+
 ### Case Study Identification
 
-This question is part of the **Bellows Sports** case study, directly continuing from the previous question regarding user security role assignments and the principle of least privilege.
-
----
-
-### The Verdict
+### Answer
 
 * **Intern:** **Environment Maker**
 
 * **Manager:** **System Administrator**
 
 * **Sales representative:** **Basic User**
-
-
----
 
 ### Step-by-Step Breakdown
 
@@ -23650,7 +23580,6 @@ From the **Security** section table in the case study:
 
 *Constraint:* *"You must grant users the minimum permissions required to perform their job tasks."*
 
----
 
 #### 2. Intern $\rightarrow$ `Environment Maker`
 
@@ -23660,9 +23589,6 @@ From the **Security** section table in the case study:
 * **Role Alignment:** The **Environment Maker** role gives non-admin creators the specific rights to build apps, create flows, and define connectors within an environment without granting access to administrative settings or arbitrary database records.
 
 
-
----
-
 #### 3. Manager $\rightarrow$ `System Administrator`
 
 * **Requirement:** Managers are responsible for adding users to the environment, assigning security roles to users, and managing environment data storage/capacity.
@@ -23671,9 +23597,6 @@ From the **Security** section table in the case study:
 * **Role Alignment:** Adding users, delegating security roles, and managing database storage quotas require full administrative authority over the Power Platform environment, which is governed by the **System Administrator** role. (The *System Customizer* role cannot assign security roles to other users or manage storage).
 
 
-
----
-
 #### 4. Sales representative $\rightarrow$ `Basic User`
 
 * **Requirement:** Sales representatives only perform everyday data entry tasks (entering customer data into Dynamics 365 Customer Service).
@@ -23681,12 +23604,12 @@ From the **Security** section table in the case study:
 
 * **Role Alignment:** The **Basic User** role (formerly known as *Common Data Service User*) provides the baseline privileges necessary to run model-driven apps, create records, and update data owned by the user or their team without any customization or maker rights, satisfying the minimum permission requirement.
 
+
 ## Q432
 ### Case Study Identification
 
 This question continues the **Bellows Sports** case study, specifically focusing on data modeling and column type selection for the Tournament and Registration entities.
 
----
 
 ### The Verdict
 
@@ -23711,28 +23634,16 @@ This question continues the **Bellows Sports** case study, specifically focusing
 * Looking at the provided JavaScript code exhibit (`UpdateRecord.js`): Line `UR02` sets `"Division" : 2`, where an integer value represents an option choice.
 
 
-
-
 * **Reasoning:** A fixed, predefined list of choices (Baseball, Hockey, Soccer) from which a user selects one category is standardly modeled in Dataverse as an **Option Set** (Choice).
 
-
-
----
 
 #### 2. End date $\rightarrow$ `Date Only`
 
 * **Requirement:**
 * Under **Background**: *"Bellows Sports runs tournaments several times per year. Each tournament runs six weeks."*
-
 * Under **Requirements $\rightarrow$ Tournaments**: *"When team members create tournament records they must enter the start date for a tournament. The end date of the tournament must be automatically calculated."*
-
-
-
 * **Reasoning:** A calendar date marking the completion of an event (calculated deterministically as 6 weeks / 42 days from the start date) requires a **Date Only** format. A time component is unnecessary for tournament duration boundaries in this business context.
 
-
-
----
 
 #### 3. Tournament owner $\rightarrow$ `Lookup`
 
@@ -23740,13 +23651,10 @@ This question continues the **Bellows Sports** case study, specifically focusing
 * Under **Requirements $\rightarrow$ Tournaments**: *"Each tournament record must list the associated sales representative as the tournament owner."*
 
 
-
 * **Reasoning:**
 * Sales representatives are system users in Dataverse.
 
-
 * Storing a reference to a user entity or owner record requires establishing a Many-to-One relationship to the User table, which is created via a **Lookup** field.
-
 
 * In the third dropdown's available options (*Text*, *Lookup*, *Option Set*, *Unique Identifier*), **Lookup** is the only relational data type capable of referencing the user record.
 
@@ -23760,13 +23668,11 @@ This question continues the **Bellows Sports** case study, specifically focusing
 
 This is the **Adventure Works Cycles** case study, a common testlet in the PL-400 (and PL-200) certification exams focusing on migrating bicycle manufacturing, retail, and field service workloads to the Power Platform.
 
----
 
 ### The Verdict
 
 **Correct Answer:** **B. a flow that creates a notification in Microsoft Teams**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -23787,9 +23693,6 @@ This is the **Adventure Works Cycles** case study, a common testlet in the PL-40
 > 
 
 
-
----
-
 #### 2. Why Option B is Correct
 
 * Incoming customer inquiries are currently sitting idle in an email inbox for days because staff members do not constantly monitor the mailbox or receive immediate visibility when a new inquiry arrives.
@@ -23800,9 +23703,6 @@ This is the **Adventure Works Cycles** case study, a common testlet in the PL-40
 
 * This provides instant visibility, facilitates rapid team assignment, and directly reduces response times from days down to minutes or hours.
 
-
-
----
 
 ### Why the Other Options are Incorrect
 
@@ -23819,20 +23719,16 @@ Archiving emails into Azure Blob storage is an infrastructure storage/backup pat
 
 
 ## Q434
-### Case Study Identification
 
-This question is part of the **Bellows Sports** case study, focusing specifically on analyzing and remediating Power Platform **Solution Checker** rule violations in C# plug-in/workflow activity code.
+![Q434](/dump-questions/question-images/bellows-sports/q434.png)
 
----
 
-### The Verdict
+### Answer
 
 * **Code set 1:** **Modify code at line CS102 to select only required columns**
 
 * **Code set 2:** **Add the following code at line CS203: request.KeepAlive = false;**
 
-
----
 
 ### Step-by-Step Breakdown
 
@@ -23859,11 +23755,6 @@ CS105 var results = service.RetrieveMultiple(query);
 * Retrieving all columns degrades performance, consumes unnecessary memory and network bandwidth, and bypasses database indexing optimizations.
 * **Fix:** Line `CS102` must be changed from setting `AllColumns = true` to explicitly adding only the column names required for the business logic (e.g., `columns.AddColumns("name", "accountnumber")` or `new ColumnSet("name")`).
 
-
-
-
-
----
 
 #### 2. Code Set 2 Analysis
 
