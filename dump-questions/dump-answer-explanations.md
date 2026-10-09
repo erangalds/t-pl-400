@@ -1644,7 +1644,11 @@ The official Microsoft documentation on **"Optimizing model-driven form performa
 * Model-driven forms routinely contain dozens of lookups without degrading initial rendering performance. They are lightweight compared to container/data-fetching controls like timelines, quick view forms, and iFrames.
 
 ## Q36
-### Recommended Sequence
+
+![Q36](/dump-questions/question-images/city-power/q36.png)
+
+
+### Answer - Recommended Sequence
 
 1. **Select the Contact table.**
 
@@ -1654,8 +1658,6 @@ The official Microsoft documentation on **"Optimizing model-driven form performa
 
 4. **Create column security profile.**
 
-
----
 
 ### Detailed Breakdown & Architecture
 
@@ -1686,8 +1688,6 @@ The official Microsoft documentation on **"Optimizing model-driven form performa
 
 
 
----
-
 ### Why Other Options Are Not in the Sequence
 
 * **Create a custom table:** Violates the explicit requirement to use out-of-the-box solutions wherever possible. The standard Contact table already serves this purpose.
@@ -1699,16 +1699,17 @@ The official Microsoft documentation on **"Optimizing model-driven form performa
 * **Enable auditing / Start auditing:** Auditing tracks chronological changes and access history; it does not enforce read-access restrictions on PII.
 
 ## Q37
+
+![Q37](/dump-questions/question-images/city-power/q37.png)
+
 **C. component library**
 
----
 
 ### Detailed Breakdown & Architecture
 
 The requirements for the **Suitability Assessment Tool** state:
 
 1. *"The assessor completes the eligibility assessment by using an application written in React."* (Current Environment)
-
 
 2. *"Must integrate with Microsoft Power Platform."*
 
@@ -1731,9 +1732,6 @@ The requirements for the **Suitability Assessment Tool** state:
 * Component libraries act as centralized, reusable repositories of low-code UI components across multiple canvas apps within a tenant or solution, satisfying the reusability requirement while staying within native, out-of-the-box Power Platform capabilities.
 
 
-
----
-
 ### Why the other options are incorrect
 
 * **A. Power App Component Framework (PCF) control:**
@@ -1745,16 +1743,14 @@ The requirements for the **Suitability Assessment Tool** state:
 * **B. view:**
 * A view is simply a grid presentation mechanism for Dataverse tabular records, not an interactive application architecture or modular reusable UI unit.
 
-
-
-
 * **D. form:**
 * Standard Dataverse forms are tied to individual model-driven table records and cannot be modularly exported and shared across multiple independent applications in this manner.
 
 ## Q38
-**C. Key Vault**
 
----
+![Q38](/dump-questions/question-images/city-power/q38.png)
+
+**C. Key Vault**
 
 ### Detailed Breakdown & Architecture
 
@@ -5372,13 +5368,15 @@ Custom connectors in Power Platform are solution-aware components. The correct p
 
 
 ## Q104
+
+![Q104](/dump-questions/question-images/city-power/q104.png)
+
 ### Correct Selections
 
 * **Solution to deploy:** **Appointment data**
 * **How to export:** **Export the unmanaged solution as managed**
 * **Remove the column after the deployment:** **Upgrade**
 
----
 
 ### Detailed Breakdown & Architectural Reasoning
 
@@ -5392,16 +5390,12 @@ Custom connectors in Power Platform are solution-aware components. The correct p
 * The other options represent either external workloads (*Claim submission portal*), legacy artifacts (*Spreadsheet*), or an assessor-specific app (*Suitability Assessment Tool*, whose requirements state: *"All changes to the application must be completed in the Suitability Assessment Tool solution"*).
 
 
-
-
-
 #### 2. How to export $\rightarrow$ Export the unmanaged solution as managed
 
 * **Enterprise ALM Deployment Best Practice:**
 * Development takes place in an **unmanaged** solution inside the development environment.
 * When moving customizations through the ALM pipeline into downstream environments (Test, Production), the unmanaged solution must be exported as **managed** (`Export the unmanaged solution as managed`).
 * Importing unmanaged solutions directly into Production creates unmanaged layers that block future solution upgrades and prevent clean component removals.
-
 
 
 #### 3. Remove the column after the deployment $\rightarrow$ Upgrade
@@ -5422,9 +5416,14 @@ Custom connectors in Power Platform are solution-aware components. The correct p
 
 
 ## Q105
+
+
+![Q105](/dump-questions/question-images/city-power/q105.png)
+
+### Answer
+
 **C. environment variable**
 
----
 
 ### Detailed Breakdown & Architectural Reasoning
 
@@ -5441,12 +5440,9 @@ From the case study under **Issues**:
 * *"Upload the information to the API endpoint."*
 
 
-
 * Because the endpoint URL (or configuration parameter) was hardcoded or retained from the development/testing configuration, deploying the solution directly to Production caused Production transactions to continue pointing to and pushing data into the **test system** instead of the production API endpoint.
 
 
-
----
 
 #### 2. Why an Environment Variable Resolves the Issue
 
@@ -5456,8 +5452,6 @@ From the case study under **Issues**:
 
 
 
----
-
 ### Why the Other Options Are Incorrect
 
 * **A. secure config / B. unsecure config:**
@@ -5466,6 +5460,9 @@ Secure and unsecure configurations are step-registration properties specifically
 Dataverse Solution Settings (Environment Settings/App Settings) provide feature toggle and system capability definitions, but for parameterizing external service endpoints across environments in ALM pipelines, **environment variables** are the native, standard Power Platform mechanism.
 
 ## Q106
+
+![Q106](/dump-questions/question-images/city-power/q106.png)
+
 ### Interface Component Selections
 
 1. **To display the email address of the user who created the appointment:**
@@ -5473,7 +5470,6 @@ In the left navigation pane under **Table columns**, select the **Related** tab,
 2. **To resolve searches on description information not returning results:**
 In the right configuration pane under **Find by...**, select **Edit find table columns...** and add the **Description** column to the Quick Find search criteria.
 
----
 
 ### Detailed Breakdown & Architectural Reasoning
 
@@ -5486,7 +5482,6 @@ In the right configuration pane under **Find by...**, select **Edit find table c
 * **View Designer Behavior:**
 * On the left pane, the **Table columns** tool offers two tabs: **Open/Current table** and **Related**.
 * To show attributes from a linked entity (the related User record), you must switch to the **Related** tab, expand the `Created By (User)` lookup relationship, and drag/select the email address column onto the view grid.
-
 
 
 #### 2. Issue: "Searches on the description information do not return any results"
@@ -11213,6 +11208,10 @@ In Power Automate, makers can add the native Dataverse action **Perform an unbou
 
 
 ## Q210
+
+![Q210](/dump-questions/question-images/city-power/q210.png)
+
+### Answer
 The correct mappings are:
 
 * **Retrieve data:** $\rightarrow$ **Dataverse**
@@ -16806,13 +16805,18 @@ The correct selections are:
 * **B. `pac solution import`:** Imports a managed or unmanaged solution zip archive into an environment, but it does not increment the PCF version required to break the client-side caching issue, nor is it the standard inner-loop deployment command used by PCF developers (`pac pcf push`).
 
 ## Q312
+
+![Q312](/dump-questions/question-images/city-power/q312.png)
+
+
+### Answer
+
 The correct sequence of actions is:
 
 1. **Create a connector by using the wizard.**
 2. **Enable API key authentication.**
 3. **Share the connector.**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -16823,7 +16827,6 @@ The correct sequence of actions is:
 * **Business Requirements:**
 *"The Claim Submission Portal must allow citizen developers to create automated solutions."*
 
----
 
 #### 2. Sequence Analysis
 
@@ -16840,9 +16843,6 @@ The correct sequence of actions is:
 * Per the business requirements: *"The Claim Submission Portal must allow citizen developers to create automated solutions."*
 * By default, a newly created custom connector is private to the maker who authored it. To enable citizen developers across the organization to use it in their Power Automate flows and Power Apps, the connector must be **shared** with those users or security groups.
 
-
-
----
 
 ### Why the Other Options are Not Used
 
@@ -19198,9 +19198,13 @@ UpsertResponse response = (UpsertResponse)service.Execute(request);
 `RetrieveRequest` is a read-only operation used to fetch an entity and its specified column set. It performs no data updates.
 
 ## Q357
+
+![Q357](/dump-questions/question-images/city-power/q357.png)
+
+### Answer 
+
 **Correct Answer:** **B. pac pcf init**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -19219,9 +19223,6 @@ UpsertResponse response = (UpsertResponse)service.Execute(request);
 * **"Must be developed by using modular components that can be used by other applications."**
 
 * Optimized for tablet devices (iOS and Android).
-
-
-
 
 
 #### 2. Why `pac pcf init` is the Correct Command

@@ -192,6 +192,10 @@ The company has the following requirements for a reporting solution:
 ## Questions 
 
 ## Q36
+
+![Q36](/dump-questions/question-images/city-power/q36.png)
+
+
 You need to design the Planning Hub data model.
 
 Which four actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.
@@ -214,9 +218,10 @@ Which four actions should you perform in sequence? To answer, move the appropria
 
 * Start auditing.
 
-### Data model design steps
 
-### Recommended Sequence
+### Answer 
+
+#### Data Model Design Steps - Recommended Sequence
 
 1. **Select the Contact table.**
 
@@ -226,8 +231,6 @@ Which four actions should you perform in sequence? To answer, move the appropria
 
 4. **Create column security profile.**
 
-
----
 
 ### Detailed Breakdown & Architecture
 
@@ -257,9 +260,6 @@ Which four actions should you perform in sequence? To answer, move the appropria
 * To grant the required permissions to the authorized audience (*"Only team leaders and senior managers should have access to read personally identifiable information"*), an administrator must **Create column security profile**, configure **Read** permissions for the secured columns, and assign the appropriate users or AAD Security Groups/Teams to the profile.
 
 
-
----
-
 ### Why Other Options Are Not in the Sequence
 
 * **Create a custom table:** Violates the explicit requirement to use out-of-the-box solutions wherever possible. The standard Contact table already serves this purpose.
@@ -270,7 +270,11 @@ Which four actions should you perform in sequence? To answer, move the appropria
 
 * **Enable auditing / Start auditing:** Auditing tracks chronological changes and access history; it does not enforce read-access restrictions on PII.
 
+
 ## Q37
+
+![Q37](/dump-questions/question-images/city-power/q37.png)
+
 **Question:**
 
 You need to implement the Suitability Assessment Tool.   What should you use?   
@@ -282,14 +286,13 @@ D. form
 
 **C. component library**
 
----
 
-### Detailed Breakdown & Architecture
+### Answer 
+#### Detailed Breakdown & Architecture
 
 The requirements for the **Suitability Assessment Tool** state:
 
 1. *"The assessor completes the eligibility assessment by using an application written in React."* (Current Environment)
-
 
 2. *"Must integrate with Microsoft Power Platform."*
 
@@ -312,9 +315,6 @@ The requirements for the **Suitability Assessment Tool** state:
 * Component libraries act as centralized, reusable repositories of low-code UI components across multiple canvas apps within a tenant or solution, satisfying the reusability requirement while staying within native, out-of-the-box Power Platform capabilities.
 
 
-
----
-
 ### Why the other options are incorrect
 
 * **A. Power App Component Framework (PCF) control:**
@@ -322,17 +322,16 @@ The requirements for the **Suitability Assessment Tool** state:
 
 * PCF controls are custom code components rather than an out-of-the-box modular canvas design feature.
 
-
 * **B. view:**
 * A view is simply a grid presentation mechanism for Dataverse tabular records, not an interactive application architecture or modular reusable UI unit.
-
-
-
 
 * **D. form:**
 * Standard Dataverse forms are tied to individual model-driven table records and cannot be modularly exported and shared across multiple independent applications in this manner.
 
 ## Q38
+
+![Q38](/dump-questions/question-images/city-power/q38.png)
+
 **Question:**
 
 You need to identify the Azure service to use for the Planning Hub application.   Which service should you use?   
@@ -343,8 +342,6 @@ C. Key Vault
 D. Function 
 
 **C. Key Vault**
-
----
 
 ### Detailed Breakdown & Architecture
 
@@ -372,28 +369,22 @@ Looking across the Planning Hub Application and Technical Environment requiremen
 
 
 
-
-
----
-
 ### Why the other options are incorrect
 
 * **A. Logic App:**
 * The orchestration steps for the Planning Hub application (Teams approval, status update, email notification, retry loops) are implemented directly inside Power Platform using **Power Automate** flows, satisfying the explicit constraint: *"The company requires out-of-the-box solutions, when possible"* and *"allow citizen developers to create automated solutions"*. Introducing an Azure Logic App would add unnecessary custom infrastructure management.
 
 
-
-
 * **B. Service Bus:**
 * While Service Bus provides message queuing, the requirements specify direct REST API integration (`upload the information to the API endpoint` with HTTP retry logic) rather than an asynchronous enterprise service bus messaging pipeline.
-
-
 
 
 * **D. Function:**
 * Azure Functions are compute services for executing custom code. The scenario focuses on low-code out-of-the-box Power Platform automation and secure credential management, rather than custom serverless code execution.
 
 ## Q104
+
+![Q104](/dump-questions/question-images/city-power/q104.png)
 
 **Question:**
 
@@ -413,7 +404,56 @@ NOTE: Each correct selection is worth one point.
 | How to export | + Export the unmanaged solution as managed + Export the unmanaged solution as unmanaged|
 | Remove the column after the deployment | + Publish all customizations + Stage for Upgrade + UpdateUpgrade|
 
+
+### Correct Selections
+
+* **Solution to deploy:** **Appointment data**
+* **How to export:** **Export the unmanaged solution as managed**
+* **Remove the column after the deployment:** **Upgrade**
+
+---
+
+### Detailed Breakdown & Architectural Reasoning
+
+#### 1. Solution to deploy $\rightarrow$ Appointment data
+
+* **Context & Isolation:**
+* The case study specifies: *"Customer and appointment information must be accessible to all applications"* and the planning hub application is replacing the Excel spreadsheet that managed customer appointments.
+
+
+* The components containing the core appointment entity and its schema fields (like the column that needs to be removed) are packaged under the **Appointment data** solution layer.
+* The other options represent either external workloads (*Claim submission portal*), legacy artifacts (*Spreadsheet*), or an assessor-specific app (*Suitability Assessment Tool*, whose requirements state: *"All changes to the application must be completed in the Suitability Assessment Tool solution"*).
+
+
+#### 2. How to export $\rightarrow$ Export the unmanaged solution as managed
+
+* **Enterprise ALM Deployment Best Practice:**
+* Development takes place in an **unmanaged** solution inside the development environment.
+* When moving customizations through the ALM pipeline into downstream environments (Test, Production), the unmanaged solution must be exported as **managed** (`Export the unmanaged solution as managed`).
+* Importing unmanaged solutions directly into Production creates unmanaged layers that block future solution upgrades and prevent clean component removals.
+
+
+#### 3. Remove the column after the deployment $\rightarrow$ Upgrade
+
+* **Understanding Solution Import Modes for Component Deletion:**
+* **The Issue:** *"After removing a column from the Planning Hub application and deploying the changes to the production environment, you observe that the column is still present."*
+
+* When deploying updates to an existing managed solution:
+* **Update:** Layer updates onto existing components. If a component (such as a column) is deleted from the source solution, an **Update** will **not** delete that column in the target environment; it simply leaves orphaned components behind.
+* **Stage for Upgrade:** Imports a holding patch/solution layer alongside the existing version, but does not apply or finalize the changes until an "Apply Upgrade" action is triggered.
+
+
+* **Upgrade (Apply Upgrade):** Deploys the new solution version, seamlessly consolidates/flattens previous patches, and explicitly **deletes any managed components that were removed from the source solution**.
+
+
+* Applying the **Upgrade** action ensures that the removed column is purged from the target Production environment.
+
+
+
 ## Q105
+
+![Q105](/dump-questions/question-images/city-power/q105.png)
+
 **Question:**
 
 You need to resolve the funding application issue.
@@ -428,9 +468,11 @@ C. environment variable
 
 D. settings
 
+
+### Answer
+
 **C. environment variable**
 
----
 
 ### Detailed Breakdown & Architectural Reasoning
 
@@ -447,12 +489,9 @@ From the case study under **Issues**:
 * *"Upload the information to the API endpoint."*
 
 
-
 * Because the endpoint URL (or configuration parameter) was hardcoded or retained from the development/testing configuration, deploying the solution directly to Production caused Production transactions to continue pointing to and pushing data into the **test system** instead of the production API endpoint.
 
 
-
----
 
 #### 2. Why an Environment Variable Resolves the Issue
 
@@ -460,9 +499,6 @@ From the case study under **Issues**:
 * By replacing hardcoded API endpoints with an **environment variable**, each target environment (Development, Test, Production) maintains its own distinct current value.
 * When deploying the solution to Production, the environment variable can be set to the Production Claim Submission API endpoint, ensuring production funding applications are routed to the live system and never pollute the test environment.
 
-
-
----
 
 ### Why the Other Options Are Incorrect
 
@@ -473,6 +509,8 @@ Dataverse Solution Settings (Environment Settings/App Settings) provide feature 
 
 ## Q106
 
+![Q106](/dump-questions/question-images/city-power/q106.png)
+
 **Question:**
 
 You need to resolve the issues with the appointment data.
@@ -481,11 +519,8 @@ What should you change on the view? To answer, select the appropriate interface 
 
 NOTE: Each correct selection is worth one point.
 
----
 
 ### Answer Area (Interface Mockup Details)
-
-
 
 The bottom exhibit displays the Power Apps view designer for **Quick Find All Appointments** with the following selectable sections:
 
@@ -494,16 +529,12 @@ The bottom exhibit displays the Power Apps view designer for **Quick Find All Ap
 * Column list search box and available fields: `Activity Type`, `Actual Duration`, `Actual End`, `Actual Start`, `Address/Location`, `All Day Event`, `Appointment Type`, `Category`, `Created By` (Selected/Highlighted), `Created By (Delegate)`, `Created On`, `Currency`, `Description`, `Due Date`, `Exchange Rate`.
 
 
-
-
 2. **Center Canvas (View Grid Layout):**
 
 * View column headers: `Subject`, `Required Attendees`, `Start Time`, `End Time`, `Duration`.
 
 
 * Empty state banner: *"We didn't find anything to show here"*.
-
-
 
 
 3. **Right Properties Pane (Quick Find All Appointments):**
@@ -529,7 +560,6 @@ In the left navigation pane under **Table columns**, select the **Related** tab,
 2. **To resolve searches on description information not returning results:**
 In the right configuration pane under **Find by...**, select **Edit find table columns...** and add the **Description** column to the Quick Find search criteria.
 
----
 
 ### Detailed Breakdown & Architectural Reasoning
 
@@ -542,7 +572,6 @@ In the right configuration pane under **Find by...**, select **Edit find table c
 * **View Designer Behavior:**
 * On the left pane, the **Table columns** tool offers two tabs: **Open/Current table** and **Related**.
 * To show attributes from a linked entity (the related User record), you must switch to the **Related** tab, expand the `Created By (User)` lookup relationship, and drag/select the email address column onto the view grid.
-
 
 
 #### 2. Issue: "Searches on the description information do not return any results"
@@ -558,6 +587,9 @@ In the right configuration pane under **Find by...**, select **Edit find table c
 
 
 ## Q210
+
+![Q210](/dump-questions/question-images/city-power/q210.png)
+
 Determine the appropriate Power Automate connector to fulfill each automation requirement for the new Planning Hub replacement flow.
 
 #### Available Connectors
@@ -577,6 +609,9 @@ Determine the appropriate Power Automate connector to fulfill each automation re
 | **Approve the submission in Microsoft Teams** | `[ Drop Connector Here ]` |
 | **Record the result of the API upload** | `[ Drop Connector Here ]` |
 
+
+### Answer 
+
 The correct mappings are:
 
 * **Retrieve data:** $\rightarrow$ **Dataverse**
@@ -585,8 +620,6 @@ The correct mappings are:
 
 * **Record the result of the API upload:** $\rightarrow$ **Dataverse**
 
-
----
 
 ### Detailed Breakdown
 
@@ -600,8 +633,6 @@ The case study specifies replacing the legacy Excel spreadsheet with a modern Po
 
 
 
----
-
 #### 2. Approve the submission in Microsoft Teams $\rightarrow$ **Approvals**
 
 * **Case Requirement:**
@@ -611,9 +642,6 @@ The case study specifies replacing the legacy Excel spreadsheet with a modern Po
 In Power Automate, multi-stage human approval workflows with actionable cards (such as *Start and wait for an approval*) are powered by the **Approvals** connector. The Approvals service natively integrates into Microsoft Teams by sending adaptive cards into Teams chat/channels and surfacing tasks in the user's Teams Approvals hub. While the Teams connector posts standard messages or chat cards, official approval decisions and tracking are handled by the **Approvals** connector.
 
 
-
----
-
 #### 3. Record the result of the API upload $\rightarrow$ **Dataverse**
 
 * **Case Requirement:**
@@ -622,9 +650,6 @@ In Power Automate, multi-stage human approval workflows with actionable cards (s
 * **Why Dataverse:**
 The funding application is an entity record stored within the new application's underlying database (Dataverse). Updating the status of the record with the result of the API call (success, failed, or retried) is performed using the **Update a row** action from the **Dataverse** connector.
 
-
-
----
 
 ### Why the Other Options are Incorrect / Unused
 
@@ -637,13 +662,10 @@ The Teams connector handles team/channel administration, posting standard messag
 
 
 ## Q311
+
+![Q311](/dump-questions/question-images/city-power/q311.png)
+
 ### Question
-
-• After deploying a change to the new eligibility assessment tool in the development environment, you observe that the changes do not appear in the development environment.
-
-• After removing a column from the Planning Hub application and deploying the changes to the production environment, you observe that the column is still present.
-
-• You deploy the customizations for the data model. Users report that the email address of the user who created the appointment is missing and that searches on the description information do not return any results.
 
 You need to resolve the issue with the eligibility assessment tool.
 
@@ -663,14 +685,15 @@ Which two commands should you run? Each correct answer presents part of the solu
 
 * **D.** `pac pcf version --strategy manifest`
 
+
+### Answer
+
 **Correct Answers:**
 
 * **C. pac pcf push**
 
 * **D. pac pcf version --strategy manifest**
 
-
----
 
 ### Step-by-Step Breakdown
 
@@ -681,11 +704,8 @@ Which two commands should you run? Each correct answer presents part of the solu
 
 
 
-
 * **The Issue:**
 * *"After deploying a change to the new eligibility assessment tool in the development environment, you observe that the changes do not appear in the development environment."*
-
-
 
 
 #### 2. Why Changes Don't Appear (Caching & Versioning)
@@ -703,9 +723,6 @@ Which two commands should you run? Each correct answer presents part of the solu
 * Rapidly builds and imports the PCF control directly into your target development Dataverse environment, bypassing manual zip solution exports/imports during rapid prototyping and inner-loop development.
 
 
-
----
-
 ### Why the Other Options are Incorrect
 
 * **A. `pac solution version`:** Modifies the version of a Dataverse solution wrapper project (`.cdsproj`), not the inner component version in the PCF control manifest that client browsers check for cache busting.
@@ -713,19 +730,14 @@ Which two commands should you run? Each correct answer presents part of the solu
 
 
 ## Q312
+
+![Q312](/dump-questions/question-images/city-power/q312.png)
+
 ### Question
-
-• After deploying a change to the new eligibility assessment tool in the development environment, you observe that the changes do not appear in the development environment.
-
-• After removing a column from the Planning Hub application and deploying the changes to the production environment, you observe that the column is still present.
-
-• You deploy the customizations for the data model. Users report that the email address of the user who created the appointment is missing and that searches on the description information do not return any results.
 
 You need to configure a custom connector for the claim submission portal API.
 
 Which three actions should you perform in sequence? To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.
-
----
 
 ### Options
 
@@ -753,9 +765,6 @@ Which three actions should you perform in sequence? To answer, move the appropri
 * Import a Postman collection.
 
 
-
----
-
 ### Answer Area
 
 | Custom connector configuration steps |
@@ -765,13 +774,15 @@ Which three actions should you perform in sequence? To answer, move the appropri
 | [                                                               ] |
 
 
+### Answer 
+
 The correct sequence of actions is:
 
 1. **Create a connector by using the wizard.**
 2. **Enable API key authentication.**
 3. **Share the connector.**
 
----
+
 
 ### Step-by-Step Breakdown
 
@@ -782,7 +793,6 @@ The correct sequence of actions is:
 * **Business Requirements:**
 *"The Claim Submission Portal must allow citizen developers to create automated solutions."*
 
----
 
 #### 2. Sequence Analysis
 
@@ -800,9 +810,6 @@ The correct sequence of actions is:
 * By default, a newly created custom connector is private to the maker who authored it. To enable citizen developers across the organization to use it in their Power Automate flows and Power Apps, the connector must be **shared** with those users or security groups.
 
 
-
----
-
 ### Why the Other Options are Not Used
 
 * **Certify the connector:** Certification submits the connector to Microsoft for public inclusion into the out-of-the-box catalog for all Power Platform tenants globally, which is neither required nor applicable to an internal proprietary claim portal.
@@ -811,6 +818,9 @@ The correct sequence of actions is:
 
 
 ## Q357
+
+![Q357](/dump-questions/question-images/city-power/q357.png)
+
 ### Question
 
 • A recent audit identified that all users can access the PII in the Planning Hub spreadsheet.
@@ -841,7 +851,6 @@ Which command should you run?
 
 **Correct Answer:** **B. pac pcf init**
 
----
 
 ### Step-by-Step Breakdown
 
@@ -862,9 +871,6 @@ Which command should you run?
 * Optimized for tablet devices (iOS and Android).
 
 
-
-
-
 #### 2. Why `pac pcf init` is the Correct Command
 
 * To incorporate a custom code-based interface (especially one written in modern web frameworks like **React**) into the Microsoft Power Platform ecosystem as modular, reusable components, developers use the **Power Apps component framework (PCF)**.
@@ -877,7 +883,6 @@ pac pcf init --namespace <namespace> --name <name> --template <template>
 
 * This scaffolds the TypeScript/React project structure, manifest file (`ControlDescription.xml`), and package configuration needed to build and bundle the component for Power Apps.
 
----
 
 ### Why the Other Options are Incorrect
 
