@@ -21556,75 +21556,145 @@ The question asks specifically:
 
 
 ## Q397
+![Q397](/dump-questions/question-images/northwind-electric-cars/q397.png)
+
+### Answer
+
 **Correct Answer:** **C. Azure Function**
 
-(Note: We have now transitioned into a new case study: **Northwind Electric Cars**.)
+The selection highlighted in red on the dump image is **correct**.
 
 ---
 
 ### Step-by-Step Breakdown
 
-#### 1. Pinpointing the Requirements in the Case Study
+#### 1. Analyzing the Background Check API Constraints
 
-Look closely at the service provider specifications and technical constraints for the **Background check** service:
+Looking at the case study details regarding the **Background check** service provider:
 
-* **Protocol & Contract:**
-> *"The company has provided a **WSDL document to describe its SOAP-based API**."*
-> 
+* **Under Service providers table:**
+* *"The company has provided a **WSDL document to describe its SOAP-based API**."*
 
-
-* **Security & Authentication:**
-> *"An **SSL certification** has been issued to use for authentication."*
-> 
+* *"An **SSL certification** has been issued to use for authentication."*
 
 
-* **Network / Endpoint Constraint:**
-> *"Issues. Background check verification: While reviewing API information for the background check verification process you observe that the **API uses an IP address and not a fully-qualified domain name**."*
-> 
+
+* **Under Issues $\rightarrow$ Background check verification:**
+* *"While reviewing API information for the background check verification process you observe that the **API uses an IP address and not a fully-qualified domain name**."*
 
 
-* **General Technical Permissions:**
-> *"Use of Microsoft Azure resources is approved for use if necessary."*
-> 
+
+* **Under Requirements $\rightarrow$ General:**
+* *"Use of **Microsoft Azure resources is approved for use if necessary**."*
+
 
 
 
 ---
 
-#### 2. Why Option C (Azure Function) is Correct
+#### 2. Why Custom Connectors & Power Automate Cannot Be Used (Ruling out Option B)
 
-* **Custom SSL Handshakes with Raw IP Endpoints:**
-Because the target SOAP service endpoint is addressed directly by an **IP address** rather than a valid hostname/FQDN, standard HTTPS certificate name verification will fail. Client environments connecting via custom connectors or sandboxed Dataverse plugins cannot easily bypass or customize certificate validation logic for an IP address. An **Azure Function** provides full code-level control over the HTTP/WCF communication pipeline (e.g., using `HttpClientHandler` or custom binding configurations) to accept the client certificate while targeting an IP address.
+* **Custom Connector Limitations:**
+* Power Platform Custom Connectors support SOAP-to-REST conversions, but **Custom Connectors require a fully-qualified domain name (FQDN)**. They do **not** support endpoints configured strictly by raw IP address.
+* Custom Connectors do **not** support client certificate (mutual SSL/mTLS) authentication natively for outbound calls to arbitrary web services.
 
 
-* **Native SOAP / WCF Support:**
-Dataverse cloud components struggle natively with complex legacy SOAP/WSDL protocols requiring client certificate authentication. An Azure Function running .NET can generate a WCF client directly from the WSDL and attach the client certificate cleanly.
+* Therefore, a standard "Flow with a custom connector" cannot communicate directly with this specific endpoint.
 
 
 
 ---
 
-#### 3. Why the Other Options are Incorrect
+#### 3. Why Client-Side JavaScript and Dataverse Plug-ins Fail (Ruling out Options A & D)
 
-* **A. JavaScript:**
-* Client-side JavaScript running in the browser cannot establish raw SOAP connections requiring mutual TLS/SSL client certificate authentication.
-
-
-* Furthermore, the case study notes: *"Cross-origin resource sharing (CORS) is disabled for all three APIs."* Any direct browser call via JavaScript would be immediately blocked by CORS policy.
+* **Option A (JavaScript):**
+* The case study states: *"Cross-origin resource sharing (CORS) is disabled for all three APIs."* Client-side JavaScript running in the user's browser would immediately be blocked by the Same-Origin Policy (as seen in the Address verification issue). Furthermore, client-side browser script cannot handle SOAP WSDL envelopes with local SSL client certificates.
 
 
 
 
-* **B. Flow with a custom connector:**
-* Power Platform custom connectors require a fully-qualified domain name (FQDN) for HTTPS endpoints and do not support targeting bare IP addresses.
+* **Option D (Plug-in):**
+* Dataverse plug-ins run in a tightly constrained sandbox. They do not support raw IP endpoint binding reliably, and storing/managing private client SSL certificates inside an isolated Dataverse sandbox assembly is not supported.
 
 
-* Custom connectors also lack direct support for client-certificate-based SOAP authentication against raw IP endpoints.
 
+---
 
-* **D. Plug-in:**
-* Dataverse plug-ins run within a restricted sandbox isolation mode that imposes strict network and protocol limitations, preventing custom SSL/TLS bypasses or direct IP-bound client-certificate handshakes.
+#### 4. Why Option C (Azure Function) is Correct
 
+* An **Azure Function** provides full code-level control in .NET/C#:
+* It can handle **SOAP/WSDL** endpoints using standard `HttpClient` / WCF channel factories.
+* It can connect directly to a raw **IP address**.
+* It can securely load and present the required **SSL client certificate** (stored safely in Azure Key Vault or Function App TLS settings).
+* Power Platform (either via a flow or plug-in) can call the Azure Function, which acts as a secure intermediary/facade to talk to the background check provider.
+
+To satisfy the requirement:
+
+> *"The solution must connect to the service and update the background check stage for candidates at least once per hour for incomplete background checks."*
+
+The Model-Driven App does **not** call the API on a timer by itself (model-driven apps only run in the user's browser during active sessions). Instead, the recurring hourly polling is orchestrated in the backend using one of two standard Power Platform / Azure integration architectures:
+
+---
+
+### Option 1: Power Automate (Scheduled Recurrence Flow) + Azure Function (Recommended Architecture)
+
+```
+[Scheduled Recurrence Flow] (Runs every 1 hour)
+             │
+             ▼
+[Dataverse Connector: List Records] 
+(Query candidates where background_check_status == Incomplete)
+             │
+             ▼
+[HTTP Action] ──► [Azure Function] ──► [SOAP API (via raw IP + Client SSL)]
+                         │                                 │
+                         ◄── Returns latest stage ─────────┘
+             │
+             ▼
+[Dataverse Connector: Update Record] 
+(Updates stage field on Candidate record in Dataverse)
+             │
+             ▼
+[Model-Driven App Form / View] (Reflects updated stage automatically)
+
+```
+
+1. **Trigger on Schedule:** A Power Automate cloud flow uses a **Recurrence** trigger set to interval `1 Hour`.
+2. **Retrieve Incomplete Candidates:** The flow calls Dataverse (`List rows`) filtering for candidate records that have an active submission ID but whose stage is not final.
+3. **Invoke Azure Function:** For each candidate, the flow calls an HTTP-triggered **Azure Function**, passing the candidate's `submission identification number`.
+4. **API Communication:** The Azure Function holds the SSL certificate, makes the SOAP call to the raw IP address, parses the XML/WSDL response, and returns the status value.
+5. **Update Candidate Table:** The flow updates the candidate row in Dataverse with the returned stage.
+6. **Visibility in Model-Driven App:** Because model-driven apps bind directly to Dataverse tables, regional managers immediately see the updated stage fields on the candidate forms and views without manual intervention.
+
+---
+
+### Option 2: Azure Timer-Triggered Function directly updating Dataverse
+
+```
+[Azure Function (Timer Trigger: 0 0 * * * *)]
+             │
+             ▼
+1. Authenticates to Dataverse via Service Principal / Web API
+2. Queries incomplete candidates
+3. Calls 3rd-party Background Check SOAP API (raw IP + client cert)
+4. Writes updated stage directly back to Dataverse Web API
+             │
+             ▼
+[Model-Driven App Form / View] (Displays updated stage)
+
+```
+
+* An Azure Function runs on a cron schedule (`TimerTrigger` set to hourly: `0 0 * * * *`).
+* The function connects to Dataverse via `Microsoft.PowerPlatform.Dataverse.Client` / Web API to fetch candidate IDs needing updates.
+* It calls the SOAP service, resolves the stage, and pushes the updated value straight back into Dataverse.
+
+---
+
+### Why this satisfies the case study requirements
+
+* **Overcomes Endpoint Restrictions:** The raw IP address and client certificate requirements cannot be handled by browser scripts, native sandbox plugins, or standard custom connectors. The Azure Function handles this external boundary.
+* **Keeps Dataverse Updated Headlessly:** Recurring polling happens automatically in the cloud without requiring a user to have the model-driven app open.
+* **Meets UI Needs:** Regional managers open their model-driven app to view candidate records, where the stage field is already populated and kept up to date.
 
 
 ## Q398
@@ -22630,26 +22700,12 @@ In Dataverse / Dynamics 365 Model-Driven forms and mobile controls, visual contr
 * Selecting a categorical purpose among predefined reasons requires the **Option set** control. The others (*Linear gauge*, *Radial knob*) are reserved for numeric fields, and *Flip switch* is strictly for binary/Boolean values.
 
 ## Q416
-### Case Study Identification
-
-**Yes, this question is part of a case study.**
-
-It originates from the **"Lamna Healthcare Company"** (sometimes titled as an onboarding/candidate verification scenario in PL-400 testlets).
-
-In this case study:
-
-* The company manages candidate onboarding, address verification, and driving record background checks.
-* The relevant requirements specify:
-1. *"The system must perform address validation any time an address is added or updated in the model-driven app user interface."*
-2. *"Validation must **not** be performed unless an address is changed."*
-3. *"Users must initiate address validation by selecting a button on the command bar."*
-4. *"If the API returns an error, the user must contact the candidate to resolve the issue. The user must re-enter the address information to trigger validation."*
 
 
+![Q416](/dump-questions/question-images/northwind-electric-cars/q416.png)
 
----
 
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -22683,13 +22739,10 @@ A confirmation dialog adds an extra click without satisfying any requirement reg
 
 
 ## Q417
-### Case Study Identification
 
-This is the **Northwind Electric Cars** case study (frequently paired with candidate onboarding / background check scenarios in the PL-400: Microsoft Power Platform Developer exam).
+![Q417](/dump-questions/question-images/northwind-electric-cars/q417.png)
 
----
-
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -22757,12 +22810,14 @@ Sharing an individual flow allows users to edit or run that specific flow, but i
 
 
 ## Q418
-### The Verdict
+
+![Q418](/dump-questions/question-images/northwind-electric-cars/q418.png)
+
+### Answer
 
 * **Trigger a driving record check:** **After the address validation field is saved to Dataverse**
 
 * **Perform a driving record check:** **Cloud flow**
-
 
 ---
 
@@ -22789,8 +22844,6 @@ From the **Northwind Electric Cars** case study specifications:
 > *"The process of verifying driving records can take more than a minute to complete. The user must wait on the phone call to receive a result."*
 > 
 
-
-
 ---
 
 #### 2. First Dropdown: Trigger a driving record check
@@ -22808,9 +22861,6 @@ From the **Northwind Electric Cars** case study specifications:
 
 
 * Therefore, the trigger must occur asynchronously **after the verified state is committed/saved to Dataverse**.
-
-
-
 
 
 ---
@@ -22836,7 +22886,10 @@ From the **Northwind Electric Cars** case study specifications:
 
 
 ## Q419
-### The Verdict
+
+![Q419](/dump-questions/question-images/northwind-electric-cars/q419.png)
+
+### Answer
 
 * **Configure the development environment:** **Install the plug-in profiler solution in the environment**
 
@@ -22888,7 +22941,10 @@ From the **Requirements $\rightarrow$ Environments** table in the scenario text:
 * Setting the environment to **Enable trace log in the environment** fulfills the requirement to view tracing service logs without installing any third-party or debugging solutions.
 
 ## Q420
-### The Verdict
+
+![Q421](/dump-questions/question-images/northwind-electric-cars/q420.png)
+
+### Answer
 
 * **Address validation message:** **`northwind_ValidateAddress`**
 
@@ -22964,7 +23020,10 @@ From the **Requirements $\rightarrow$ Environments** table in the scenario text:
 
 
 ## Q421
-### The Verdict
+
+![Q421](/dump-questions/question-images/northwind-electric-cars/q421.png)
+
+### Answer
 
 * **Select an implementation pattern:** **Pull**
 
@@ -23012,9 +23071,6 @@ From the **Northwind Electric Cars** scenario text:
 * Because Northwind must run a recurring scheduled job (e.g., hourly) to contact the third-party endpoint using the submission ID and pull the stage data, this is a textbook **Pull** pattern.
 
 
-
-
-
 ---
 
 #### 3. Second Dropdown: Apply stage changes to Dataverse
@@ -23033,6 +23089,11 @@ From the **Northwind Electric Cars** scenario text:
 * **Why not Upsert?** `Upsert` checks whether a record exists and either creates or updates it. Because candidate records are already established in the HR model-driven app prior to initiating background checks, there is no requirement to dynamically create new candidate records during status synchronization.
 
 ## Q422
+
+![Q422](/dump-questions/question-images/northwind-electric-cars/q422.png)
+
+### Answer
+
 **Correct Answer:** **D. a plug-in attached to a custom action called from JavaScript**
 
 ---
@@ -23105,8 +23166,9 @@ While cloud flows bypass CORS, triggering a cloud flow from a command bar button
 
 ## Q423
 
+![Q424](/dump-questions/question-images/northwind-electric-cars/q423.png)
 
-### The Verdict
+### Answer
 
 * **You must replace ACTIONNAME in line AV22 with northwind_ValidateAddress:** **No**
 
@@ -23193,7 +23255,10 @@ function error(error) {
 
 
 ## Q424
-### The Verdict
+
+![Q424](/dump-questions/question-images/northwind-electric-cars/q424.png)
+
+### Answer
 
 * **Configure authentication:** **Basic**
 

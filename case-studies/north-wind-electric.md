@@ -133,6 +133,8 @@ AV30 );
 
 ## Q397
 
+![Q397](/dump-questions/question-images/northwind-electric-cars/q397.png)
+
 You need to connect to the background check API.
 
 Which mechanism should you use?
@@ -142,71 +144,154 @@ Which mechanism should you use?
 - **C.** Azure Function
 - **D.** Plug-in
 
+### Case Study Identification
+
+This is the **Northwind Electric Cars** case study on the PL-400 exam, which centers around automating background checks, external API integrations, CORS limits, and custom connector capabilities.
+
+---
+
+### Answer
+
 **Correct Answer:** **C. Azure Function**
 
-(Note: We have now transitioned into a new case study: **Northwind Electric Cars**.)
+The selection highlighted in red on the dump image is **correct**.
+
+---
 
 ### Step-by-Step Breakdown
 
-#### 1. Pinpointing the Requirements in the Case Study
+#### 1. Analyzing the Background Check API Constraints
 
-Look closely at the service provider specifications and technical constraints for the **Background check** service:
+Looking at the case study details regarding the **Background check** service provider:
 
-* **Protocol & Contract:**
-> *"The company has provided a **WSDL document to describe its SOAP-based API**."*
-> 
+* **Under Service providers table:**
+* *"The company has provided a **WSDL document to describe its SOAP-based API**."*
 
-
-* **Security & Authentication:**
-> *"An **SSL certification** has been issued to use for authentication."*
-> 
+* *"An **SSL certification** has been issued to use for authentication."*
 
 
-* **Network / Endpoint Constraint:**
-> *"Issues. Background check verification: While reviewing API information for the background check verification process you observe that the **API uses an IP address and not a fully-qualified domain name**."*
-> 
+
+* **Under Issues $\rightarrow$ Background check verification:**
+* *"While reviewing API information for the background check verification process you observe that the **API uses an IP address and not a fully-qualified domain name**."*
 
 
-* **General Technical Permissions:**
-> *"Use of Microsoft Azure resources is approved for use if necessary."*
-> 
 
-#### 2. Why Option C (Azure Function) is Correct
-
-* **Custom SSL Handshakes with Raw IP Endpoints:**
-Because the target SOAP service endpoint is addressed directly by an **IP address** rather than a valid hostname/FQDN, standard HTTPS certificate name verification will fail. Client environments connecting via custom connectors or sandboxed Dataverse plugins cannot easily bypass or customize certificate validation logic for an IP address. An **Azure Function** provides full code-level control over the HTTP/WCF communication pipeline (e.g., using `HttpClientHandler` or custom binding configurations) to accept the client certificate while targeting an IP address.
-
-
-* **Native SOAP / WCF Support:**
-Dataverse cloud components struggle natively with complex legacy SOAP/WSDL protocols requiring client certificate authentication. An Azure Function running .NET can generate a WCF client directly from the WSDL and attach the client certificate cleanly.
-
-
-#### 3. Why the Other Options are Incorrect
-
-* **A. JavaScript:**
-* Client-side JavaScript running in the browser cannot establish raw SOAP connections requiring mutual TLS/SSL client certificate authentication.
-
-
-* Furthermore, the case study notes: *"Cross-origin resource sharing (CORS) is disabled for all three APIs."* Any direct browser call via JavaScript would be immediately blocked by CORS policy.
+* **Under Requirements $\rightarrow$ General:**
+* *"Use of **Microsoft Azure resources is approved for use if necessary**."*
 
 
 
 
-* **B. Flow with a custom connector:**
-* Power Platform custom connectors require a fully-qualified domain name (FQDN) for HTTPS endpoints and do not support targeting bare IP addresses.
+---
+
+#### 2. Why Custom Connectors & Power Automate Cannot Be Used (Ruling out Option B)
+
+* **Custom Connector Limitations:**
+* Power Platform Custom Connectors support SOAP-to-REST conversions, but **Custom Connectors require a fully-qualified domain name (FQDN)**. They do **not** support endpoints configured strictly by raw IP address.
+* Custom Connectors do **not** support client certificate (mutual SSL/mTLS) authentication natively for outbound calls to arbitrary web services.
 
 
-* Custom connectors also lack direct support for client-certificate-based SOAP authentication against raw IP endpoints.
+* Therefore, a standard "Flow with a custom connector" cannot communicate directly with this specific endpoint.
 
 
-* **D. Plug-in:**
-* Dataverse plug-ins run within a restricted sandbox isolation mode that imposes strict network and protocol limitations, preventing custom SSL/TLS bypasses or direct IP-bound client-certificate handshakes.
+
+---
+
+#### 3. Why Client-Side JavaScript and Dataverse Plug-ins Fail (Ruling out Options A & D)
+
+* **Option A (JavaScript):**
+* The case study states: *"Cross-origin resource sharing (CORS) is disabled for all three APIs."* Client-side JavaScript running in the user's browser would immediately be blocked by the Same-Origin Policy (as seen in the Address verification issue). Furthermore, client-side browser script cannot handle SOAP WSDL envelopes with local SSL client certificates.
+
+
+
+
+* **Option D (Plug-in):**
+* Dataverse plug-ins run in a tightly constrained sandbox. They do not support raw IP endpoint binding reliably, and storing/managing private client SSL certificates inside an isolated Dataverse sandbox assembly is not supported.
+
+
+
+---
+
+#### 4. Why Option C (Azure Function) is Correct
+
+* An **Azure Function** provides full code-level control in .NET/C#:
+* It can handle **SOAP/WSDL** endpoints using standard `HttpClient` / WCF channel factories.
+* It can connect directly to a raw **IP address**.
+* It can securely load and present the required **SSL client certificate** (stored safely in Azure Key Vault or Function App TLS settings).
+* Power Platform (either via a flow or plug-in) can call the Azure Function, which acts as a secure intermediary/facade to talk to the background check provider.
+
+To satisfy the requirement:
+
+> *"The solution must connect to the service and update the background check stage for candidates at least once per hour for incomplete background checks."*
+
+The Model-Driven App does **not** call the API on a timer by itself (model-driven apps only run in the user's browser during active sessions). Instead, the recurring hourly polling is orchestrated in the backend using one of two standard Power Platform / Azure integration architectures:
+
+---
+
+### Option 1: Power Automate (Scheduled Recurrence Flow) + Azure Function (Recommended Architecture)
+
+```
+[Scheduled Recurrence Flow] (Runs every 1 hour)
+             │
+             ▼
+[Dataverse Connector: List Records] 
+(Query candidates where background_check_status == Incomplete)
+             │
+             ▼
+[HTTP Action] ──► [Azure Function] ──► [SOAP API (via raw IP + Client SSL)]
+                         │                                 │
+                         ◄── Returns latest stage ─────────┘
+             │
+             ▼
+[Dataverse Connector: Update Record] 
+(Updates stage field on Candidate record in Dataverse)
+             │
+             ▼
+[Model-Driven App Form / View] (Reflects updated stage automatically)
+
+```
+
+1. **Trigger on Schedule:** A Power Automate cloud flow uses a **Recurrence** trigger set to interval `1 Hour`.
+2. **Retrieve Incomplete Candidates:** The flow calls Dataverse (`List rows`) filtering for candidate records that have an active submission ID but whose stage is not final.
+3. **Invoke Azure Function:** For each candidate, the flow calls an HTTP-triggered **Azure Function**, passing the candidate's `submission identification number`.
+4. **API Communication:** The Azure Function holds the SSL certificate, makes the SOAP call to the raw IP address, parses the XML/WSDL response, and returns the status value.
+5. **Update Candidate Table:** The flow updates the candidate row in Dataverse with the returned stage.
+6. **Visibility in Model-Driven App:** Because model-driven apps bind directly to Dataverse tables, regional managers immediately see the updated stage fields on the candidate forms and views without manual intervention.
+
+---
+
+### Option 2: Azure Timer-Triggered Function directly updating Dataverse
+
+```
+[Azure Function (Timer Trigger: 0 0 * * * *)]
+             │
+             ▼
+1. Authenticates to Dataverse via Service Principal / Web API
+2. Queries incomplete candidates
+3. Calls 3rd-party Background Check SOAP API (raw IP + client cert)
+4. Writes updated stage directly back to Dataverse Web API
+             │
+             ▼
+[Model-Driven App Form / View] (Displays updated stage)
+
+```
+
+* An Azure Function runs on a cron schedule (`TimerTrigger` set to hourly: `0 0 * * * *`).
+* The function connects to Dataverse via `Microsoft.PowerPlatform.Dataverse.Client` / Web API to fetch candidate IDs needing updates.
+* It calls the SOAP service, resolves the stage, and pushes the updated value straight back into Dataverse.
+
+---
+
+### Why this satisfies the case study requirements
+
+* **Overcomes Endpoint Restrictions:** The raw IP address and client certificate requirements cannot be handled by browser scripts, native sandbox plugins, or standard custom connectors. The Azure Function handles this external boundary.
+* **Keeps Dataverse Updated Headlessly:** Recurring polling happens automatically in the cloud without requiring a user to have the model-driven app open.
+* **Meets UI Needs:** Regional managers open their model-driven app to view candidate records, where the stage field is already populated and kept up to date.
 
 
 ## Q416
-the following certification question structure and options:
 
-### Question: 416
+![Q416](/dump-questions/question-images/northwind-electric-cars/q416.png)
 
 **Context / Prompt:**
 
@@ -222,7 +307,7 @@ Identify two required actions (each correct choice forms part of the overall sol
 * **D.** Reset/clear the verification status indicator whenever any address attribute is modified.
 
 
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -254,51 +339,8 @@ A confirmation dialog adds an extra click without satisfying any requirement reg
 
 
 ## Q417
-Users report that the address verification API returns the following error message: The Same Origin Policy disallows reading the remote resource.
 
-**Issues. Background check verification**
-
-While reviewing API information for the background check verification process you observe that the API uses an IP address and not a fully-qualified domain name.
-
-**Code -**
-
-AddressVerificationAPI.js -
-
-You create a custom action to communicate with the address verification API by using the following code. (Line numbers are included for reference only.)
-
-```javascript
-AV01 var parameters = {};
-AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
-AV03 ...
-AV04 var contoso_ValidateAddressRequest = {
-AV05     Line1In: parameters.Line1In,
-AV06     ...
-AV07     getMetadata: function () {
-AV08         return {
-AV09             boundParameter: null,
-AV10             parameterTypes: {
-AV11                 "Line1In": {
-AV12                     "typeName": "Edm.String",
-AV13                     "structuralProperty": 1
-AV14                 },
-AV15                 ...
-AV16             },
-AV17             operationType: 0,
-AV18             operationName: "northwind_ValidateAddress"
-AV19         };
-AV20     }
-AV21 };
-
-AV22 Xrm.WebApi.online.execute(ACTIONNAME).then(
-AV23     function success(result) {
-AV24         ...
-AV26     },
-AV27     function error(error) {
-AV28         ...
-AV29     }
-AV30 );
-
-```
+![Q417](/dump-questions/question-images/northwind-electric-cars/q417.png)
 
 **Question** You need to configure the solution to meet the requirements for driving record verifications.
 
@@ -314,11 +356,8 @@ What are two possible ways to achieve the goal? Each correct answer presents a c
 
 * **D.** Share the flow with a member of the talent department.
 
-### Case Study Identification
 
-This is the **Northwind Electric Cars** case study (frequently paired with candidate onboarding / background check scenarios in the PL-400: Microsoft Power Platform Developer exam).
-
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -372,43 +411,10 @@ The service provider does not offer a pre-built connector—they only supply an 
 Sharing an individual flow allows users to edit or run that specific flow, but it does not grant permissions to manage or update credentials on the underlying custom connector itself.
 
 ## Q418
-```javascript
-AV01 var parameters = {};
-AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
-AV03 ...
-AV04 var contoso_ValidateAddressRequest = {
-AV05     Line1In: parameters.Line1In,
-AV06     ...
-AV07     getMetadata: function () {
-AV08         return {
-AV09             boundParameter: null,
-AV10             parameterTypes: {
-AV11                 "Line1In": {
-AV12                     "typeName": "Edm.String",
-AV13                     "structuralProperty": 1
-AV14                 },
-AV15                 ...
-AV16             },
-AV17             operationType: 0,
-AV18             operationName: "northwind_ValidateAddress"
-AV19         };
-AV20     }
-AV21 };
 
-AV22 Xrm.WebApi.online.execute(ACTIONNAME).then(
-AV23     function success(result) {
-AV24         ...
-AV26     },
-AV27     function error(error) {
-AV28         ...
-AV29     }
-AV30 );
-
-```
+![Q418](/dump-questions/question-images/northwind-electric-cars/q418.png)
 
 ### Question: HOTSPOT
-
-
 
 You need to implement the driving record check functionality.
 
@@ -421,7 +427,6 @@ What should you implement? To answer, select the appropriate options in the answ
 #### Answer Area
 
 
-
 | Requirement| Implementation option|
 | --- | --- |
 | Trigger a driving record check| **[ Select an option ]**<br><br><br>• After the address validation field is saved to Dataverse<br><br>• After the address validation field changes on the screen<br><br>• Before the address validation field is saved to Dataverse|
@@ -429,12 +434,11 @@ What should you implement? To answer, select the appropriate options in the answ
 |
 
 
-### The Verdict
+### Answer
 
 * **Trigger a driving record check:** **After the address validation field is saved to Dataverse**
 
 * **Perform a driving record check:** **Cloud flow**
-
 
 ---
 
@@ -500,43 +504,8 @@ From the **Northwind Electric Cars** case study specifications:
 
 
 ## Q419
-```javascript
-AV01 var parameters = {};
-AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
-AV03 ...
-AV04 var contoso_ValidateAddressRequest = {
-AV05     Line1In: parameters.Line1In,
-AV06     ...
-AV07     getMetadata: function () {
-AV08         return {
-AV09             boundParameter: null,
-AV10             parameterTypes: {
-AV11                 "Line1In": {
-AV12                     "typeName": "Edm.String",
-AV13                     "structuralProperty": 1
-AV14                 },
-AV15                 ...
-AV16             },
-AV17             operationType: 0,
-AV18             operationName: "northwind_ValidateAddress"
-AV19         };
-AV20     }
-AV21 };
 
-AV22 Xrm.WebApi.online.execute(ACTIONNAME).then(
-AV23     function success(result) {
-AV24         ...
-AV26     },
-AV27     function error(error) {
-AV28         ...
-AV29     }
-AV30 );
-
-```
-
-### Question: HOTSPOT
-
-
+![Q419](/dump-questions/question-images/northwind-electric-cars/q419.png)
 
 You need to configure the environments.
 
@@ -556,7 +525,7 @@ What should you do? To answer, select the appropriate options in the answer area
 | Configure the production environment| **[ Select an option ]**<br><br><br>• Write code to throw an InvalidPluginExecutionException exception<br><br>• Write information to the trace log<br><br>• Enable trace log in the environment|
 |
 
-### The Verdict
+### Answer
 
 * **Configure the development environment:** **Install the plug-in profiler solution in the environment**
 
@@ -605,6 +574,9 @@ From the **Requirements $\rightarrow$ Environments** table in the scenario text:
 
 
 ## Q420
+
+![Q420](/dump-questions/question-images/northwind-electric-cars/q420.png)
+
 ```javascript
 AV01 var parameters = {};
 AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
@@ -657,7 +629,7 @@ Which values should you use? To answer, select the appropriate options in the an
 | Execution mode| **[ Select an option ]**<br><br><br>• Synchronous<br><br>• Asynchronous<br><br>• Post-Operation|
 |
 
-### The Verdict
+### Answer
 
 * **Address validation message:** **`northwind_ValidateAddress`**
 
@@ -679,15 +651,11 @@ Which values should you use? To answer, select the appropriate options in the an
 * **Reasoning:**
 * In the provided JavaScript snippet (`AddressVerificationAPI.js`):
 
-
 * Line `AV17`: `operationType: 0` (indicating an Action/Operation)
-
 
 * Line `AV18`: `operationName: "northwind_ValidateAddress"`
 
 * Line `AV22`: `Xrm.WebApi.online.execute(ACTIONNAME)...` calls this custom message.
-
-
 
 
 * When a Custom Action or Custom API is defined in Dataverse, its unique name becomes an event message in the Event Execution Pipeline.
@@ -720,43 +688,10 @@ Which values should you use? To answer, select the appropriate options in the an
 
 
 ## 421
-```javascript
-AV01 var parameters = {};
-AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
-AV03 ...
-AV04 var contoso_ValidateAddressRequest = {
-AV05     Line1In: parameters.Line1In,
-AV06     ...
-AV07     getMetadata: function () {
-AV08         return {
-AV09             boundParameter: null,
-AV10             parameterTypes: {
-AV11                 "Line1In": {
-AV12                     "typeName": "Edm.String",
-AV13                     "structuralProperty": 1
-AV14                 },
-AV15                 ...
-AV16             },
-AV17             operationType: 0,
-AV18             operationName: "northwind_ValidateAddress"
-AV19         };
-AV20     }
-AV21 };
 
-AV22 Xrm.WebApi.online.execute(ACTIONNAME).then(
-AV23     function success(result) {
-AV24         ...
-AV26     },
-AV27     function error(error) {
-AV28         ...
-AV29     }
-AV30 );
-
-```
+![Q421](/dump-questions/question-images/northwind-electric-cars/q421.png)
 
 ### Question HOTSPOT -
-
-
 
 You need to design functionality to process background check results.
 
@@ -834,39 +769,8 @@ From the **Northwind Electric Cars** scenario text:
 
 
 ## Q422
-```javascript
-AV01 var parameters = {};
-AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
-AV03 ...
-AV04 var contoso_ValidateAddressRequest = {
-AV05     Line1In: parameters.Line1In,
-AV06     ...
-AV07     getMetadata: function () {
-AV08         return {
-AV09             boundParameter: null,
-AV10             parameterTypes: {
-AV11                 "Line1In": {
-AV12                     "typeName": "Edm.String",
-AV13                     "structuralProperty": 1
-AV14                 },
-AV15                 ...
-AV16             },
-AV17             operationType: 0,
-AV18             operationName: "northwind_ValidateAddress"
-AV19         };
-AV20     }
-AV21 };
 
-AV22 Xrm.WebApi.online.execute(ACTIONNAME).then(
-AV23     function success(result) {
-AV24         ...
-AV26     },
-AV27     function error(error) {
-AV28         ...
-AV29     }
-AV30 );
-
-```
+![Q422](/dump-questions/question-images/northwind-electric-cars/q422.png)
 
 **Question** You need to resolve the address validation API error.
 
@@ -874,15 +778,13 @@ Which method should you use to connect?
 
 * **A.** an Azure function triggered by a webhook
 
-
 * **B.** JavaScript code
-
 
 * **C.** a custom connector used in a cloud flow
 
-
 * **D.** a plug-in attached to a custom action called from JavaScript
 
+### Answer
 
 **Correct Answer:** **D. a plug-in attached to a custom action called from JavaScript**
 
@@ -911,8 +813,6 @@ Which method should you use to connect?
 > 
 > *"The returned address must replace the address entered by the user."*
 > 
-
-
 
 ---
 
@@ -947,6 +847,8 @@ While cloud flows bypass CORS, triggering a cloud flow from a command bar button
 
 
 ## Q423
+
+![Q423](/dump-questions/question-images/northwind-electric-cars/q423.png)
 
 ```javascript
 AV01 var parameters = {};
@@ -984,8 +886,6 @@ AV30 );
 
 ### Question HOTSPOT -
 
-
-
 You need to correct the JavaScript code that communicates with the address verification API.
 
 For each of the following statements, select Yes if the statement is true. Otherwise, select No.
@@ -997,7 +897,6 @@ For each of the following statements, select Yes if the statement is true. Other
 #### Answer Area
 
 
-
 | Statements | Yes | No |
 | --- | --- | --- |
 | You must replace ACTIONNAME in line AV22 with northwind_ValidateAddress | ○ | ○ |
@@ -1006,7 +905,7 @@ For each of the following statements, select Yes if the statement is true. Other
 |  |  |  |
 
 
-### The Verdict
+### Answer
 
 * **You must replace ACTIONNAME in line AV22 with northwind_ValidateAddress:** **No**
 
@@ -1024,9 +923,7 @@ Xrm.WebApi.online.execute(request).then(successCallback, errorCallback);
 
 ```
 
-
 * The parameter passed into `execute(...)` must be the **request object itself** (which implements the `getMetadata` contract).
-
 
 * In line `AV04`, the request object is defined as:
 ```javascript
@@ -1034,8 +931,6 @@ var contoso_ValidateAddressRequest = { ... };
 ```[cite: 38]
 
 ```
-
-
 * Inside `getMetadata()`, line `AV18` already specifies `operationName: "northwind_ValidateAddress"`.
 
 
@@ -1083,6 +978,8 @@ function error(error) {
 
 ## Q424
 
+![Q424](/dump-questions/question-images/northwind-electric-cars/q424.png)
+
 You need to configure a connector for the driving record verification API.
 
 How should you configure the system? To answer, select the appropriate options in the answer area.
@@ -1094,14 +991,13 @@ How should you configure the system? To answer, select the appropriate options i
 #### Answer Area
 
 
-
 | Configuration option | Implementation|
 | --- | --- |
 | Configure authentication.| **[ Select an option ]**<br><br>• Basic<br><br>• OAuth 2.0<br><br>• API Key|
 | Provide credentials to the API.| **[ Select an option ]**<br><br>• Authentication section in the connector configuration.<br><br>• Prompt when the connector is used for the 1st time.<br><br>• Pass Credentials as parameters to the action being invoked in the flow or app.|
 |
 
-### The Verdict
+### Answer
 
 * **Configure authentication:** **Basic**
 
@@ -1168,39 +1064,8 @@ From the **Service providers** table in the Northwind Electric Cars case study:
 
 
 ## Q425
-```javascript
-AV01 var parameters = {};
-AV02 parameters.Line1In = formContext.getAttribute("address1_line1").getValue();
-AV03 ...
-AV04 var contoso_ValidateAddressRequest = {
-AV05     Line1In: parameters.Line1In,
-AV06     ...
-AV07     getMetadata: function () {
-AV08         return {
-AV09             boundParameter: null,
-AV10             parameterTypes: {
-AV11                 "Line1In": {
-AV12                     "typeName": "Edm.String",
-AV13                     "structuralProperty": 1
-AV14                 },
-AV15                 ...
-AV16             },
-AV17             operationType: 0,
-AV18             operationName: "northwind_ValidateAddress"
-AV19         };
-AV20     }
-AV21 };
 
-AV22 Xrm.WebApi.online.execute(ACTIONNAME).then(
-AV23     function success(result) {
-AV24         ...
-AV26     },
-AV27     function error(error) {
-AV28         ...
-AV29     }
-AV30 );
-
-```
+![Q425](/dump-questions/question-images/northwind-electric-cars/q425.png)
 
 **Question** You need to implement the background verification check stage field.
 
@@ -1214,6 +1079,8 @@ Which type of field should you use?
 
 * **D.** Lookup
 
+
+### Answer
 **Correct Answer:** **D. Lookup**
 
 
