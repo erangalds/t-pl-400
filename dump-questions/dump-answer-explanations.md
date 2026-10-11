@@ -1171,145 +1171,197 @@ Xrm.Navigation.openAlertDialog({ text: "Please validate the information entered 
 * **Edit XML** (such as customizing customizations.xml or RibbonDiffXml directly) is used for manual sitemap adjustments or advanced command bar customizations that are unsupported in the designer. It is neither needed nor supported for calculating values or generating UI pop-up dialogs.
 
 
+
 ## Q25
-**A. Navigate to Customize the System and export everything to a managed solution.**
+
+![Q25](/dump-questions/question-images/contoso-pharmaceuticals/q25.png)
+
+You need to create an application to deploy to other pharmacies.
+
+What should you do?
+
+A. Navigate to Customize the System and export everything to a managed solution.
+
+B. Create packages for Package Deployer.
+
+C. Create customizations with metadata in Organization Services.
+
+D. Write a Web API to move customizations.
+
+
+### Answer 
+
+The correct answer is **Create packages for Package Deployer** (Option **B** in Images 1, 2, and 3).
 
 ---
 
-### Detailed Breakdown & Explanation
+### Step-by-Step Analysis of the Case Study
 
-The case study outlines the following deployment constraints:
-
-1. *"The new solution will be sold to other pharmacies for use."*
-
-2. *"The application must not allow changes to be made."*
-
-3. *"The solution must be error free so that when it is installed in other environments it does not cause issues."*
-
-
-#### 1. Why a Managed Solution is Required
-
-* In Microsoft Power Platform / Dataverse, solutions are exported as either **Unmanaged** or **Managed**.
-* When distributing intellectual property or commercial products (ISV solutions) to external clients or other organizations where **"the application must not allow changes to be made,"** you **must export it as a Managed solution**.
-
-
-* Managed solutions lock the component customizations in the target tenant, prevent end users from modifying core app architecture, and allow clean uninstallation and controlled servicing/upgrades.
-
-
-
-#### 2. Why Option A is the Selected Action
-
-* In classic Dataverse administrative tooling (which this case study references), navigating to the solution explorer via **Customize the System** allows bundling the required entities, apps, and dependencies, followed by exporting the complete package as a **managed solution** (`.zip`).
-
-
-
----
-
-### Why the other options are incorrect
-
-* **B. Create packages for Package Deployer:** While the Power Platform Package Deployer tool can deploy solutions and sample data to environments, it requires a pre-built managed solution file to exist first; it is a deployment runner/installer, not the step where the package protection (managed state) is created.
-
-
-* **C. Create customizations with metadata in Organization Services:** The Organization Service API allows querying and defining metadata programmatically via SDK calls, but it is not the standard administrative mechanism used to package and export a distributable, tamper-proof app package.
-
-
-* **D. Write a Web API to move customizations:** Writing custom Web API calls to move customizations between tenants introduces high complexity, violates the rule to minimize custom code, and bypasses native Dataverse solution packaging and dependency tracking.
-
-## Q26 
-**B. Create packages for Package Deployer.**
-
----
-
-### Detailed Breakdown & Architecture
-
-Notice that this question variant does **not** offer the managed export option that appeared in the previous question (`Navigate to Customize the System and export everything to a managed solution` has been replaced with `Clone the solution`).
-
-Among the options provided, **Package Deployer** is the correct mechanism:
-
-1. **Deploying Commercial / ISV Solutions Across Multiple External Tenants:**
-* The scenario states:
+1. **Target Requirement:**
 * *"Every pharmacy has its own Dynamics 365 Sales instance."*
 
-* *"The new solution will be sold to other pharmacies for use."*
+* *"The new solution will be sold to other pharmacies for use. The application must not allow changes to be made."*
 
 * *"The solution must be error free so that when it is installed in other environments it does not cause issues."*
 
-
-
-* When selling software to disparate external client instances, shipping standalone `.zip` solution files manually is brittle.
-* **Microsoft Dynamics CRM / Power Platform Package Deployer** is designed specifically to bundle one or more solutions (managed), configuration and seed data (via Configuration Migration tool), pre/post-deployment verification logic, and custom code into a single, repeatable installer package that can be deployed cleanly and reliably across separate environments.
+* **Question:** *"You need to create an application to deploy to other pharmacies. What should you do?"*
 
 
 
+2. **Evaluating "Navigate to Customize the System and export everything to a managed solution" vs. "Create packages for Package Deployer":**
+* **The Flaw with Exporting from "Customize the System":**
+* In classic Dataverse/Dynamics 365 administration, going to *Settings > Customizations > Customize the System* opens the **Default Solution**.
+* You cannot directly export the Default Solution as a managed solution (the system default solution is always unmanaged and contains all components in the environment, not just your app's custom components).
+* Even if it were a custom solution, simply exporting a `.zip` file does not create a comprehensive deployment payload that can safely deploy across independent instances (often requiring reference data, multiple packages, and pre/post deployment checks to ensure it runs error-free).
 
+
+* **Why Package Deployer is the intended Microsoft architecture solution:**
+* **Microsoft Dynamics 365 Package Deployer** is specifically designed for Independent Software Vendors (ISVs) and developers distributing solutions and demo/seed data across multiple distinct tenant environments/instances.
+* It bundles one or more solutions (specifically managed solutions), data files (using the Configuration Migration tool), and custom code into an executable installer package (`.exe` or PowerShell deployment) that validates prerequisites and installs without errors.
 
 ---
 
-### Why the other options are incorrect
+### Why the Other Options Are Incorrect
 
-* **A. Recreate customizations in a new environment:**
-* Rebuilding customizations manually inside each customer’s environment is completely unmaintainable, error-prone, and violates every principle of ALM and commercial software distribution.
-
+* **Recreate customizations in a new environment / Clone the solution:**
 
 
-
-* **C. Create customizations with metadata in Organization Services:**
-* The Organization Service API allows developers to write code to create attributes or tables, but programmatic metadata creation is not the mechanism used to deploy packaged applications to customer environments.
+Cloning a solution is used for creating patches or major/minor version upgrades within your development environment; it does not deploy or package an app for third-party client distribution. Recreating manually defeats the entire ALM and solution lifecycle.
 
 
+* **Create customizations with metadata in Organization Services / Write a Web API to move customizations:**
 
 
-* **D. Clone the solution:**
-* In Dataverse ALM, **Clone Solution** is used during development to roll up existing patches into a single, new major/minor version of the base unmanaged solution. It does not deploy or package the application for distribution to external customer instances.
+Both require writing custom code and low-level API operations, directly violating the case study requirement to *"minimize the use of custom code and custom connectors."*
+
+
+## Question 26
+
+![Q26](/dump-questions/question-images/contoso-pharmaceuticals/q26.png)
+
+
+#### Question:
+
+You need to create an application to deploy to other pharmacies.
+
+What should you do?
+
+A. Recreate customizations in a new environment.
+
+B. Create packages for Package Deployer.
+
+C. Create customizations with metadata in Organization Services.
+
+D. Clone the solution.
+
+### Answer
+
+The correct answer is **Create packages for Package Deployer** (Option **B** in Images 1, 2, and 3).
+
+---
+
+### Step-by-Step Analysis of the Case Study
+
+1. **Target Requirement:**
+* *"Every pharmacy has its own Dynamics 365 Sales instance."*
+
+* *"The new solution will be sold to other pharmacies for use. The application must not allow changes to be made."*
+
+* *"The solution must be error free so that when it is installed in other environments it does not cause issues."*
+
+* **Question:** *"You need to create an application to deploy to other pharmacies. What should you do?"*
+
+
+
+2. **Evaluating "Navigate to Customize the System and export everything to a managed solution" vs. "Create packages for Package Deployer":**
+* **The Flaw with Exporting from "Customize the System":**
+* In classic Dataverse/Dynamics 365 administration, going to *Settings > Customizations > Customize the System* opens the **Default Solution**.
+* You cannot directly export the Default Solution as a managed solution (the system default solution is always unmanaged and contains all components in the environment, not just your app's custom components).
+* Even if it were a custom solution, simply exporting a `.zip` file does not create a comprehensive deployment payload that can safely deploy across independent instances (often requiring reference data, multiple packages, and pre/post deployment checks to ensure it runs error-free).
+
+
+* **Why Package Deployer is the intended Microsoft architecture solution:**
+* **Microsoft Dynamics 365 Package Deployer** is specifically designed for Independent Software Vendors (ISVs) and developers distributing solutions and demo/seed data across multiple distinct tenant environments/instances.
+* It bundles one or more solutions (specifically managed solutions), data files (using the Configuration Migration tool), and custom code into an executable installer package (`.exe` or PowerShell deployment) that validates prerequisites and installs without errors.
+
+---
+
+### Why the Other Options Are Incorrect
+
+* **Recreate customizations in a new environment / Clone the solution:**
+
+
+Cloning a solution is used for creating patches or major/minor version upgrades within your development environment; it does not deploy or package an app for third-party client distribution. Recreating manually defeats the entire ALM and solution lifecycle.
+
+
+* **Create customizations with metadata in Organization Services / Write a Web API to move customizations:**
+
+
+Both require writing custom code and low-level API operations, directly violating the case study requirement to *"minimize the use of custom code and custom connectors."*
+
 
 ## Q27
-**D. Navigate to Customize the System and export everything to a managed solution.**
 
-**NOTE**
-This is the exact same question as above. I still think the answer should be "Create Packages for Package Deployer" Because that's what the question is expecting. 
+![Q27](/dump-questions/question-images/contoso-pharmaceuticals/q27.png)
 
 
----
+Question:
 
-### Detailed Breakdown & Explanation
+You need to create an application to deploy to other pharmacies.
 
-The case study outlines specific business constraints for packaging and releasing the software:
+What should you do?
 
-1. *"The new solution will be sold to other pharmacies for use."*
+A. Clone the solution.
 
-2. *"The application must not allow changes to be made."*
+B. Create packages for Package Deployer.
 
-3. *"The solution must be error free so that when it is installed in other environments it does not cause issues."*
+C. Recreate customizations in a new environment.
 
+D. Navigate to Customize the System and export everything to a managed solution.
 
-#### 1. Why a Managed Solution is Mandatory
-
-* In Microsoft Dataverse, unmanaged solutions allow components to be modified, deleted, or directly customized in the target environment.
-* When creating an application intended to be distributed or sold commercially as an ISV product where downstream customers cannot alter the core components (*"The application must not allow changes to be made"*), it **must be exported as a Managed solution**.
-
-
-* Managed solutions protect intellectual property, prevent breaking changes from local administrators, and allow clean installation and rollback.
-
-#### 2. Why Option D is the Target Action
-
-* Classic administrative tools in Dataverse provide the solution management surface under **Customize the System** (or Solutions Explorer).
-
-
-* To create an application package ready for external distribution, you bundle all relevant components (entities, model-driven apps, sitemaps, web resources) and run the export wizard, selecting **Managed** as the package type.
-
-
+The correct answer is **Create packages for Package Deployer** (Option **B** in Images 1, 2, and 3).
 
 ---
 
-### Why the other options are incorrect
+### Step-by-Step Analysis of the Case Study
 
-* **A. Clone the solution:** Cloning rolls up existing patches into a new major or minor version of an *unmanaged* solution during the development cycle. It does not produce an exportable managed package for distribution.
+1. **Target Requirement:**
+* *"Every pharmacy has its own Dynamics 365 Sales instance."*
+
+* *"The new solution will be sold to other pharmacies for use. The application must not allow changes to be made."*
+
+* *"The solution must be error free so that when it is installed in other environments it does not cause issues."*
+
+* **Question:** *"You need to create an application to deploy to other pharmacies. What should you do?"*
 
 
-* **B. Create packages for Package Deployer:** While Package Deployer is an installer runtime used to deploy solutions and configuration data, it relies on an already exported managed solution file (`.zip`). The direct requirement to create an unchangeable distribution package from the custom build is addressed by exporting as a managed solution.
+
+2. **Evaluating "Navigate to Customize the System and export everything to a managed solution" vs. "Create packages for Package Deployer":**
+* **The Flaw with Exporting from "Customize the System":**
+* In classic Dataverse/Dynamics 365 administration, going to *Settings > Customizations > Customize the System* opens the **Default Solution**.
+* You cannot directly export the Default Solution as a managed solution (the system default solution is always unmanaged and contains all components in the environment, not just your app's custom components).
+* Even if it were a custom solution, simply exporting a `.zip` file does not create a comprehensive deployment payload that can safely deploy across independent instances (often requiring reference data, multiple packages, and pre/post deployment checks to ensure it runs error-free).
 
 
-* **C. Recreate customizations in a new environment:** Manually recreating entities, forms, and views across external pharmacy environments violates ALM standards and introduces human error, directly conflicting with the goal of an error-free deployment.
+* **Why Package Deployer is the intended Microsoft architecture solution:**
+* **Microsoft Dynamics 365 Package Deployer** is specifically designed for Independent Software Vendors (ISVs) and developers distributing solutions and demo/seed data across multiple distinct tenant environments/instances.
+* It bundles one or more solutions (specifically managed solutions), data files (using the Configuration Migration tool), and custom code into an executable installer package (`.exe` or PowerShell deployment) that validates prerequisites and installs without errors.
+
+---
+
+### Why the Other Options Are Incorrect
+
+* **Recreate customizations in a new environment / Clone the solution:**
+
+
+Cloning a solution is used for creating patches or major/minor version upgrades within your development environment; it does not deploy or package an app for third-party client distribution. Recreating manually defeats the entire ALM and solution lifecycle.
+
+
+* **Create customizations with metadata in Organization Services / Write a Web API to move customizations:**
+
+
+Both require writing custom code and low-level API operations, directly violating the case study requirement to *"minimize the use of custom code and custom connectors."*
+
 
 ## Q28
 **B. Register a pre-image by using the Plug-in Registration Tool. Add the code to the plug-in to read the image from the PreEntityImages collection.**
@@ -4818,6 +4870,9 @@ Looking at the specification under **Requirements. Historical Information Tracki
 * Adding fields or lookups directly onto the **Application** table restricts referrals strictly to active applications. Incomplete applications or pre-application recommendations cannot be captured this way. Moreover, flattening multiple potential referrals onto a single application record violates relational database design principles.
 
 ## Q91
+
+![Q91](/dump-questions/question-images/contoso-pharmaceuticals/q91.png)
+
 ### Recommended Placements
 
 * **UserA:** **Environment Maker**
@@ -4827,8 +4882,6 @@ Looking at the specification under **Requirements. Historical Information Tracki
 * **UserC:** **System Customizer**
 
 * **All employees:** **Basic User**
-
-
 ---
 
 ### Detailed Breakdown & Architectural Reasoning
@@ -4836,8 +4889,6 @@ Looking at the specification under **Requirements. Historical Information Tracki
 The objective is to assign the **minimum** environment security role that fulfills each user's exact requirements.
 
 #### 1. UserA $\rightarrow$ Environment Maker
-
-
 
 * **Requirement:** *"UserA must be able to create and publish Power Apps apps."*
 
@@ -4847,20 +4898,12 @@ The objective is to assign the **minimum** environment security role that fulfil
 
 * It does not grant administrative privileges over environment settings or user security roles, making it the least-privilege role for app creators.
 
-
-
-
-
 #### 2. UserB $\rightarrow$ System Administrator
-
-
 
 * **Requirement:** *"UserB must be the owner of all the systems and be able to provide permissions and create all new environments."*
 
 * **Role Capabilities:**
 * Managing user permissions, assigning security roles, and full administrative ownership within Dataverse requires the **System Administrator** role.
-
-
 * System Administrator is the only role with full, unconstrained privileges across all data, custom tables, system tables, and user access definitions.
 
 
@@ -4874,14 +4917,9 @@ The objective is to assign the **minimum** environment security role that fulfil
 
 #### 4. All employees $\rightarrow$ Basic User
 
-
-
 * **Requirement:** *"End users must have minimum access to the required systems."*
-
 * **Role Capabilities:**
 * In Dataverse, **Basic User** (formerly known as *Common Data Service User*) is the fundamental base role designed for standard end users.
-
-
 * It grants basic privileges to run apps within the environment and access records they own or that are shared with them, representing the baseline minimum access model.
 
 
@@ -22186,6 +22224,8 @@ From the Bellows Sports case study specifications:
 
 ## Q408
 
+![Q408](/dump-questions/question-images/contoso-pharmaceuticals/q408.png)
+
 ---
 **Correct Answer:** **A. Filter**
 
@@ -23301,6 +23341,9 @@ The background check process is at a single stage at any given moment ("identifi
 
 
 ## Q426
+
+![Q426](/dump-questions/question-images/contoso-pharmaceuticals/q426.png)
+
 ### Case Study Identification
 
 This is the **Contoso Pharmaceuticals** case study, a classic PL-200 / PL-400 scenario centered on Dynamics 365 Sales/Finance implementation, Dataverse schema design, calculated fields, and security modeling.
@@ -23371,6 +23414,9 @@ This is the **Contoso Pharmaceuticals** case study, a classic PL-200 / PL-400 sc
 
 
 ## Q427
+
+![Q428](/dump-questions/question-images/contoso-pharmaceuticals/q427.png)
+
 ### Case Study Identification
 
 This question continues the **Contoso Pharmaceuticals** case study. It focuses on mapping the principle of least privilege using standard out-of-the-box Dataverse security roles.
@@ -23417,6 +23463,9 @@ This question continues the **Contoso Pharmaceuticals** case study. It focuses o
 
 
 ## Q428
+
+![Q428](/dump-questions/question-images/contoso-pharmaceuticals/q428.png)
+
 This question is part of the **Contoso Pharmaceuticals** case study.
 
 ---
@@ -23456,7 +23505,10 @@ Custom code is unnecessary when the native solution packaging framework already 
 
 
 ## Q429
-### The Verdict
+
+![Q429](/dump-questions/question-images/contoso-pharmaceuticals/q429.png)
+
+### Answer
 
 * **supervisors:** **Field level security**
 
@@ -23783,13 +23835,16 @@ CS205 response.Close();
 
 
 ## Q435
+
+![Q436](/dump-questions/question-images/contoso-pharmaceuticals/q435.png)
+
 ### Case Study Identification
 
 This question is part of the **Contoso Pharmaceuticals** case study.
 
 ---
 
-### The Verdict
+### Answer
 
 **Correct Answers:**
 
@@ -23848,13 +23903,10 @@ Sorting a view by lowest to highest does not separate or partition records into 
 
 
 ## Q436
-### Case Study Identification
 
-This question continues the **Contoso Pharmaceuticals** case study.
+![Q436](/dump-questions/question-images/contoso-pharmaceuticals/q436.png)
 
----
-
-### The Verdict
+### Answer
 
 **Correct Answer:** **D. DIFFINDAYS(Createdon, now())**
 
