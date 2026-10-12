@@ -122,6 +122,10 @@ Northwind Traders uses Microsoft Dynamics 365 Sales to manage its sales process.
 
 
 ## Q92
+
+![Q92](/dump-questions/question-images/northwind-traders/q92.png)
+
+
 **Question:**
 
 You need to determine which component to add to the solution to resolve the account records import error.
@@ -135,6 +139,9 @@ B. service endpoint
 C. custom connector
 
 D. Account table
+
+
+### Answer
 
 **C. custom connector**
 
@@ -166,6 +173,7 @@ The case study notes that Dynamics 365 Sales is installed across all three envir
 
 ## Q162
 
+![Q162](/dump-questions/question-images/northwind-traders/q162.png)
 
 You need to choose a technology to access the Web API.
 
@@ -181,6 +189,9 @@ Which technology should you select?
 
 
 * **D.** Webhook that contacts the Web API
+
+
+### Answer
 
 The correct answer is **C. Power Automate flow that uses the custom connector**.
 
@@ -226,6 +237,9 @@ Dataverse Webhooks send Dataverse execution context (payloads) outward when an e
 
 
 ## Q206
+
+![Q206](/dump-questions/question-images/northwind-traders/q206.png)
+
 You need to configure a Dataverse trigger and action in a Power Automate flow so researchers can update account records with data from the Web API even if they do not have edit privileges on the record.
 
 What should you configure for each trigger and action requirement? To answer, select the appropriate options in the answer area.
@@ -240,6 +254,9 @@ NOTE: Each correct selection is worth one point.
 | --- | --- |
 | **When a row is added, modified, or deleted trigger with Change Type.**<br> | `[▾]`<br> <br>• Added<br> <br>• Modified<br><br>• Added or Modified|
 | **Update a row connection type.**<br> | `[▾]`<br><br>• API key<br><br>• User account<br><br>• Service principal
+
+
+### Answer
 
 The correct selections for the hot area are:
 
@@ -305,7 +322,8 @@ The correct selections for the hot area are:
 
 ## Q209
 
-**Prompt:**
+![Q209](/dump-questions/question-images/northwind-traders/q209.png)
+
 
 Implement a reusable solution to encapsulate the parameterized Dataverse queries. Select three actions and arrange them in the correct execution sequence in the Answer Area.
 
@@ -323,6 +341,9 @@ Implement a reusable solution to encapsulate the parameterized Dataverse queries
 * **Step 1:** `[ Select Action ]`
 * **Step 2:** `[ Select Action ]`
 * **Step 3:** `[ Select Action ]`
+
+
+### Answer
 
 The correct sequence of three actions is:
 
@@ -452,6 +473,9 @@ You configure the formal contract in the action designer so that callers know wh
 In Power Automate, makers can add the native Dataverse action **Perform an unbound action** (or **Perform a bound action**). Power Automate automatically reads the Action's metadata and dynamically renders form fields for the input parameters you defined in Step 2, allowing any researcher to call the logic cleanly and consistently.
 
 ## Q254
+
+![Q254](/dump-questions/question-images/northwind-traders/q254.png)
+
 ### Question
 
 You need to configure the row filter on the Dataverse trigger.
@@ -466,6 +490,9 @@ Which filter should you use?
 
 * **D.** `new_dataid ne null`
 
+
+### Answer
+
 The correct answer is **D. `new_dataid ne null**`.
 
 ---
@@ -477,7 +504,6 @@ The correct answer is **D. `new_dataid ne null**`.
 
 
 * This field accepts an standard OData filter expression to prevent the flow from firing unless the specified condition is met.
-
 
 
 
@@ -494,10 +520,6 @@ The correct answer is **D. `new_dataid ne null**`.
 new_dataid ne null
 
 ```
-
-
-
-
 
 ---
 
@@ -520,6 +542,9 @@ new_dataid ne null
 
 
 ## Q255
+
+![Q255](/dump-questions/question-images/northwind-traders/q255.png)
+
 ### Question
 
 You need to ensure data returned from the Web API corresponds to the correct environment.
@@ -587,6 +612,8 @@ The correct answer is **D. environment variables**.
 
 
 ## Q256
+
+![Q256](/dump-questions/question-images/northwind-traders/q256.png)
 
 You need to configure the custom connector to incorporate the environment name and DataId in the Web API URL.
 
@@ -665,6 +692,9 @@ To fix both parts of the URL, you need **two policies** (and each policy needs i
 * These are bogus options. An "operation" in a connector is the actual action name (like `GetCandidate` or `EnrichAccount`), not random URL fragments.
 
 ## Q263
+
+![Q263](/dump-questions/question-images/northwind-traders/q263.png)
+
 ### Question
 
 You need to implement visual hints in the custom connector.
@@ -675,23 +705,18 @@ NOTE: Each correct selection is worth one point.
 
 * **A.** In the custom connector, update the name of the policy template.
 
-
 * **B.** Extend the Open API definition of the Web API for the EnvironmentName parameter.
-
 
 * **C.** Extend the Open API definition of the Web API for the DataId parameter.
 
-
 * **D.** In the custom connector, update the description for the DataId parameter.
 
-
-
+### Answer
 The correct answers (each presenting a complete alternative solution) are:
 
 * **C. Extend the Open API definition of the Web API for the DataId parameter.**
 
 * **D. In the custom connector, update the description for the DataId parameter.**
-
 
 ---
 
@@ -703,12 +728,10 @@ The correct answers (each presenting a complete alternative solution) are:
 * *"Text descriptions and field placeholder text that describe the use of the custom connector must appear for non-developers."*
 
 
-
 * The parameter exposed to makers/non-developers when invoking the connector action is **`DataId`**.
 
 
 * The goal is to provide visual hints—specifically descriptions, summaries, or placeholders (`x-ms-summary`, `description`)—so makers using Power Automate or Power Apps clearly understand what to input into the `DataId` field.
-
 
 
 #### 2. Why Options C and D are Both Complete Solutions
@@ -811,6 +834,9 @@ The policy template is just the behind-the-scenes engine that rewrites website U
 `EnvironmentName` is handled automatically in the background (dev vs. test vs. prod). It is not a box that business users type into on their flow screen.
 
 ## Q304
+
+![Q304](/dump-questions/question-images/northwind-traders/q304.png)
+
 ### Question
 
 • A tester attempts to connect to the production instance of the Web API with a DataId that should return data. The tester receives an error stating that the remote name could not be resolved.
@@ -832,6 +858,9 @@ Which security tool should you configure for each item? To answer, select the ap
 | **Azure Function**<br> |  Anonymous <br><br> Function key <br><br> Azure Active Directory 
 | **Custom connector**<br> |  API Key <br><br> OAuth 2.0 <br><br> Basic authentication 
 |
+
+
+### Answer 
 
 The correct selections are:
 
@@ -869,9 +898,6 @@ The correct selections are:
 * `Function key` uses a shared master or function-level secret string, which does not authenticate individual users or satisfy audit trail requirements.
 
 
-
-
-
 #### 3. Custom connector $\rightarrow$ **OAuth 2.0**
 
 * When the backend Azure Function is protected by Azure Active Directory (Microsoft Entra ID), the custom connector must use **OAuth 2.0** as its authentication type.
@@ -881,11 +907,10 @@ The correct selections are:
 
 
 ## Q305
+
+![Q305](/dump-questions/question-images/northwind-traders/q305.png)
+
 ### Question
-
-• A tester attempts to connect to the production instance of the Web API with a DataId that should return data. The tester receives an error stating that the remote name could not be resolved.
-
-• A missing component causes an error to occur when importing the solution that contains the Power Automate flow to update account records in a test environment.
 
 You need to configure the Web API and create the custom connector.
 
@@ -903,120 +928,76 @@ Which action should you perform for each step? To answer, select the appropriate
 | **Create the custom connector.**<br> |  Import a solution. <br><br> Import an OpenAPI file. <br><br> Import a PostMan collection. 
 |
 
-The correct selections for each step are:
+### Case Study Identification
 
-* **Configure the Web API:** **Add an OpenAPI definition.**
+This question belongs to the **Fourth Coffee** / **City Power & Light** (often cataloged alongside *Northwind Trader / Contoso Data Enrichment*) case study on the PL-400 exam, which centers around integrating an Azure Function RESTful Web API into Power Platform via a custom connector.
 
-* **Create the custom connector:** **Import a PostMan collection.**
+---
+
+### Answer
+
+The marked red box in the second dropdown (`Import a PostMan collection`) is **incorrect**.
+
+The correct selections are:
+
+* **Configure the Web API:** **`Add an OpenAPI definition.`**
+
+* **Create the custom connector:** **`Import an OpenAPI file.`**
 
 
 ---
 
 ### Step-by-Step Breakdown
 
-#### 1. Relevant Requirement from the Case Study
+#### 1. Analyzing the Requirement
 
-* Under **Requirements $\rightarrow$ Custom connector**:
-> *"The Web API definition used to create the custom connector must be generated based on a low-code technology."*
-> 
+The note emphasized in the prompt specifies:
 
-
-
----
-
-#### 2. Configure the Web API $\rightarrow$ **Add an OpenAPI definition.**
-
-* The backend is hosted as an Azure Function running a RESTful .NET Web API.
-
-
-* To allow external tooling or client platforms to consume or document a REST API, you configure and add an **OpenAPI definition** (Swagger specification) to the API.
-
-
-* *Why not "Import a PostMan collection"?* You do not import a Postman collection *into* the backend Web API service itself; Postman is a client-side testing/authoring tool, not a server configuration component.
-
-
-* *Why not "Import a WSDL file"?* WSDL (Web Services Description Language) is strictly used for legacy SOAP-based XML web services, whereas this is a modern RESTful JSON Web API.
-
-
-
----
-
-#### 3. Create the custom connector $\rightarrow$ **Import a PostMan collection.**
-
-* The key constraint here is: *"The Web API definition used to create the custom connector must be generated based on a low-code technology."*
-
-* **Postman** is an intuitive visual, GUI-driven tool where non-developers/makers can construct, test, and save API requests without writing code. Exporting that collection creates a definition via low-code visual tooling.
-
-
-* Inside the Power Platform Custom Connector wizard, you select **Import a PostMan collection** to generate the connector definition without hand-crafting OpenAPI JSON/YAML code.
-
-
-* *Why not "Import an OpenAPI file"?* Hand-authoring or maintaining raw OpenAPI (Swagger) JSON/YAML definitions is a code-centric developer task rather than a low-code approach.
-
-
-* *Why not "Import a solution"?* Custom connectors can be included in solutions, but creating a connector from an external API definition begins with importing an API specification (such as a Postman collection or OpenAPI file), not by importing an existing Dataverse solution package.
-
-### The Goal
-
-You have a custom .NET Web API running inside an Azure Function. You want to bring that API into Power Platform as a **Custom Connector** so Power Apps and Power Automate flows can use it.
-
-The exam question asks what two steps to take:
-
-1. What do you do on the **Web API** side?
-
-
-2. What do you do on the **Custom Connector** side?
-
-
-
----
-
-### Step 1: Configure the Web API $\rightarrow$ **Add an OpenAPI definition**
-
-* **The Problem:** An Azure Function is just raw code running in the cloud. By default, other platforms don't automatically know what URL endpoints it has, what data it expects, or what response it sends back.
-
-
-* **The Solution:** You add an **OpenAPI definition** (also known as Swagger) to the API.
-
-
-* **Analogy:** Think of an OpenAPI definition like a **restaurant menu** for your API. It clearly lists every dish (endpoint) available and the ingredients (parameters) needed so anyone outside knows how to order.
-
-
-
----
-
-### Step 2: Create the custom connector $\rightarrow$ **Import a PostMan collection**
-
-* **The Requirement:** The prompt contains one specific hint:
 > *"The Web API definition used to create the custom connector must be generated based on a **low-code technology**."*
 > 
 
+Along with the standard case study specifications:
 
-* **Why Postman fits "low-code":**
-* Hand-writing a full Swagger/OpenAPI file in raw JSON or YAML requires coding and deep schema syntax knowledge.
+* The backend service is hosted as an **Azure Function running a RESTful .NET Web API**.
+* Developers plan to create a **custom connector** from this Web API so Power Automate and Power Apps can call it.
+* Post-creation, descriptions and parameters must be accessible to non-developers.
+
+---
+
+#### 2. Step 1: Configure the Web API $\rightarrow$ `Add an OpenAPI definition.`
+
+* In Azure Functions / Azure App Service, you can generate the API contract directly through the Azure portal interface without writing documentation manually.
+* By navigating to the Azure Function App settings and enabling **API definition (OpenAPI / Swagger)**, Azure automatically exposes an OpenAPI specification endpoint (or generates an OpenAPI definition file).
+* This fulfills generating the Web API definition using a built-in platform **low-code configuration feature** rather than authoring JSON/YAML from scratch.
 
 
-* In **Postman**, you don't write code. You just paste the URL into a visual interface, click buttons, test the request, and hit **Export Collection**.
-
-
-* Power Platform has a built-in option: **"Import a Postman collection"**. You simply upload that exported file, and Power Platform automatically generates all connector actions for you.
-
-
+* A WSDL file is exclusively for SOAP services (this is a RESTful API), and Postman is an external API client/testing tool, not a Web API configuration setting inside Azure.
 
 
 
 ---
 
-### Quick Summary
+#### 3. Step 2: Create the custom connector $\rightarrow$ `Import an OpenAPI file.`
 
-1. Give the Web API a schema standard $\rightarrow$ **Add an OpenAPI definition**.
+* Once the OpenAPI definition is exported or fetched from the configured Web API in Step 1, the developer goes to the Power Apps / Power Automate maker portal and chooses:
+
+$$\text{New custom connector} \longrightarrow \text{Import an OpenAPI file (or URL)}$$
 
 
-2. Use the low-code visual tool to bring it into Power Platform $\rightarrow$ **Import a PostMan collection**.
+* **Why not `Import a PostMan collection`?**
+* Creating a Postman collection requires manually assembling request URLs, headers, and test payloads in Postman and exporting a collection v1/v2 file. That is an extra, manual third-party step that does not stem directly from configuring the Web API's own low-code definition.
+* Because Step 1 produced an **OpenAPI definition**, Step 2 directly consumes it by selecting **`Import an OpenAPI file`**.
 
 
+
+
+* **Why not `Import a solution`?**
+* You import solutions to deploy pre-packaged components between environments, not to create a custom connector from an API contract.
 
 ## Q307
+
+![Q307](/dump-questions/question-images/northwind-traders/q307.png)
+
 ### Question
 
 • A tester attempts to connect to the production instance of the Web API with a DataId that should return data. The tester receives an error stating that the remote name could not be resolved.
@@ -1033,15 +1014,14 @@ What do you identify?
 
 * **A.** The web service lacks data for the record.
 
-
 * **B.** An authentication error occurred.
-
 
 * **C.** The request timed-out.
 
-
 * **D.** The host name in the URL is missing a valid value.
 
+
+### Answer 
 **Correct Answer:** **A. The web service lacks data for the record.**
 
 ---
@@ -1060,13 +1040,9 @@ Look under the **Web API** section:
 * An HTTP `404` status code standardly indicates **Not Found**.
 * In this specific architecture, the backend Azure Function searches the Azure SQL Database using `[DATAID]`.
 
-
 * According to the API's specification in the case study, when no matching record/data is found for the supplied `DataId`, the API intentionally responds with a **404 response**.
 
-
 * Therefore, the root cause of a 404 error returned by the service is that **the web service lacks data for the record**.
-
-
 
 ---
 
@@ -1077,12 +1053,13 @@ Look under the **Web API** section:
 * **D. The host name in the URL is missing a valid value:**
 * If the host name or URL domain cannot be resolved (e.g., `[ENVIRONMENTNAME]` was replaced incorrectly), the client fails at the DNS lookup stage.
 
-
 * The case study explicitly addresses this specific issue under **Issues**: *"A tester receives an error stating that the **remote name could not be resolved**"*. A DNS/hostname resolution failure never reaches the Web API server and therefore does not generate an HTTP `404` status code from the API.
 
 
-
 ## Q349
+
+![Q349](/dump-questions/question-images/northwind-traders/q349.png)
+
 Question & Objective
 
 * During testing against the production Web API instance using a DataId that ought to yield data, the tester encounters an error stating that the host/remote name could not be resolved.
@@ -1113,6 +1090,9 @@ Determine the correct sequence of three actions to perform.
 | **Step 2** | [                                                                      ] |
 | **Step 3** | [                                                                      ] |
 
+
+### Answer
+
 The correct three actions in sequence are:
 
 1. **Add an Initialize variable step and set the value to the response code from the custom connector.**
@@ -1135,20 +1115,14 @@ The correct three actions in sequence are:
 * If the `DataId` is not found, the Web API returns a **`404` response**.
 
 
-
-
 * **Resilience & Downstream Error Requirement:**
 * *"Errors generated by the custom connector must not cause downstream processes to fail."*
 
 * This means a 404 (or failure) from the connector call should not terminate the flow run as unhandled or failed, but must be safely evaluated.
 
 
-
-
 * **Objective:**
 * *"Configure a Power Automate flow to update account records by using the response from the Web API."*
-
-
 
 
 ---
@@ -1160,21 +1134,14 @@ The correct three actions in sequence are:
 * To inspect whether the call was successful (200) or not found (404), the status/response code returned by the custom connector action must be captured into a variable.
 
 
-
-
 * **Step 2: Add a condition step to check if the variable value equals 200.**
 
 * The flow must branch based on whether the data was actually found. Checking `value equals 200` routes the execution into the "If yes" branch only when valid enrichment data exists in the payload.
 
 
-
-
 * **Step 3: Add a Dataverse update record step to update the Dataverse account record.**
 
 * Inside the "If yes" (200 OK) branch, the flow proceeds with updating the corresponding Account record with the retrieved enrichment data.
-
-
-
 
 
 ---
@@ -1185,11 +1152,8 @@ The correct three actions in sequence are:
 * If you check for 404, the "If yes" path handles the missing record scenario where *no* update should happen. To perform the requested update, checking for `200` directly establishes the happy path.
 
 
-
-
 * **Add a terminate step and set the status to failed:**
 * Explicitly violates the constraint: *"Errors generated by the custom connector must not cause downstream processes to fail."*
-
 
 
 * **Add an initialize variable step and set the value to the DataId from the Dataverse account record:**

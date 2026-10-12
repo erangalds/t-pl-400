@@ -4924,6 +4924,11 @@ The objective is to assign the **minimum** environment security role that fulfil
 
 
 ## Q92
+
+![Q92](/dump-questions/question-images/northwind-traders/q92.png)
+
+### Answer
+
 **C. custom connector**
 
 ---
@@ -8816,6 +8821,11 @@ The FetchXML query in the prompt defines:
 * Furthermore, this query is a read-only FetchXML aggregation query designed for reporting/scoring metrics; it does not process, manage, or "allow" scheduling workflows.
 
 ## Q162
+
+![Q162](/dump-questions/question-images/northwind-traders/q162.png)
+
+### Answer
+
 The correct answer is **C. Power Automate flow that uses the custom connector**.
 
 ---
@@ -10958,6 +10968,11 @@ The correct answer is **C. Create new fields on the customer entity for insuranc
 
 
 ## Q206
+
+![Q206](/dump-questions/question-images/northwind-traders/q206.png)
+
+### Answer
+
 The correct selections for the hot area are:
 
 1. **When a row is added, modified, or deleted trigger with Change Type:** $\rightarrow$ **Added or Modified**
@@ -11116,6 +11131,9 @@ Corresponds to the OData `$select` clause. It restricts which specific columns o
 
 
 ## Q209
+
+![Q209](/dump-questions/question-images/northwind-traders/q209.png)
+
 The correct sequence of three actions is:
 
 1. **Create a custom process action that uses a custom workflow activity to perform the Dataverse queries.**
@@ -13953,6 +13971,11 @@ The correct two answers are:
 
 
 ## Q254
+
+![Q254](/dump-questions/question-images/northwind-traders/q254.png)
+
+### Answer
+
 The correct answer is **D. `new_dataid ne null**`.
 
 ---
@@ -14056,6 +14079,9 @@ The correct answer is **D. environment variables**.
 
 
 ## Q256
+
+![Q256](/dump-questions/question-images/northwind-traders/q256.png)
+
 Here is a simplified explanation of what the question is asking and how the solution works:
 
 ---
@@ -14442,6 +14468,9 @@ The correct answer is **A. Add a response property to the custom API.**
 
 ## Q263
 
+![Q263](/dump-questions/question-images/northwind-traders/q263.png)
+
+### Answer
 You need to implement visual hints in the custom connector.
 
 What should you do? Each correct answer presents a complete solution.
@@ -16524,120 +16553,120 @@ The correct selections are:
 
 * Configuring **OAuth 2.0** with Azure Active Directory as the identity provider allows Power Platform to acquire bearer access tokens on behalf of the logged-in user, passing the token in the `Authorization: Bearer <token>` header to the Azure Function.
 
-
-
 ## Q304
-The correct selections for each step are:
 
-* **Configure the Web API:** **Add an OpenAPI definition.**
+![Q304](/dump-questions/question-images/northwind-traders/q304.png)
 
-* **Create the custom connector:** **Import a PostMan collection.**
+### Answer 
+
+The correct selections are:
+
+* **Azure Function:** **Azure Active Directory**
+
+* **Custom connector:** **OAuth 2.0**
 
 
 ---
 
 ### Step-by-Step Breakdown
 
-#### 1. Relevant Requirement from the Case Study
+#### 1. Requirements from the Case Study
 
-* Under **Requirements $\rightarrow$ Custom connector**:
-> *"The Web API definition used to create the custom connector must be generated based on a low-code technology."*
-> 
+* **Security & Auditing:** *"Users must access data as themselves to enforce security and audit changes."*
 
+* **Environment Architecture:** *"Each environment has an application user that can be used for integrations."*
 
-
----
-
-#### 2. Configure the Web API $\rightarrow$ **Add an OpenAPI definition.**
-
-* The backend is hosted as an Azure Function running a RESTful .NET Web API.
-
-
-* To allow external tooling or client platforms to consume or document a REST API, you configure and add an **OpenAPI definition** (Swagger specification) to the API.
-
-
-* *Why not "Import a PostMan collection"?* You do not import a Postman collection *into* the backend Web API service itself; Postman is a client-side testing/authoring tool, not a server configuration component.
-
-
-* *Why not "Import a WSDL file"?* WSDL (Web Services Description Language) is strictly used for legacy SOAP-based XML web services, whereas this is a modern RESTful JSON Web API.
+* **Target Endpoint:** The Azure Function hosts a RESTful .NET Web API to enrich Dataverse accounts with data from Azure SQL Database.
 
 
 
----
+#### 2. Azure Function $\rightarrow$ **Azure Active Directory**
 
-#### 3. Create the custom connector $\rightarrow$ **Import a PostMan collection.**
-
-* The key constraint here is: *"The Web API definition used to create the custom connector must be generated based on a low-code technology."*
-
-* **Postman** is an intuitive visual, GUI-driven tool where non-developers/makers can construct, test, and save API requests without writing code. Exporting that collection creates a definition via low-code visual tooling.
+* To satisfy the explicit requirement that *"Users must access data as themselves to enforce security and audit changes,"* the service must enforce delegated user identity and access control.
 
 
-* Inside the Power Platform Custom Connector wizard, you select **Import a PostMan collection** to generate the connector definition without hand-crafting OpenAPI JSON/YAML code.
+* Securing the Azure Function with **Azure Active Directory** (now Microsoft Entra ID) enables token validation based on user identity or service principals, rather than using a static shared key.
 
 
-* *Why not "Import an OpenAPI file"?* Hand-authoring or maintaining raw OpenAPI (Swagger) JSON/YAML definitions is a code-centric developer task rather than a low-code approach.
+* *Why not Anonymous or Function key?*
+* `Anonymous` provides zero authentication or auditing.
 
 
-* *Why not "Import a solution"?* Custom connectors can be included in solutions, but creating a connector from an external API definition begins with importing an API specification (such as a Postman collection or OpenAPI file), not by importing an existing Dataverse solution package.
-
-### The Goal
-
-You have a custom .NET Web API running inside an Azure Function. You want to bring that API into Power Platform as a **Custom Connector** so Power Apps and Power Automate flows can use it.
-
-The exam question asks what two steps to take:
-
-1. What do you do on the **Web API** side?
+* `Function key` uses a shared master or function-level secret string, which does not authenticate individual users or satisfy audit trail requirements.
 
 
-2. What do you do on the **Custom Connector** side?
+#### 3. Custom connector $\rightarrow$ **OAuth 2.0**
 
+* When the backend Azure Function is protected by Azure Active Directory (Microsoft Entra ID), the custom connector must use **OAuth 2.0** as its authentication type.
+
+
+* Configuring **OAuth 2.0** with Azure Active Directory as the identity provider allows Power Platform to acquire bearer access tokens on behalf of the logged-in user, passing the token in the `Authorization: Bearer <token>` header to the Azure Function.
+
+
+## Q305
+
+![Q304](/dump-questions/question-images/northwind-traders/q305.png)
+
+
+### Answer
+
+The marked red box in the second dropdown (`Import a PostMan collection`) is **incorrect**.
+
+The correct selections are:
+
+* **Configure the Web API:** **`Add an OpenAPI definition.`**
+
+* **Create the custom connector:** **`Import an OpenAPI file.`**
 
 
 ---
 
-### Step 1: Configure the Web API $\rightarrow$ **Add an OpenAPI definition**
+### Step-by-Step Breakdown
 
-* **The Problem:** An Azure Function is just raw code running in the cloud. By default, other platforms don't automatically know what URL endpoints it has, what data it expects, or what response it sends back.
+#### 1. Analyzing the Requirement
 
+The note emphasized in the prompt specifies:
 
-* **The Solution:** You add an **OpenAPI definition** (also known as Swagger) to the API.
-
-
-* **Analogy:** Think of an OpenAPI definition like a **restaurant menu** for your API. It clearly lists every dish (endpoint) available and the ingredients (parameters) needed so anyone outside knows how to order.
-
-
-
----
-
-### Step 2: Create the custom connector $\rightarrow$ **Import a PostMan collection**
-
-* **The Requirement:** The prompt contains one specific hint:
 > *"The Web API definition used to create the custom connector must be generated based on a **low-code technology**."*
 > 
 
+Along with the standard case study specifications:
 
-* **Why Postman fits "low-code":**
-* Hand-writing a full Swagger/OpenAPI file in raw JSON or YAML requires coding and deep schema syntax knowledge.
+* The backend service is hosted as an **Azure Function running a RESTful .NET Web API**.
+* Developers plan to create a **custom connector** from this Web API so Power Automate and Power Apps can call it.
+* Post-creation, descriptions and parameters must be accessible to non-developers.
+
+---
+
+#### 2. Step 1: Configure the Web API $\rightarrow$ `Add an OpenAPI definition.`
+
+* In Azure Functions / Azure App Service, you can generate the API contract directly through the Azure portal interface without writing documentation manually.
+* By navigating to the Azure Function App settings and enabling **API definition (OpenAPI / Swagger)**, Azure automatically exposes an OpenAPI specification endpoint (or generates an OpenAPI definition file).
+* This fulfills generating the Web API definition using a built-in platform **low-code configuration feature** rather than authoring JSON/YAML from scratch.
 
 
-* In **Postman**, you don't write code. You just paste the URL into a visual interface, click buttons, test the request, and hit **Export Collection**.
-
-
-* Power Platform has a built-in option: **"Import a Postman collection"**. You simply upload that exported file, and Power Platform automatically generates all connector actions for you.
-
-
+* A WSDL file is exclusively for SOAP services (this is a RESTful API), and Postman is an external API client/testing tool, not a Web API configuration setting inside Azure.
 
 
 
 ---
 
-### Quick Summary
+#### 3. Step 2: Create the custom connector $\rightarrow$ `Import an OpenAPI file.`
 
-1. Give the Web API a schema standard $\rightarrow$ **Add an OpenAPI definition**.
+* Once the OpenAPI definition is exported or fetched from the configured Web API in Step 1, the developer goes to the Power Apps / Power Automate maker portal and chooses:
+
+$$\text{New custom connector} \longrightarrow \text{Import an OpenAPI file (or URL)}$$
 
 
-2. Use the low-code visual tool to bring it into Power Platform $\rightarrow$ **Import a PostMan collection**.
+* **Why not `Import a PostMan collection`?**
+* Creating a Postman collection requires manually assembling request URLs, headers, and test payloads in Postman and exporting a collection v1/v2 file. That is an extra, manual third-party step that does not stem directly from configuring the Web API's own low-code definition.
+* Because Step 1 produced an **OpenAPI definition**, Step 2 directly consumes it by selecting **`Import an OpenAPI file`**.
 
+
+
+
+* **Why not `Import a solution`?**
+* You import solutions to deploy pre-packaged components between environments, not to create a custom connector from an API contract.
 
 
 ## Q306
@@ -16685,6 +16714,47 @@ The correct mappings are:
 
 * **MainOperation (Stage 30):** Reserved internally for the core Dataverse engine to perform the native database CRUD operations (e.g., SQL statements); custom plug-in steps cannot be registered here.
 * **PreOperation (Stage 20):** Runs inside the database transaction and is primarily used for enriching or modifying attributes on the target record before it commits to the database, not for external system synchronization.
+
+
+## Q307
+
+![Q307](/dump-questions/question-images/northwind-traders/q307.png)
+
+### Answer 
+**Correct Answer:** **A. The web service lacks data for the record.**
+
+---
+
+### Step-by-Step Breakdown
+
+#### 1. Relevant Information from the Case Study
+
+Look under the **Web API** section:
+
+> *"The Web API response will return a 200 response plus data if the DataId is found. **Otherwise, a 404 response is returned.**"*
+> 
+
+#### 2. Evaluating the 404 Error
+
+* An HTTP `404` status code standardly indicates **Not Found**.
+* In this specific architecture, the backend Azure Function searches the Azure SQL Database using `[DATAID]`.
+
+* According to the API's specification in the case study, when no matching record/data is found for the supplied `DataId`, the API intentionally responds with a **404 response**.
+
+* Therefore, the root cause of a 404 error returned by the service is that **the web service lacks data for the record**.
+
+---
+
+### Why the Other Options are Incorrect
+
+* **B. An authentication error occurred:** An authentication failure produces an HTTP `401 Unauthorized` or `403 Forbidden` status code, not a `404 Not Found`.
+* **C. The request timed-out:** A timeout generates an HTTP `408 Request Timeout` or `504 Gateway Timeout`, not a `404`.
+* **D. The host name in the URL is missing a valid value:**
+* If the host name or URL domain cannot be resolved (e.g., `[ENVIRONMENTNAME]` was replaced incorrectly), the client fails at the DNS lookup stage.
+
+* The case study explicitly addresses this specific issue under **Issues**: *"A tester receives an error stating that the **remote name could not be resolved**"*. A DNS/hostname resolution failure never reaches the Web API server and therefore does not generate an HTTP `404` status code from the API.
+
+
 
 ## Q308
 **Correct Answers:**
@@ -18754,6 +18824,9 @@ The scenario explicitly specifies that the app *"must authenticate using OAuth w
 
 
 ## Q349
+
+![Q349](/dump-questions/question-images/northwind-traders/q349.png)
+
 The correct three actions in sequence are:
 
 1. **Add an Initialize variable step and set the value to the response code from the custom connector.**
@@ -23281,8 +23354,6 @@ From the **Service providers** table in the Northwind Electric Cars case study:
 > *"The password **expires periodically and must be changed by a member of the HR department**."*
 > 
 
-
-
 ---
 
 #### 2. First Dropdown: Configure authentication
@@ -23300,10 +23371,6 @@ From the **Service providers** table in the Northwind Electric Cars case study:
 * The case study specifies: *"The service uses a username and password for authentication."*
 
 * A standard username/password combination sent over HTTP corresponds to **Basic** authentication.
-
-
-
-
 
 ---
 
@@ -23345,6 +23412,10 @@ From the **Service providers** table in the Northwind Electric Cars case study:
 
 
 ## Q425
+
+![Q425](/dump-questions/question-images/northwind-electric-cars/q425.png)
+
+### Answer
 **Correct Answer:** **D. Lookup**
 
 ---
