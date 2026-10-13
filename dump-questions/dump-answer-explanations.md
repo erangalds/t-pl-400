@@ -2018,7 +2018,11 @@ Looking across the Planning Hub Application and Technical Environment requiremen
 
 
 ## Q39
-### Recommended Placements
+
+![Q39](/dump-questions/question-images/q1-100/q39.png)
+
+
+### Answer
 
 * **Phone number formatting:** **Plug-in**
 
@@ -2066,6 +2070,12 @@ Looking across the Planning Hub Application and Technical Environment requiremen
 * Since this fulfills the requirement natively without writing custom C# code, it aligns with avoiding custom development whenever possible.
 
 ## Q40
+
+![Q40](/dump-questions/question-images/q1-100/q40.png)
+
+
+### Answer
+
 **B. link-entity** and **D. condition**
 
 ---
@@ -2080,8 +2090,6 @@ The scenario defines two distinct requirements for the FetchXML query:
 
 #### 1. B. link-entity
 
-
-
 * In FetchXML schema design, joining or linking another table to the root `<entity>` requires the **`<link-entity>`** node.
 
 
@@ -2091,7 +2099,6 @@ The scenario defines two distinct requirements for the FetchXML query:
 
 
 #### 2. D. condition
-
 
 
 * To filter the records returned from the related table, you place a `<filter>` element inside the `<link-entity>` node containing one or more **`<condition>`** elements.
@@ -2110,8 +2117,17 @@ The scenario defines two distinct requirements for the FetchXML query:
 
 * **C. alias:** `alias` is an XML **attribute** on the `<link-entity>` tag (e.g., `<link-entity name="contact" alias="c" ...>`), not a standalone FetchXML **element**. It is used for naming prefixes in the returned dataset rather than performing the filtering or linking itself.
 
+
+
+
 ## Q41
-**A. Turn off the feature that controls record ownership across business units.** and **B. Create a security role for BusA users in the parent business unit with privileges set to Business Unit level.**
+
+![Q41](/dump-questions/question-images/q1-100/q41.png)
+
+### Answer
+**A. Turn off the feature that controls record ownership across business units.** and 
+
+**B. Create a security role for BusA users in the parent business unit with privileges set to Business Unit level.**
 
 ---
 
@@ -2295,7 +2311,13 @@ Finally, verify that both the role and app bindings reflect the design:
 
 * Any records belonging to `BusB` or `BusC` will be filtered out at the Dataverse platform security layer and will not appear in views, lookups, or global search.
 
+
+
+
 ## Q42
+
+![Q42](/dump-questions/question-images/q1-100/q42.png)
+
 ### Correct Selections
 
 1. Dropdown 1 (Outer function): **`SortByColumns`**
@@ -2400,7 +2422,15 @@ SortByColumns(
 
 * Notice the trailing argument already uses the lower-case logical schema string `"createdon"`. Consistent with Dataverse schema naming conventions in `SortByColumns`, the surname is referenced as **`"lastname"`**.
 
+
+
+
 ## Q43
+
+![Q43](/dump-questions/question-images/q1-100/q43.png)
+
+### Answer
+
 **C. Filter(Sort(Accounts, 'Account Name', SortOrder.Descending), IsBlank('Account Name') = false)**
 
 ---
@@ -2434,41 +2464,11 @@ SortByColumns(
 * **D. collAccounts:**
 * Directly displays the truncated in-memory collection without sorting or filtering, failing all stated requirements.
 
-## Q43
-**C. Filter(Sort(Accounts, 'Account Name', SortOrder.Descending), IsBlank('Account Name') = false)**
-
----
-
-### Detailed Breakdown & Architectural Reasoning
-
-#### 1. The Root Cause: Local Collection Truncation & Delegation Limits
-
-* The original setup cached the Accounts table into an in-memory client collection named `collAccounts` (e.g., using `ClearCollect(collAccounts, Accounts)`).
-* When creating a collection in Power Apps Canvas apps, the platform loads records into client device memory. Collections are strictly bounded by the **Non-delegable query / Data row limit** (set to 500 rows by default, configurable up to a maximum of 2,000 rows).
-* In a production environment with more than 500 (or 2,000) accounts, caching into `collAccounts` truncates the dataset at the client boundary. Users notice that expected rows are missing from the gallery because they were never loaded into `collAccounts` in the first place.
-
-#### 2. Why Option C Resolves the Problem
-
-* By querying the direct **`Accounts`** Dataverse table rather than the locally cached collection `collAccounts`, Power Apps offloads data processing directly to the server (Dataverse engine).
-* When a gallery binds directly to a Dataverse tabular source, Dataverse automatically handles server-side paging and delegation, loading batches of records dynamically as the user scrolls down through the gallery without hitting the 500/2,000-row collection ceiling.
-* Option C keeps the required business filtering condition (`IsBlank('Account Name') = false`) and sorting rule while pointing to the live, delegable **`Accounts`** data source.
-
----
-
-### Why the other options are incorrect
-
-* **A. Sort(Accounts, 'Account Name', SortOrder.Descending):**
-* While this points directly to the `Accounts` table, it drops the mandatory business requirement: *"Data in the gallery must always display accounts that have a name value"* (it omits the `Filter` check for non-blank account names).
-
-
-* **B. Sort(collAccounts, 'Account Name', SortOrder.Descending):**
-* Still queries the local in-memory collection `collAccounts`, which means it remains truncated by client data row limits, and it also omits the blank name filter.
-
-
-* **D. collAccounts:**
-* Directly displays the truncated in-memory collection without sorting or filtering, failing all stated requirements.
 
 ## Q44
+
+![Q44](/dump-questions/question-images/q1-100/q44.png)
+
 ### Correct Selections
 
 1. Dropdown 1: **`ClearCollect`**
@@ -2540,6 +2540,9 @@ ClearCollect(
 
 
 ## Q45
+
+![Q45](/dump-questions/question-images/q1-100/q45.png)
+
 ### Correct Selections
 
 1. **Privilege provided to edit accounts:** **Security role**
@@ -2603,6 +2606,9 @@ ClearCollect(
 * In Dataverse, you create an **Entra ID Group Team** (linked to the M365/Office Group backing the Teams site) and assign the Security Role directly to that team. As users join or leave the Teams channel/site, their Dataverse privileges are automatically synchronized dynamically without manual user administration. 
 
 ## Q46
+
+![Q46](/dump-questions/question-images/q1-100/q46.png)
+
 ### Correct Placements
 
 * **Sensor IoT data:** **Elastic**
@@ -2645,6 +2651,9 @@ ClearCollect(
 * **Virtual tables** do not store data inside Dataverse; they only project and surface data residing in an external system without persisting it locally.
 
 ## Q47
+
+![Q47](/dump-questions/question-images/q1-100/q47.png)
+
 An evaluation of the security design and requirements indicates:
 
 1. **Position Hierarchy Security Capabilities:**
@@ -2677,6 +2686,9 @@ Therefore, using position hierarchy security with departments as positions does 
 **B. No**
 
 ## Q48
+
+![Q48](/dump-questions/question-images/q1-100/q48.png)
+
 An evaluation of the requirements and the proposed solution indicates:
 
 1. **Security Isolation vs. Broad Access:**
@@ -2704,6 +2716,10 @@ Therefore, the proposed solution violates the primary security isolation constra
 **B. No**
 
 ## Q49
+
+![Q49](/dump-questions/question-images/q1-100/q49.png)
+
+
 An evaluation of the security requirements and the proposed mechanism indicates:
 
 1. **The Core Architectural Challenge:**
@@ -2732,6 +2748,9 @@ Therefore, using access team templates precisely fulfills both the conditional c
 **A. Yes**
 
 ## Q50
+
+![Q50](/dump-questions/question-images/q1-100/q50.png)
+
 ### Correct Placements
 
 * **Vehicle licensing data:** **Entity**
@@ -2783,7 +2802,15 @@ Therefore, using access team templates precisely fulfills both the conditional c
 * Cosmos DB can handle the high-throughput write pipeline while referencing the vehicle licensing identifier (foreign key relationship) to link violation events back to the primary vehicle data in Dataverse.
 
 ## Q51
-**B. Set the field permission Allow Read to Yes and add the users to the members section**, **D. Enable field security and then publish the entity**, and **E. Create a field security profile**
+![Q51](/dump-questions/question-images/q1-100/q51.png)
+
+### Answer
+
+**B. Set the field permission Allow Read to Yes and add the users to the members section**, 
+
+**D. Enable field security and then publish the entity**, and 
+
+**E. Create a field security profile**
 
 ---
 
@@ -2831,7 +2858,13 @@ Marking a field as read-only simply prevents users from modifying its contents o
 
 Security roles govern table-level (record-level) privileges—such as Read, Write, Create, or Delete across an entire entity—and have no mechanism to grant or revoke field-level security access.
 
+
+
+
 ## Q52
+
+
+![Q52](/dump-questions/question-images/q1-100/q52.png)
 
 ### Correct Selections
 
@@ -2908,7 +2941,13 @@ This scenario tests the programmatic management of the **Data Export Service (DE
 * Executing the failure log profile operation (e.g., `GET /crm/exporter/profiles/{id}/failures`) returns the metadata and failure descriptions of the unsynced records.
 
 
+
+
 ## Q53
+
+![Q53](/dump-questions/question-images/q1-100/q53.png)
+
+
 ### Correct Selections
 
 1. **Relationship Behavior type:** **Configurable Cascading**
@@ -2961,6 +3000,9 @@ This question addresses **table relationship cascading behaviors** between a par
 * **Cascade Active:** Only child records in an **Active / Open** state (outstanding tasks) are reassigned to the new parent owner. Inactive or completed child records remain with their historical owners to preserve accountability and audit trails.
 
 ## Q54
+
+![Q54](/dump-questions/question-images/q1-100/q54.png)
+
 ### Recommended Sequence
 
 1. **Create a Dynamics 365 Package project in Visual Studio**
@@ -3053,6 +3095,11 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 * Solution Packager decomposes a solution `.zip` into individual XML and component files for source control branch management, or recombines source tree files back into a `.zip`. The prompt specifies that solutions and data have already been exported as `.zip` files.
 
 ## Q55
+
+![Q55v1](/dump-questions/question-images/q1-100/q55v1.png)
+
+![Q55v2](/dump-questions/question-images/q1-100/q55v2.png)
+
 ### Correct Answers
 
 | Statements | Yes | No |
@@ -3139,6 +3186,8 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 * This resolves the missing privilege error directly on the target entity without granting elevated system-wide administrative roles.
 
 ## Q56
+
+![Q56](/dump-questions/question-images/q1-100/q56.png)
 ### Recommended Placements
 
 * **Visualize records as a hierarchy in a model-driven app:** **self-referential relationship**
@@ -3180,6 +3229,9 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 * **Connections** provide ad-hoc, informal associations between records across multiple different table types with defined connection roles (e.g., "Doctor / Patient", "Former Colleague"), but they do not enforce direct relational schema constraints or enable native Dataverse hierarchy visualization tree views.
 
 ## Q57
+
+![Q57](/dump-questions/question-images/q1-100/q57.png)
+
 ### Correct Selections
 
 1. **Table ownership for the class record table:** **Organization**
@@ -3242,6 +3294,9 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 * Because the relationship is **Parental**, reassigning the student to the new school automatically cascades the assignment of all associated `class history` records to the new owner/BU, ensuring administrators at the new school gain immediate access.
 
 ## Q58
+
+![Q58](/dump-questions/question-images/q1-100/q57.png)
+
 ### Correct Answers
 
 | Statements | Yes | No |
@@ -3304,6 +3359,12 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 * If connection is lost (`Connection.Connected = false`), execution branches to the false block (lines 12–19), saving the form payload locally via `SaveData(LocalRecord, "LocalRecord")` and routing the user to `PendingScreen` rather than failing with an unhandled network error.
 
 ## Q59
+
+![Q59](/dump-questions/question-images/q1-100/q59.png)
+
+
+### Answer
+
 **A. Liquid**
 
 ---
@@ -3338,7 +3399,12 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 
 * **D. Bootstrap:** Bootstrap is a client-side front-end CSS/JS framework used for responsive grid layouts and UI components, not for querying or processing Dataverse data.
 
+
+
 ## Q60
+
+![Q60](/dump-questions/question-images/q1-100/q60.png)
+
 ### Recommended Placements
 
 * **Sales managers must be able to view the records of the salespeople in their business unit:** **Role-based security**
@@ -3385,6 +3451,9 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 
 
 ## Q61
+
+![Q61](/dump-questions/question-images/q1-100/q61.png)
+
 ### Correct Answers
 
 | Statements | Yes | No |
@@ -3466,6 +3535,9 @@ var response = (UpsertResponse)_serviceProxy.Execute(request);
 * Because an account record with `accountnumber = "CO-555"` already exists, `UpsertRequest` detects the match and executes an **Update** operation on that existing record, updating its name and credit limit rather than creating a duplicate record.
 
 ## Q62
+
+![Q62](/dump-questions/question-images/q1-100/q62.png)
+
 ### Recommended Placements
 
 * **When a primary record is deleted, the associated referential records must also be deleted:** **Parental**
@@ -3523,6 +3595,9 @@ var response = (UpsertResponse)_serviceProxy.Execute(request);
 
 
 ## Q63
+
+![Q63](/dump-questions/question-images/q1-100/q63.png)
+
 ### Recommended Sequence
 
 1. **Enable field security in the Approval field.**
@@ -3593,6 +3668,9 @@ Configuring this involves three chronological steps:
 
 
 ## Q64
+
+![Q64](/dump-questions/question-images/q1-100/q64.png)
+
 ### Correct Selections
 
 1. **Calculate the efficiency of the delivery:** **`DIFFINMINUTES(Created On, Delivery Time)`**
@@ -3652,6 +3730,9 @@ Configuring this involves three chronological steps:
 
 
 ## Q65
+
+![Q65](/dump-questions/question-images/q1-100/q65.png)
+
 **A. In the development instance, make changes to the solutions that are deployed in the production instance, export the solutions as managed solutions, and import the managed solutions into the production instance.**
 
 **B. In the development instance, highlight the solution you want to make changes to, select Clone a Patch, make changes, export the solution, and import the solution into the production instance.**
@@ -3699,7 +3780,12 @@ Configuring this involves three chronological steps:
 
 * This is not a complete end-to-end method or actionable workflow for moving solutions across instances. Furthermore, attempting a solution update with the *same* version number does not trigger a solution upgrade or valid patch update in Dataverse; version numbers must increment.
 
+
+
 ## Q66
+
+![Q66](/dump-questions/question-images/q1-100/q66.png)
+
 ### Recommended Sequence
 
 1. **`pac solution init --publisher-name <publisher> --publisher-prefix <prefix>`**
@@ -3755,6 +3841,11 @@ The packaging workflow using the Power Platform CLI (`pac`) and MSBuild follows 
 
 
 ## Q67
+
+![Q67](/dump-questions/question-images/q1-100/q66.png)
+
+
+### Answer
 **B. Map table columns from the parent record to the child record.**
 
 ---
@@ -3792,6 +3883,9 @@ Business rules execute within the scope of the child record's form/table context
 A quick view form only displays read-only data from the parent record on the child form. It does not populate or store the data into the child record's actual fields.
 
 ## Q68
+
+![Q68](/dump-questions/question-images/q1-100/q68.png)
+
 ### Recommended Sequence
 
 1. **In the Plug-in Registration tool, select Register New Assembly.**
@@ -3859,6 +3953,12 @@ A quick view form only displays read-only data from the parent record on the chi
 
 
 ## Q69
+
+
+![Q69](/dump-questions/question-images/q1-100/q69.png)
+
+### Answer 
+
 **B. Navigate to Table options and enable attachments.**
 
 ---
@@ -3905,6 +4005,9 @@ The `annotation` (Notes) table is a system table with polymorphic behavior. You 
 
 
 ## Q70
+
+![Q70](/dump-questions/question-images/q1-100/q70.png)
+
 ### Correct Selections
 
 1. **File that you must edit to include custom code:** **`PackageTemplate.cs`**
@@ -3964,6 +4067,10 @@ This question tests the creation and configuration of a deployment package using
 
 
 ## Q71
+
+![Q71](/dump-questions/question-images/q1-100/q71.png)
+
+
 **A. Use Web API and use a PicklistAttributeMetadata request.**
 
 ---
@@ -4106,6 +4213,10 @@ Once your non-.NET script makes that metadata call, it parses the JSON response,
 
 
 ## Q72
+
+![Q72](/dump-questions/question-images/q1-100/q72.png)
+
+### Answer
 **C. Create an intersect entity named ContactRegion and create 1:N relationships to Contact and Region.** (or **H**, depending on perspective)
 
 **D. On the main form for ContactRegion, add lookup fields for Contact and Region, and a date field for the visit date.**
@@ -4173,7 +4284,12 @@ A client travels to many regions, and a region is visited by many clients; a dir
 
 The requirement is to capture the visit data and date, not to display a nested subgrid of country data on the junction record.
 
+
+
 ## Q73
+
+![Q73](/dump-questions/question-images/q1-100/q73.png)
+
 ### Correct Selections
 
 1. **Solution checker completes a run and reports errors for one solution but completes without errors for a different solution:** **A canvas app in the first solution has errors.**
@@ -4229,6 +4345,10 @@ Line 3: if (acctnumber == 'abc')
 
 
 ## Q74
+
+![Q74](/dump-questions/question-images/q1-100/q74.png)
+
+### Answer
 **D. Create a plug-in that uses the CalculateRollupFieldRequest method for the rollup field. Configure a step on the Create event for the policy entity for this plug-in.**
 
 ---
@@ -4280,6 +4400,11 @@ Out-of-the-box classic workflows cannot aggregate/sum across child collections n
 The system recurring job frequency cannot be reduced below 1 hour in Dataverse, and even if it could, a periodic polling job does not fulfill the requirement to update values **immediately** after policy creation.
 
 ## Q75
+
+![Q75](image.png)
+
+
+### Answer
 **D. Client secret**
 
 ---
@@ -4323,6 +4448,9 @@ The system recurring job frequency cannot be reduced below 1 hour in Dataverse, 
 
 
 ## Q76
+
+![Q76](image.png)
+
 **C. The web resources were not added to the solution before exporting.**
 
 ---
@@ -4370,6 +4498,11 @@ You do not need to clone or copy forms before including them in a Dataverse solu
 
 
 ## Q77
+
+![Q77](/dump-questions/question-images/q1-100/q77.png)
+
+### Answer
+
 **A. Map the value of a Choices column on the child table to the value of a Choices column on the parent table.**
 
 **C. Map the value of columns on both the child table quick-create and main forms to the value for the same columns on the parent table.**
@@ -4420,6 +4553,9 @@ Dataverse strictly enforces **data type compatibility** for column mapping. You 
 
 
 ## Q78
+
+![Q78](/dump-questions/question-images/q1-100/q78.png)
+
 ### Recommended Placements
 
 * **Fitness program:** **Standard table with User or Team ownership**
@@ -4470,6 +4606,9 @@ Dataverse strictly enforces **data type compatibility** for column mapping. You 
 
 
 ## Q79
+
+![Q79](/dump-questions/question-images/q1-100/q79.png)
+
 ### Recommended Placements
 
 * **Canvas app sessions open during the update:** **Development**
@@ -4498,7 +4637,12 @@ Dataverse strictly enforces **data type compatibility** for column mapping. You 
 * To force a cloud flow to bind to an updated environment variable value without an ALM re-import, the flow must either be **turned off and on (deactivated and reactivated)** or **edited and saved**.
 * Editing and **saving** the flow re-compiles the flow trigger/action definitions and invalidates the cached environment variable metadata, causing subsequent executions to pick up the new **Production** URL.
 
+
+
 ## Q80
+
+![Q80](/dump-questions/question-images/q1-100/q80.png)
+
 ### Correct Selections
 
 * **Store information about doctors:** **Standard**
