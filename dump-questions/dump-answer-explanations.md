@@ -1,7 +1,7 @@
 # PL 400 Dump Answers
 
 ## Q1
-![Q1](./question-images/q1.png)
+![Q1](./question-images/q1-100/q1.png)
 
 <br>
 **D. Add the maintenance history app to the Power BI dashboard.**
@@ -40,6 +40,9 @@ By embedding the existing canvas app directly into the Power BI dashboard (using
 
 
 ## Q2
+
+![Q2](/dump-questions/question-images/q1-100/q2.png)
+
 ### Recommended Selections
 
 1. **Create the job listings portal:**
@@ -163,6 +166,9 @@ If this appears on a Microsoft exam:
 
 
 ## Q3
+
+![Q3](/dump-questions/question-images/q1-100/q3.png)
+
 ### Recommended Selections
 
 1. Determine which store is closest to the order destination:
@@ -234,7 +240,13 @@ If this appears on a Microsoft exam:
 
 * A UI flow (Power Automate Desktop / RPA) is intended for automating legacy systems without APIs and is not suited for a standard email delivery workflow.
 
+
+
+
 ## Q4
+
+![Q4](/dump-questions/question-images/q1-100/q4.png)
+
 **C. OpenAPI definition** and **D. Postman collection**
 
 ---
@@ -261,7 +273,14 @@ Both formats provide a complete API specification that the maker portal uses to 
 
 * **B. WSDL (Web Services Description Language):** WSDL is used for SOAP-based XML services. While custom connectors originally had preview support for SOAP/WSDL, modern Power Platform custom connector authoring relies on RESTful endpoints and OpenAPI/Postman collections. In Microsoft exam objectives (such as PL-200 and PL-400), **OpenAPI definition** and **Postman collection** are the designated standard file formats for creating REST-based custom connectors.
 
+
+
 ## Q5
+
+![Q5](/dump-questions/question-images/q1-100/q5.png)
+
+### Answer
+
 **A. SQL Server** and **B. Common Data Service** (now Microsoft Dataverse)
 
 ---
@@ -293,6 +312,10 @@ Because **Common Data Service** and **SQL Server** have robust query engines, fu
 * **D. Azure Table Storage:** While there is a connector for Azure Table Storage, it is a NoSQL key-value store with very limited query capabilities and does not support full delegation for standard relational filtering/sorting patterns in Power Apps compared to SQL Server or Dataverse.
 
 ## Q6
+
+![Q6](/dump-questions/question-images/q1-100/q6.png)
+
+
 ### Recommended Selections
 
 1. Warehouse employees can use mobile devices to scan barcodes by using Dynamics 365 Finance:
@@ -333,7 +356,13 @@ Because **Common Data Service** and **SQL Server** have robust query engines, fu
 * Classic Dynamics 365 background **Workflows** only support native internal system actions (creating records, assigning records, sending internal emails) and cannot call external SMS gateways directly without custom workflow activities (C# code assemblies).
 * **Power Automate** is Microsoft's standard platform integration tool for Dynamics 365 Customer Engagement / Field Service. It triggers on record events (such as location/booking status updates) and has built-in preconfigured connectors to send SMS/text messages natively without third-party custom code.
 
+
+
+
 ## Q7
+
+![Q7](/dump-questions/question-images/q1-100/q7.png)
+
 ### Recommended Match
 
 * **Email:** **Server-side synchronization**
@@ -373,6 +402,9 @@ Because **Common Data Service** and **SQL Server** have robust query engines, fu
 * **System settings:** While general environment-level switches exist in System Settings, they do not establish or configure the underlying integration architecture required for SharePoint document management or Exchange mailbox processing.
 
 ## Q8
+
+![Q8](/dump-questions/question-images/q1-100/q8.png)
+
 **C. a webhook that connects to an Azure Function**
 
 ---
@@ -397,9 +429,6 @@ This question hinges on evaluating the technical constraints:
 * Inside the Azure Function, the order processing logic can coordinate external system updates and interact with Dataverse via a batch operation (`ExecuteTransactionRequest` or `$batch` via the Web API) to guarantee transactional integrity ("completed in one operation to avoid leaving records in an incomplete state").
 
 
-
-
-
 ---
 
 ### Why the other options fail
@@ -412,7 +441,12 @@ This question hinges on evaluating the technical constraints:
 
 * **D. An asynchronous plug-in:** Even though asynchronous plug-ins run in the background via the Async Service, they still execute within the sandbox worker process and are constrained by the **2-minute execution timeout** limit.
 
+
+
 ## Q9
+
+![Q9](/dump-questions/question-images/q1-100/q9.png)
+
 ### Recommended Selections
 
 1. Create a portal by using a portal template:
@@ -421,14 +455,10 @@ This question hinges on evaluating the technical constraints:
 * **Starter portal**
 
 
-
 2. Manage volunteer registration:
 
 
 * **Webform**
-
-
-
 
 ---
 
@@ -444,7 +474,6 @@ This question hinges on evaluating the technical constraints:
 
 
 * **Starter portal** (now known as the blank site / standard site template in Power Pages) is designed specifically for standard Dataverse environments using **custom entities**, providing the foundational website structure, master pages, and authentication without requiring Dynamics 365 app dependencies.
-
 
 
 
@@ -465,6 +494,12 @@ This question hinges on evaluating the technical constraints:
 
 
 ## Q10
+
+![Q10](/dump-questions/question-images/q1-100/q10.png)
+
+
+### Answer
+
 **A. Content snippet**, **B. Web page**, and **C. Web template**
 
 ---
@@ -502,13 +537,14 @@ In Power Apps Portals / Power Pages, **Liquid** is an open-source template langu
 * A Page Template is purely a structural routing pointer. It specifies either a pointer to a **Web Template** or an **ASP.NET (.aspx) rewrite URL**. It does not have a content field where Liquid code can be written or processed.
 
 
-
-
 * **E. Portal settings / Site settings (`adx_sitesetting`):**
 * Site settings store configuration key/value pairs (like boolean flags, integer limits, URLs, or authentication keys). The portal engine treats their values as raw strings and does not execute Liquid code stored inside them.
 
 
 ## Q11
+
+![Q11](/dump-questions/question-images/q1-100/q11.png)
+
 ### Recommended Sequence
 
 1. **Register the skill bot in Azure Active Directory.**
@@ -557,6 +593,9 @@ To consume an external **Bot Framework skill (the class bot)** from a consumer b
 
 
 ## Q12
+
+![Q12](/dump-questions/question-images/q1-100/q12.png)
+
 **C. Sandbox**
 
 ---
@@ -590,7 +629,12 @@ When migrating custom plug-in code from an on-premises deployment to a cloud-hos
 
 * **D. Disk:** Like GAC, "Disk" is a deployment storage location used in legacy on-premises implementations (deploying assemblies to the `bin\assembly` folder on the CRM server), not an isolation mode. Cloud plug-in assemblies must be stored directly in the Dataverse database in Sandbox mode.
 
+
+
 ## Q13
+
+![Q13](/dump-questions/question-images/q1-100/q13.png)
+
 **B. Select the Portal Management app and then select Play.** and **D. Select the portal app and then select Edit.**
 
 ---
@@ -680,7 +724,6 @@ When editing a page via the Portal Management app, changes are split between two
 4. Select **Save & Close**.
 
 
-
 ---
 
 #### 4. Clear the Portal Cache (Important)
@@ -691,6 +734,12 @@ Because Power Pages / Portals aggressively cache metadata:
 * Click **Sync** / **Browse website** inside the Power Pages design studio to ensure your changes reflect immediately on the live site.
 
 ## Q14
+
+![Q14](/dump-questions/question-images/q1-100/q14.png)
+
+
+### Answer
+
 Depending on whether this is approached from **official Microsoft exam answer keys** or from an **architectural engineering standpoint**, there is a notable divergence between the intended exam answer and real-world system architecture:
 
 * **Official / Exam Key Answer:** **A. Power Automate**
@@ -748,6 +797,11 @@ From a strict software engineering perspective, the phrasing contains a crucial 
 * **For real-world design:** If the parsing compute resides inside the Azure app, call the **Dataverse Web API** (`https://<org>[.api.crm.dynamics.com/api/data/v9.x/](https://.api.crm.dynamics.com/api/data/v9.x/)`); if delegating the workflow orchestration away from custom Azure code, trigger a **Power Automate** cloud flow.
 
 ## Q15
+
+![Q15](/dump-questions/question-images/q1-100/q15.png)
+
+
+### Answer
 ### Recommended Placements
 
 * Support records that use an integer as a primary key: **Custom connector**
@@ -799,6 +853,10 @@ From a strict software engineering perspective, the phrasing contains a crucial 
 * A custom connector is not part of the Dataverse data layer. It is consumable inside Canvas Apps, Power Automate, and Azure Logic Apps, but cannot be directly surfaced as a relational table within Model-driven app views/forms or native Dataverse Web API endpoints without custom middleware or custom controls.
 
 ## Q16
+
+![Q16](/dump-questions/question-images/q1-100/q16.png)
+
+### Answer
 **A. Retrieve the list of relationships between tables.**
 
 ---
@@ -826,7 +884,13 @@ The query targets the Dataverse Web API metadata endpoint:
 * **B & D:** The query returns records from `RelationshipDefinitions` (the relationships themselves), not records from `EntityDefinitions` (the tables)[cite: 16]. It does not return a list of tables or count how many relationships a table has[cite: 16].
 * **C & E:** Both options are too restrictive[cite: 16]. To query *only* one-to-many relationships or *only* many-to-many relationships, the request would need to use derived type casting in the OData path (e.g., `/RelationshipDefinitions/Microsoft.Dynamics.CRM.OneToManyRelationshipMetadata` or `.../ManyToManyRelationshipMetadata`), which is not present here.
 
+
+
+
 ## Q17
+
+![Q17](/dump-questions/question-images/q1-100/q17.png)
+
 ### Recommended Selections
 
 1. Full name of the primary contact:
@@ -898,7 +962,16 @@ primarycontactid($select=fullname)
 
 * `Expand Query = expand=account($top=1;$select=creditlimit)`: The target table of the List Rows action is already Account, so expanding "account" is invalid syntax, and sorting/limiting records is handled by `$orderby` and `$top`, not `$expand`.
 
+
+
+
+
 ## Q18
+
+![Q18](/dump-questions/question-images/q1-100/q18.png)
+
+### Answer
+
 **B. Create a custom connector by using the Azure Function API.** and **E. Create an API definition for the Azure Function.**
 
 ---
@@ -940,7 +1013,13 @@ To connect a Canvas App directly to a custom REST endpoint like an Azure Functio
 
 * **D. Use Azure Service Bus:** Azure Service Bus is an asynchronous enterprise messaging queue/topic service used for decoupling systems and fire-and-forget processing. It does not provide the immediate, interactive request-response pattern needed when a user searches for information in an app interface.
 
+
+
+
 ## Q19
+
+![Q19](/dump-questions/question-images/q1-100/q19.png)
+
 ### Recommended Placements
 
 * **Use a bot on the website:** **Power Pages**
@@ -989,6 +1068,12 @@ To connect a Canvas App directly to a custom REST endpoint like an Azure Functio
 
 
 ## Q20
+
+![Q20](/dump-questions/question-images/q1-100/q20.png)
+
+
+### Answer
+
 **C. Set host URL**
 
 ---
@@ -1030,6 +1115,12 @@ Power Platform custom connectors support **Policy Templates** to modify outbound
 
 
 ## Q21
+
+![Q21](/dump-questions/question-images/q1-100/q21.png)
+
+
+### Answer
+
 **D. Slot filling**
 
 ---
@@ -1057,7 +1148,16 @@ Power Platform custom connectors support **Policy Templates** to modify outbound
 
 * **C. Bot Service compliance:** Relates to regulatory, data handling, and security governance standards (e.g., GDPR, HIPAA, FedRAMP), with no connection to parsing language or attributes.
 
+
+
+
+
 ## Q22
+
+![Q22](/dump-questions/question-images/q1-100/q22.png)
+
+
+### Answer
 **B. Upgrade the solution.**
 
 ---
@@ -1089,7 +1189,15 @@ In Power Platform / Dataverse Application Lifecycle Management (ALM), when impor
 4. **Create a new solution:**
 * Creating a brand new solution creates an independent layer with separate dependencies and metadata ownership, resulting in complex dependency tracking without cleanly removing components from the existing deployed solution.
 
+
+
+
+
 ## Q23
+
+![/Q23](/dump-questions/question-images/q1-100/q23.png)
+
+### Answer
 **D. Ask User1 to sign into the model-driven app.**
 
 ---
@@ -1125,8 +1233,13 @@ In Power Platform / Dataverse Application Lifecycle Management (ALM), when impor
 * **C. Create an Owner team for the members of the Sales Azure AD group:** Creating an Owner team requires manual management of individual users inside Dataverse, which defeats the purpose of using Azure AD group teams for centralized access management.
 
 
+
 ## Q24
-### Recommended Placements
+
+![Q24](/dump-questions/question-images/q1-100/q24.png)
+
+
+### Answer
 
 * Calculate payments: **Configure an out-of-box feature**
 
@@ -16425,6 +16538,10 @@ You already created and tested your Microsoft Graph API calls inside Postman. No
 
 
 ## Q301
+
+![Q301](/dump-questions/question-images/proseware-inc/q301.png)
+
+### Answer
 The correct selections are:
 
 * **Statement 1:** *You can use data from the contact's name without explicitly retrieving the value from the fullname column.* $\rightarrow$ **Yes**
@@ -16478,6 +16595,8 @@ foreach (var recruiter in recruiters.Entities)
 
 
 ## Q302
+
+![Q302](/dump-questions/question-images/proseware-inc/q302.png)
 The correct selections are:
 
 * **Statement 1:** *You can use data from the contact's name without explicitly retrieving the value from the fullname column.* $\rightarrow$ **Yes**
@@ -16530,6 +16649,10 @@ foreach (var recruiter in recruiters.Entities)
 * If a candidate applied to three different positions assigned to the same recruiter, that recruiter will receive three separate emails. This also violates the design guideline: *"Email notifications need to be kept to a minimum."*
 
 ## Q303
+
+![Q303](/dump-questions/question-images/proseware-inc/q303.png)
+
+### Answer
 The correct mappings are:
 
 * **Initiate process for all individuals:** **Power Automate flow**
