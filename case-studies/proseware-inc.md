@@ -32,96 +32,68 @@ The recruiting team manages all information by using a model-driven application.
 
 The company has the following Microsoft Dataverse tables and columns:
 
+### Tables and Columns 
+
 * **JobPosting**
 
-* Hiring Manager - lookup to SystemUser
+  * Hiring Manager - lookup to SystemUser
 
-
-* Recruiter Assigned - lookup to SystemUser
-
-
+  * Recruiter Assigned - lookup to SystemUser
 
 
 * **Contact (Job Applicant)**
 
-* Contact identifier
+  * Contact identifier
 
+  * First name
 
-* First name
+  * Last name
 
+  * Time-Zone Offset
 
-* Last name
-
-
-* Time-Zone Offset
-
-
-* Person of Interest - Yes/No (default)
-
-
-
+  * Person of Interest - Yes/No (default)
 
 * **Application proapplication**
 
-* Contact identifier, Contact - lookup to Contact
+  * Contact identifier, Contact - lookup to Contact
 
+  * Job Posting - lookup to JobPosting
 
-* Job Posting - lookup to JobPosting
-
-
-* pro_recruiterassignedid
-
-
+  * pro_recruiterassignedid
 
 
 * **Interview**
 
-* Application - lookup to Application
+  * Application - lookup to Application
 
+  * Job Posting - lookup to JobPosting
 
-* Job Posting - lookup to JobPosting
+  * Recommend - Choice (Yes (0), No (1), and null (default) are the available values)
 
-
-* Recommend - Choice (Yes (0), No (1), and null (default) are the available values)
-
-
-* Person of Interest - Yes/No, No is the default value
-
-
+  * Person of Interest - Yes/No, No is the default value
 
 
 * **Referral**
 
-* Contact - lookup to Contact
+  * Contact - lookup to Contact
+  
+  * Referrer - lookup to SystemUser
 
-
-* Referrer - lookup to SystemUser
-
-
-* Job Posting - lookup to JobPosting
-
-
+  * Job Posting - lookup to JobPosting
 
 
 * **SystemUser**
 
-* Manager - lookup to SystemUser
+  * Manager - lookup to SystemUser
 
-
-* Time-Zone Offset
-
-
+  * Time-Zone Offset
 
 
 * **Recruiter**
 
-* Recruiter identifier
+  * Recruiter identifier
 
-
-* Recruiter name
-
-
-
+  * Recruiter name
 
 
 **Applications -**
@@ -197,8 +169,6 @@ The automated process must run weekly to assess all candidates. The process must
 * Each designation or certification adds one to the score.
 
 
-
-
 * All scoring elements must be recalculated when changes occur. You must assign the score to the Person of interest field.
 
 
@@ -249,7 +219,10 @@ The following design guidelines must be followed:
 
 ## Questions 
 
-## Q89
+## Q88
+
+![Q88](/dump-questions/question-images/proseware-inc/q88.png)
+
 **Question:**
 
 You need to store designations and certifications.
@@ -264,6 +237,8 @@ C. Create a new table that has an N:1 relationship with the Contact table.
 
 D. Create a new Choices column on the Contact table.
 
+
+### Answer
 **D. Create a new Choices column on the Contact table.**
 
 ---
@@ -314,7 +289,74 @@ While structurally possible in relational modeling, creating a full custom table
 * **C. Create a new table that has an N:1 relationship with the Contact table:**
 An N:1 relationship from a new table to Contact would represent a 1:N relationship from Contact to Certifications (one contact has multiple certification records). Like Option B, creating a custom child entity creates unnecessary database overhead compared to a native multi-select `Choices` column.
 
+Yes, exactly—a **Choices** column in Dataverse is indeed a **Multi-Select Choice** column (whereas a single-select column is simply called a **Choice** column).
+
+---
+
+### Can You Count Them Using Power Fx?
+
+**Yes.** In Power Fx, a multi-select Choices column is treated as a **table of records/options**, meaning you can evaluate it using standard table functions.
+
+The direct function to count the selected values is **`CountRows()`**.
+
+---
+
+### How to Count in Different Scenarios
+
+#### 1. In a Canvas App / Custom Page
+
+If you want to count how many certifications/designations are selected for the current Contact:
+
+```powerfx
+CountRows(ThisItem.cr123_DesignationsAndCertifications)
+
+```
+
+* If a candidate has 3 certifications selected, `CountRows(...)` returns `3`.
+* To add it directly to their score:
+```powerfx
+Set(varCandidateScore, varBaseScore + CountRows(ThisItem.cr123_DesignationsAndCertifications));
+
+```
+
+
+
+#### 2. In Dataverse Formula Columns (Power Fx in Dataverse)
+
+Formula columns support counting items in multi-select choices using `CountRows()`:
+
+```powerfx
+CountRows(cr123_designationsandcertifications)
+
+```
+
+---
+
+### How Scoring is Handled in This Case Study
+
+In the case study context:
+
+1. **The Rule:** *"Each designation or certification adds one to the score."*
+
+2. **The Execution Mechanism:**
+* The requirements specify: *"Any code required to calculate scores must be able to be run from a single point."* and *"Plug-ins must be used..."* / command button running logic.
+
+
+* If evaluated in a **C# Dataverse Plugin**: Multi-select Choices are retrieved as an `OptionSetValueCollection`. You simply read `.Count`:
+```csharp
+var certs = candidate.GetAttributeValue<OptionSetValueCollection>("cr123_designations");
+int certScore = certs != null ? certs.Count : 0;
+
+```
+
+
+* If evaluated via **Power Fx** (Formula Column, Low-code Plugin, or Command bar formula), `CountRows(cr123_designations)` evaluates the selection count cleanly.
+
+
 ## Q89
+
+![Q89](/dump-questions/question-images/proseware-inc/q89.png)
+
 Question:
 
 You need to prevent the field used by the PCF control from updating the record.   What are two possible ways to achieve the goal? Each correct answer presents a complete solution.   
@@ -325,6 +367,9 @@ A. Create a business rule to clear the field value.
 B. Make the field read-only.   
 C. Call the setSubmitMode('never') function on the field.   
 D. Disable existing event handlers on the field. 
+
+
+### Answer
 
 **B. Make the field read-only.**
 
@@ -372,6 +417,9 @@ Clearing the value resets the data to `null` on the form, which would prevent th
 The issue is caused by the PCF control updating its bound attribute value and the standard form save pipeline submitting dirty attributes, not by attached `OnChange` JavaScript event handlers. Disabling event handlers does not stop a dirty field from being submitted to the server during a save.
 
 ## Q90
+
+![Q90](/dump-questions/question-images/proseware-inc/q90.png)
+
 Question:
 
 You need to track referrals.
@@ -385,6 +433,9 @@ B. Create a new Referral table with required lookup columns to the Contact, Syst
 C. Add a second lookup column to SystemUser for manager referrals to the Application table.   
 
 D. Create a new Referral table with required lookup columns to the Contact, SystemUser, and JobPosting tables.
+
+
+### Answer
 
 **D. Create a new Referral table with required lookup columns to the Contact, SystemUser, and JobPosting tables.**
 
@@ -448,6 +499,8 @@ Looking at the specification under **Requirements. Historical Information Tracki
 
 ## Q160
 
+![Q160](/dump-questions/question-images/proseware-inc/q160.png)
+
 You need to configure the columns to store scores and totals.
 
 Which configurations should you use? To answer, drag the appropriate configurations to the correct columns. Each configuration may be used once, more than once, or not at all. You may need to drag the split bar between panes or scroll to view content.
@@ -470,6 +523,9 @@ Which configurations should you use? To answer, drag the appropriate configurati
 | --- | --- |
 | **Total Score** | [ Configuration ] |
 | **Number of designations and certifications** | [ Configuration ] |
+
+
+### Answer
 
 The correct mappings are:
 
@@ -599,6 +655,8 @@ Because it specifies a fixed count of 12 and explicitly mandates the **least amo
 
 ## Q161
 
+![Q161](/dump-questions/question-images/proseware-inc/q161.png)
+
 You create the following FetchXML query to determine the number of interviews where there are no recommendations for an applicant:
  
 ```xml
@@ -633,6 +691,9 @@ For each of the following statements, select Yes if the statement is true. Other
 | The query meets the requirements for retrieving the count of interviews without recommendations. | ◯ | ◯ |
 | You can modify the query to return counts of interviews with and without recommendations. | ◯ | ◯ |
 | The query allows scheduled interviews for job applications when there are no recommendations for the job applicant. | ◯ | ◯ |
+
+
+### Answer 
 
 The correct selections for the hot area are:
 
@@ -700,6 +761,9 @@ The FetchXML query in the prompt defines:
 
 
 ## Q250
+
+![Q250](/dump-questions/question-images/proseware-inc/q250.png)
+
 Configure the manifest elements for the PCF control that displays the local time without causing unnecessary record saves. Match each element in the **Answer Area** with the appropriate option:
 
 #### **Answer Area**
@@ -708,6 +772,9 @@ Configure the manifest elements for the PCF control that displays the local time
 | --- | --- |
 | **Property** | `[ Dropdown Selection ]`<br><br>• `of-type="Lookup.Simple"`<br><br>• `of-type="Whole.TimeZone"`<br><br>•`of-type="DateAndTime.DateAndTime"` |
 | **Type-Group** | `[ Dropdown Selection ]`<br><br>• `<type>Whole.None</type>`<br><br>• `<type>SingleLine.Text</type>`<br><br>• `<type>DateAndTime.DateAndTime</type>` |
+
+
+### Answer 
 
 The correct selections for the hot area are:
 
@@ -756,6 +823,8 @@ The correct selections for the hot area are:
 
 ## Q251
 
+![Q251](/dump-questions/question-images/proseware-inc/q251.png)
+
 You Need to resolve the issue with the new command button. What should you do? 
 
 A. Pass ExecutionContext to the function in the action definition
@@ -763,6 +832,7 @@ B. Pass the value SelectedControl to the function in the action definition
 C. Select the Pass execution context as first parameter option on the even registration form.
 D. Pass the value Primary Control to the function in the action definition. 
 
+### Answer
 
 The correct answer is **D. Pass the value PrimaryControl to the function in the action definition.**
 
@@ -803,6 +873,8 @@ The correct answer is **D. Pass the value PrimaryControl to the function in the 
 * That checkbox exists only in the **Form Properties** dialog for form lifecycle events (`OnLoad`, `OnSave`, `OnChange`). It is not applicable to Command Bar / Ribbon actions.
 
 ## Q252
+
+![Q252](/dump-questions/question-images/proseware-inc/q252.png)
 
 Configure ribbon display rules to control the visibility of the candidate scoring command button.
 
@@ -904,6 +976,9 @@ The Microsoft documentation clarifies that **`FormStateRule`** is the correct ch
 
 
 ## Q253
+
+![Q253](/dump-questions/question-images/proseware-inc/q253.png)
+
 You need to configure the PCF control to display team members for interview scheduling. Which two inputs should you use? *(Each correct answer presents part of the solution.)*
 
 * **A.** Identifier for the hiring manager
@@ -911,6 +986,9 @@ You need to configure the PCF control to display team members for interview sche
 * **C.** Identifier for the job posting
 * **D.** Time-zone offset for the hiring manager
 * **E.** Identifier for the job candidate
+
+
+### Answer
 
 The correct two answers are:
 
@@ -956,6 +1034,9 @@ The correct two answers are:
 
 
 ## Q301
+
+![Q301](/dump-questions/question-images/proseware-inc/q301.png)
+
 Here is a paraphrase of the question, options, and explanation from the image:
 
 ---
@@ -970,7 +1051,7 @@ Interviewers state that they are not receiving email alerts when interview recor
 * **B.** No plug-in is configured to execute upon the creation of an interview record.
 * **C.** The plug-in designated to sync the "Person of Interest" value from the Contact entity to the Interview entity failed to trigger.
 
----
+### Answer
 
 **Correct Answer:** **B. There is no plug-in registered to run when an interview record is created.**
 
@@ -1030,6 +1111,9 @@ If the pipeline failed and rolled back, the Interview record itself would fail t
 While this sounds plausible on the surface, that synchronization plug-in triggers when the **Contact** record's `Person of Interest` field is updated. In this scenario, the contact was **already** an existing person of interest, so no update happened on the Contact. The missing link is that the solution lacks a plug-in step on the **Create** of the `Interview` record to handle this scenario.
 
 ## Q302
+
+![Q302](/dump-questions/question-images/proseware-inc/q302.png)
+
 ### Question Context
 
 You develop the following code for the plug-in that sends email notifications to recruiters:
@@ -1068,6 +1152,9 @@ For each of the following statements, select Yes if the statement is true. Other
 | You can use data from the contact's name without explicitly retrieving the value from the fullname column.| ○ | ○ |
 | You can use the same plug-in to send notifications to interviewers.| ○ | ○ |
 | Recruiters only receive a single email notification per applicant.| ○ | ○ |
+
+
+### Answer
 
 The correct selections are:
 
@@ -1125,13 +1212,7 @@ foreach (var recruiter in recruiters.Entities)
 ## Q303
 ### Question
 
-• Recruiters report that the command button to score a candidate is not working. You debug the code and observe that the context input parameter is null.
-
-• The system does not support associating designations and certifications with candidates.
-
-• The value for the field used by the PCF control to display local time is saved to Microsoft Dataverse each time an active application record is opened.
-
-• Interviewers report that they do not receive email notifications when interview records are created for an existing person of interest.
+![Q303](/dump-questions/question-images/proseware-inc/q303.png)
 
 You need to implement scoring.
 
@@ -1161,6 +1242,9 @@ Which methods should you use? To answer, drag the appropriate methods to the cor
 | --- | --- |
 | Initiate process for all individuals | [                                              ] |
 | Calculate for a specific individual. | [                                              ] |
+
+
+### Answer
 
 The correct mappings are:
 

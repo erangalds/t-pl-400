@@ -4712,6 +4712,11 @@ Removing a component from an unmanaged solution only removes the reference/point
 Removing the field from the **form layout** only removes the UI control from the visual presentation. The lookup column and the underlying 1:N relationship still exist in the database metadata on TableB, meaning the dependency block remains intact.
 
 ## Q88
+
+![Q88](/dump-questions/question-images/proseware-inc/q88.png)
+
+### Answer
+
 **D. Create a new Choices column on the Contact table.**
 
 ---
@@ -4762,7 +4767,74 @@ While structurally possible in relational modeling, creating a full custom table
 * **C. Create a new table that has an N:1 relationship with the Contact table:**
 An N:1 relationship from a new table to Contact would represent a 1:N relationship from Contact to Certifications (one contact has multiple certification records). Like Option B, creating a custom child entity creates unnecessary database overhead compared to a native multi-select `Choices` column.
 
+Yes, exactly—a **Choices** column in Dataverse is indeed a **Multi-Select Choice** column (whereas a single-select column is simply called a **Choice** column).
+
+---
+
+### Can You Count Them Using Power Fx?
+
+**Yes.** In Power Fx, a multi-select Choices column is treated as a **table of records/options**, meaning you can evaluate it using standard table functions.
+
+The direct function to count the selected values is **`CountRows()`**.
+
+---
+
+### How to Count in Different Scenarios
+
+#### 1. In a Canvas App / Custom Page
+
+If you want to count how many certifications/designations are selected for the current Contact:
+
+```powerfx
+CountRows(ThisItem.cr123_DesignationsAndCertifications)
+
+```
+
+* If a candidate has 3 certifications selected, `CountRows(...)` returns `3`.
+* To add it directly to their score:
+```powerfx
+Set(varCandidateScore, varBaseScore + CountRows(ThisItem.cr123_DesignationsAndCertifications));
+
+```
+
+
+
+#### 2. In Dataverse Formula Columns (Power Fx in Dataverse)
+
+Formula columns support counting items in multi-select choices using `CountRows()`:
+
+```powerfx
+CountRows(cr123_designationsandcertifications)
+
+```
+
+---
+
+### How Scoring is Handled in This Case Study
+
+In the case study context:
+
+1. **The Rule:** *"Each designation or certification adds one to the score."*
+
+2. **The Execution Mechanism:**
+* The requirements specify: *"Any code required to calculate scores must be able to be run from a single point."* and *"Plug-ins must be used..."* / command button running logic.
+
+
+* If evaluated in a **C# Dataverse Plugin**: Multi-select Choices are retrieved as an `OptionSetValueCollection`. You simply read `.Count`:
+```csharp
+var certs = candidate.GetAttributeValue<OptionSetValueCollection>("cr123_designations");
+int certScore = certs != null ? certs.Count : 0;
+
+```
+
+
+* If evaluated via **Power Fx** (Formula Column, Low-code Plugin, or Command bar formula), `CountRows(cr123_designations)` evaluates the selection count cleanly.
+
 ## Q89
+
+![Q89](/dump-questions/question-images/proseware-inc/q89.png)
+
+### Answer
 **B. Make the field read-only.**
 
 **C. Call the setSubmitMode('never') function on the field.**
@@ -4809,6 +4881,11 @@ Clearing the value resets the data to `null` on the form, which would prevent th
 The issue is caused by the PCF control updating its bound attribute value and the standard form save pipeline submitting dirty attributes, not by attached `OnChange` JavaScript event handlers. Disabling event handlers does not stop a dirty field from being submitted to the server during a save.
 
 ## Q90
+
+![Q90](/dump-questions/question-images/proseware-inc/q90.png)
+
+### Answer
+
 **D. Create a new Referral table with required lookup columns to the Contact, SystemUser, and JobPosting tables.**
 
 ---
@@ -8629,6 +8706,10 @@ Components communicate data back to parent apps through custom properties. By cr
 Inside the component canvas, add a **Label** control, bind its `Text` property to the calculated count, and configure its formatting properties (such as `FontWeight = FontWeight.Bold` and bold `Color` formatting) to satisfy the requirement to display the issues in bold colors.
 
 ## Q160
+
+![Q160](/dump-questions/question-images/proseware-inc/q160.png)
+
+
 The correct mappings are:
 
 * **Total Score:** $\rightarrow$ **Whole number + code**
@@ -8662,8 +8743,6 @@ The score rules state:
 * The calculation aggregates data across multiple disparate tables (Interviews, Referrals, Designations/Certifications).
 
 
-
-
 * **Constraints that rule out Rollup fields:**
 * Standard Dataverse **Rollup fields** can only aggregate from a **single related child table** (1:N relationship) using basic aggregate functions (`COUNT`, `SUM`, `MIN`, `MAX`, `AVG`). A rollup column cannot combine data across multiple separate tables into one field.
 
@@ -8671,10 +8750,6 @@ The score rules state:
 * In addition, the prompt states: *"The process must run weekly... You must be able to perform scoring by selecting a command button on the contact form"* and *"Any code required to calculate scores must be able to be run from a single point."*
 
 * Because it combines disparate relationships, conditional additions and subtractions, and on-demand trigger execution via a command button, it must be computed via custom business logic (**code**, such as a shared C# plugin/action or Azure Function) and persisted to a numeric column.
-
-
-
-
 
 ---
 
@@ -8756,6 +8831,11 @@ $$\text{Number of designations and certifications} \rightarrow \textbf{Whole num
 Because it specifies a fixed count of 12 and explicitly mandates the **least amount of storage**, storing them locally on the record and summing them via a **Calculated Column** (`Whole number + calculation`) is the exact pattern the exam key targets.
 
 ## Q161
+
+![Q161](/dump-questions/question-images/proseware-inc/q161.png)
+
+### Answer
+
 The correct selections for the hot area are:
 
 1. **The query meets the requirements for retrieving the count of interviews without recommendations:** $\rightarrow$ **No**
@@ -13756,6 +13836,10 @@ function handleClassTypeSettings (executionContext) {
 
 
 ## Q250
+
+![Q250](/dump-questions/question-images/proseware-inc/q250.png)
+
+### Answer
 The correct selections for the hot area are:
 
 * **Property:** $\rightarrow$ **`of-type="DateAndTime.DateAndTime"`**
@@ -13801,6 +13885,11 @@ The correct selections for the hot area are:
 * Because this control specifically processes and displays local date/time data, the corresponding `<type>` element within the type-group is **`<type>DateAndTime.DateAndTime</type>`**.
 
 ## Q251
+
+![Q251](/dump-questions/question-images/proseware-inc/q251.png)
+
+### Answer
+
 The correct answer is **D. Pass the value PrimaryControl to the function in the action definition.**
 
 ---
@@ -13841,6 +13930,10 @@ The correct answer is **D. Pass the value PrimaryControl to the function in the 
 
 
 ## Q252
+
+![Q251](/dump-questions/question-images/proseware-inc/q252.png)
+
+### Answer
 The correct selections for the hot area are:
 
 * **Configure button visibility for recruiters:** $\rightarrow$ **`CustomRule`**
@@ -13927,6 +14020,11 @@ The Microsoft documentation clarifies that **`FormStateRule`** is the correct ch
 
 
 ## Q253
+
+![Q251](/dump-questions/question-images/proseware-inc/q253.png)
+
+
+### Answer
 The correct two answers are:
 
 * **A. Identifier for the hiring manager**
@@ -18826,6 +18924,8 @@ The scenario explicitly specifies that the app *"must authenticate using OAuth w
 ## Q349
 
 ![Q349](/dump-questions/question-images/northwind-traders/q349.png)
+
+### Answer
 
 The correct three actions in sequence are:
 
