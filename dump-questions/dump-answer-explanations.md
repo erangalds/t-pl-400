@@ -1477,6 +1477,12 @@ Both require writing custom code and low-level API operations, directly violatin
 
 
 ## Q28
+
+![Q28](/dump-questions/question-images/q1-100/q28.png)
+
+
+### Answer
+
 **B. Register a pre-image by using the Plug-in Registration Tool. Add the code to the plug-in to read the image from the PreEntityImages collection.**
 
 ---
@@ -1522,8 +1528,14 @@ Both require writing custom code and low-level API operations, directly violatin
 * **D. Add the code to the plug-in to query the data from Dataverse by using the API call based on the record ID:**
 * Making an explicit SDK retrieval call (`service.Retrieve(...)`) from inside the plug-in is an architectural anti-pattern for this scenario. It causes extra round-trip database queries and performance overhead, and in a pre-operation/post-operation transaction, it can result in dirty reads or locking issues compared to using a registered entity image.
 
+
+
+
 ## Q29
 
+![Q29](/dump-questions/question-images/q1-100/q29.png)
+
+### Answer
 **A. Yes**
 
 An evaluation of the requirements and the proposed solution indicates:
@@ -1551,7 +1563,15 @@ Therefore, implementing an OData v4 provider as the data source is a supported a
 
 **A. Yes**
 
+
+
+
 ## Q30
+
+![Q30](/dump-questions/question-images/q1-100/q30.png)
+
+
+### Answer
 
 **B. No**
 
@@ -1577,7 +1597,13 @@ Therefore, the proposed solution does not meet the goal.
 
 **B. No**
 
+
+
+
 ## Q31
+
+![Q31](/dump-questions/question-images/q1-100/q31.png)
+
 An evaluation of the technical requirements for virtual tables indicates:
 
 1. **Virtual Table Primary Key Constraints:**
@@ -1596,14 +1622,20 @@ An evaluation of the technical requirements for virtual tables indicates:
 * Using a table that has a GUID as its primary key satisfies a foundational architectural prerequisite for implementing virtual tables in Dataverse.
 
 
-
-
+### Answer
 
 Therefore, the proposed solution meets the stated goal.
 
 **A. Yes**
 
+
+
+
 ## Q32
+
+![Q32](/dump-questions/question-images/q1-100/q32.png)
+
+
 ### Recommended Sequence
 
 1. **`Entity account = (Entity)context.InputParameters["Target"];`**
@@ -1694,7 +1726,12 @@ Pre-images are only valid on `Update` and `Delete` operations. A `Create` operat
 The task is brand new and does not exist in the database yet. Calling `Update` without an existing record GUID will fail.
 
 
+
+
 ## Q33
+
+![Q33](/dump-questions/question-images/q1-100/q33.png)
+
 **B. NO**
 
 An evaluation of the requirements and the proposed solution indicates:
@@ -1719,7 +1756,15 @@ Therefore, the proposed solution does not meet the goal.
 
 **B. No**
 
+
+
+
 ## Q34
+
+![Q34](/dump-questions/question-images/q1-100/q34.png)
+
+### Answer
+
 **D. Custom Processing Step to None**
 
 ---
@@ -1761,7 +1806,14 @@ In Microsoft Dataverse, a **Custom API** allows developers to create custom acti
 * **C. Binding Type to Entity:**
 * `Binding Type` determines whether the API is unbound (global), bound to an `Entity`, or bound to an `EntityCollection`. It defines the API signature and target, not its extensibility or immutability.
 
+
+
+
 ## Q35
+
+
+![Q35](/dump-questions/question-images/q1-100/q35.png)
+
 The correct controls to evaluate are **A. timeline**, **B. quick view form**, and **C. iFrame**.
 
 The key provided at the bottom of the dump image (`BCD`) is a known error in third-party question banks.
