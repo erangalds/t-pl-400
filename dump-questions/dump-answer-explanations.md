@@ -15366,6 +15366,9 @@ To fix both parts of the URL, you need **two policies** (and each policy needs i
 
 
 ## Q257
+
+![Q257](/dump-questions/question-images/q201-300/q257.png)
+
 The correct selections for the hot area are:
 
 * **Website link to the current form:** $\rightarrow$ **`PageRule`**
@@ -15409,6 +15412,9 @@ The correct selections for the hot area are:
 
 
 ## Q258
+
+![Q258](/dump-questions/question-images/q201-300/q258.png)
+
 The correct answer is **B. Use UpdateRequest with the BypassCustomPluginExecution parameter and Execute method of the Organization service.**
 
 ---
@@ -15467,7 +15473,13 @@ service.Execute(updateRequest);
 * **D. Update the code of the new plug-in to use InputParameters of Plugin Execution Context:**
 * Because your plug-in is already in **post-operation**, modifying `InputParameters` on the current context does not update the database record or bypass secondary pipeline executions. (Modifying `InputParameters["Target"]` only alters data before it hits the database when running in **pre-operation** stage 20).
 
+
+
+
 ## Q259
+
+![Q259](/dump-questions/question-images/q201-300/q259.png)
+
 The correct answer is **D. Subgrid OnLoad**.
 
 ---
@@ -15508,6 +15520,9 @@ The correct answer is **D. Subgrid OnLoad**.
 
 
 ## Q260
+
+![Q260](/dump-questions/question-images/q201-300/q260.png)
+
 The correct answer is **C. Increment the PCF control version property in the manifest.xml file, and then reimport the solution from development to the production environment.**
 
 ---
@@ -15554,7 +15569,13 @@ The correct answer is **C. Increment the PCF control version property in the man
 * **D. Publish the PCF code component in the production environment:**
 * There is no standalone "Publish PCF component" action in production, and publishing will not invalidate the component cache without a version increment.
 
+
+
+
 ## Q261
+
+![Q261](/dump-questions/question-images/q201-300/q261.png)
+
 The correct selections for the hot area are:
 
 * **Statement 1:** *The code cancels the normal save operation of the form.* $\rightarrow$ **Yes**
@@ -15633,7 +15654,12 @@ The correct selections for the hot area are:
 * As a result, the form remains unsaved.
 
 
+
+
 ## Q262
+
+![alt text](/dump-questions/question-images/q201-300/q262.png)
+
 The correct answer is **A. Add a response property to the custom API.**
 
 ---
@@ -15840,6 +15866,9 @@ The policy template is just the behind-the-scenes engine that rewrites website U
 
 
 ## Q264
+
+![alt text](/dump-questions/question-images/q201-300/q264.png)
+
 The correct selections for the hot area are:
 
 * **Method:** $\rightarrow$ **`PATCH`**
@@ -15904,6 +15933,10 @@ Prefer: return=representation
 
 
 ## Q265
+
+![Q265](/dump-questions/question-images/q201-300/q265.png)
+
+
 The correct mappings for the requirements and capabilities are:
 
 * **Run logic when saving:** $\rightarrow$ **Client scripting**
@@ -16015,6 +16048,9 @@ If you were to assign **Power Fx** to the SQL Server requirement, you would be f
 
 
 ## Q266
+
+![Q266](image.png)
+
 The correct answer is **B. property**.
 
 ---
@@ -16064,6 +16100,10 @@ The correct answer is **B. property**.
 
 
 ## Q267
+
+![Q267](/dump-questions/question-images/q201-300/q267.png)
+
+
 The correct answer is **B. Canvas component**.
 
 ---
@@ -16112,6 +16152,10 @@ The correct answer is **B. Canvas component**.
 
 
 ## Q268
+
+![Q268](/dump-questions/question-images/q201-300/q268.png)
+
+
 The correct three actions in sequential order are:
 
 1. **Get the execution context passed to the function.**
@@ -16191,6 +16235,9 @@ function formatPhoneNumber(executionContext) {
 
 
 ## Q269
+
+![Q269](/dump-questions/question-images/q201-300/q269.png)
+
 The correct answer is **E. Disable form event handlers.**
 
 ---
@@ -16238,7 +16285,12 @@ The correct answer is **E. Disable form event handlers.**
 * Enabling offline capabilities adds local database caching and synchronization overhead; it is a deployment capability, not a diagnostic step for isolating script-related freezes.
 
 
+
+
 ## Q270
+
+![alt text](/dump-questions/question-images/q201-300/q270.png)
+
 The correct selections for the hot area are:
 
 * **Dropdown 1:** $\rightarrow$ **`Confirm`**
@@ -16322,6 +16374,9 @@ If(
 
 
 ## Q271
+
+![alt text](/dump-questions/question-images/q201-300/q271.png)
+
 The correct mappings are:
 
 * **Upsert to create and update records:** $\rightarrow$ **`If-None-Match: null`**
@@ -16419,6 +16474,10 @@ You control this using **HTTP Headers**:
 
 
 ## Q272
+
+![Q272](/dump-questions/question-images/q201-300/q272.png)
+
+
 The correct three actions are **A, D, and E**.
 
 ---
