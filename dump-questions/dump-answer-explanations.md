@@ -16506,6 +16506,9 @@ The correct three actions are **A, D, and E**.
 * **F (Deploy Azure B2B guest permissions):** Azure AD B2B is used for external user collaboration (human identities), not daemon/service-to-service API integrations.
 
 ## Q273
+
+![alt text](/dump-questions/question-images/q201-300/q273.png)
+
 The correct selections for each dropdown are:
 
 * **United States:** `0 0 11 * * 1-5`
@@ -16567,6 +16570,9 @@ Since 04:00 AM in Japan on a given day corresponds to 19:00 (7:00 PM) of the *pr
 
 
 ## Q274
+
+![Q274](/dump-questions/question-images/q201-300/q274.png)
+
 The correct matches for the **Answer Area** are:
 
 | Requirement | Component |
@@ -16630,6 +16636,10 @@ This refers to a legacy or lightweight website service that accepts a simple `us
 **Basic authentication**. It merely takes `username:password`, encodes it using standard Base64 (which is plain text encoding, **not** encryption), and sends it in the HTTP header. It is the textbook definition of a simple login mechanism that provides zero built-in encryption.
 
 ## Q275
+
+![Q275](/dump-questions/question-images/q201-300/q275.png)
+
+
 The correct matches for the **Answer Area** are:
 
 | Description | Stage |
@@ -16659,6 +16669,9 @@ The correct matches for the **Answer Area** are:
 
 
 ## Q276
+
+![Q276](/dump-questions/question-images/q201-300/q276.png)
+
 Here is a straightforward, plain-English breakdown of what this question is doing and why each statement is marked **Yes** or **No**.
 
 ---
@@ -16757,6 +16770,9 @@ Under either structural syntax analysis or token expiration analysis, the verdic
 
 
 ## Q277
+
+![Q277](/dump-questions/question-images/q201-300/q277.png)
+
 The correct selections for the expression are:
 
 1. **First dropdown (outer function):** `less`
@@ -16792,6 +16808,8 @@ To verify if the course date falls *within* the next 7 days, its tick value must
 `less(<CourseDateTicks>, <SevenDaysAheadTicks>)`.
 
 ## Q278
+![Q278](/dump-questions/question-images/q201-300/q278.png)
+
 The correct mappings for the plug-in stages are:
 
 * **Cancel a class if the student is over 15 years old:** `PreValidation`
@@ -16820,6 +16838,10 @@ The correct mappings for the plug-in stages are:
 * Running in **PostOperation** still participates in the same parent transaction (if registered synchronously), meaning related record operations remain transactional while having access to the fully committed target entity.
 
 ## Q279
+
+![Q279](/dump-questions/question-images/q201-300/q279.png)
+![alt text](/dump-questions/question-images/q201-300/q279.png)
+
 **Correct Answer:** **D. Client secret**
 
 ---
@@ -16840,6 +16862,9 @@ To allow external users to submit a survey on a public website without prompting
 
 
 ## Q280
+
+![Q280](/dump-questions/question-images/q201-300/q280.png)
+
 The correct three actions in sequence are:
 
 1. **Select Register New Web Hook.**
@@ -16859,6 +16884,10 @@ After the webhook is registered, you must register a step under it to define the
 
 
 ## Q281
+
+![alt text](/dump-questions/question-images/q201-300/q281.png)
+
+
 **Answer: C. OAuth 2.0**
 
 This is the same scenario as Question 279, but the answer choices are different. That changes the answer.
@@ -16880,6 +16909,9 @@ In Question 279 the option "Client secret" was available, which is the specific 
 I'm fairly confident in C, since it's the only choice that is a general mechanism and fits the scenario. The one real competitor is B, because certificate-based app authentication is technically valid, but the exam answer for this question is OAuth 2.0.
 
 ## Q282
+
+![alt text](/dump-questions/question-images/q201-300/q282.png)
+
 The correct mappings for the security options are:
 
 * **A user is not able to sign into a Power Apps app from home.** $\rightarrow$ **Conditional access**
@@ -16917,6 +16949,9 @@ The correct mappings for the security options are:
 
 
 ## Q283
+
+![Q283](/dump-questions/question-images/q201-300/q283.png)
+
 The correct selections for the expression are:
 
 1. **First dropdown:** `IsBlank`
@@ -16968,6 +17003,9 @@ The `AsType(RecordReference, TableName)` function **casts/converts** the generic
 
 
 ## Q284
+
+![Q284](/dump-questions/question-images/q201-300/q284.png)
+
 The correct selections for each service protection limit are:
 
 * **Number of requests:** **Number per user over a sliding window of time**
@@ -17001,6 +17039,10 @@ Microsoft Dataverse enforces three specific **Service Protection API Limits** to
 
 
 ## Q285
+
+![Q285](/dump-questions/question-images/q201-300/q285.png)
+
+
 **Correct Answer:** **D. Apply a connector policy template**
 
 ---
@@ -17028,7 +17070,11 @@ When working with custom connectors in Power Platform, **policy templates** are 
 * **C. Apply the Azure APIM parameter:** While an API could be exported from Azure API Management (APIM), there is no specific configuration called "Azure APIM parameter" in the Power Platform custom connector designer to handle this requirement. Power Platform natively provides **Connector policy templates** directly within the Custom Connector definition to manipulate and parameterize requests.
 
 
+
 ## Q286
+
+![alt text](/dump-questions/question-images/q201-300/q286.png)
+
 **Profiling a plug-in** means taking a **complete snapshot** of the exact environment and data present when that plug-in runs in Dataverse.
 
 Because Dataverse runs in the cloud, you cannot attach a live Visual Studio debugger directly to Microsoft's cloud servers. Profiling solves this by recording:
@@ -17087,6 +17133,9 @@ Attaching directly to the IIS worker process (`w3wp.exe`) is only possible on an
 
 
 ## Q287
+
+![Q287](/dump-questions/question-images/q201-300/q287.png)
+
 The correct three actions in sequence are:
 
 1. **Select Register New Web Hook.**
@@ -17121,6 +17170,9 @@ Once the webhook registration is saved, you right-click the webhook in PRT and c
 
 
 ## Q288
+
+![Q288](/dump-questions/question-images/q201-300/q288.png)
+
 **Correct Answer:** **A. Metadata diagram**
 
 ---
@@ -17147,6 +17199,9 @@ Once the webhook registration is saved, you right-click the webhook in PRT and c
 
 
 ## Q289
+
+![Q289](/dump-questions/question-images/q201-300/q289.png)
+
 The correct selections for each parameter are:
 
 * **message:** `associate`
@@ -17174,6 +17229,9 @@ In the Microsoft Dataverse event framework, the `Associate` and `Disassociate` m
 The requirement explicitly states: *"An error message must display if customers enter data incorrectly."* In Dataverse, only **synchronous** plug-ins run within the immediate pipeline execution and can surface an `InvalidPluginExecutionException` back to the caller/UI to prevent the save and display an error. Asynchronous plug-ins execute in the background via the Async Service, meaning they cannot block the action or display immediate interactive error messages to the user.
 
 ## Q290
+
+![Q290](/dump-questions/question-images/q201-300/q290.png)
+
 **Correct Answers:**
 
 * **A. Authentication model**
@@ -17214,6 +17272,9 @@ When building a custom connector in Microsoft Power Platform to connect to an ex
 
 
 ## Q291
+
+![Q291](/dump-questions/question-images/q201-300/q291.png)
+
 **Correct Answers:**
 
 * **B. Create a custom connector that uses the Azure Function API.**
@@ -17258,7 +17319,13 @@ To invoke an Azure Function from a Power Apps canvas app and retrieve customer d
 
 * **D. Create a custom connector that uses the JSON code:** A custom connector connects to an API endpoint (via an OpenAPI specification), not arbitrary backend JSON implementation code.
 
+
+
+
 ## Q292
+
+![Q292](/dump-questions/question-images/q201-300/q292.png)
+
 The correct selections for each setting are:
 
 * **Execution stage:** `PreValidation`
@@ -17291,6 +17358,9 @@ To halt execution, cancel the database submission, and present a readable error 
 
 
 ## Q293
+
+![Q293](/dump-questions/question-images/q201-300/q293.png)
+
 The correct mappings for the scenarios are:
 
 * **Remove a selection from being available without modifying existing records:** **Lookup**
@@ -17332,6 +17402,9 @@ The correct mappings for the scenarios are:
 
 
 ## Q294
+
+![Q294](/dump-questions/question-images/q201-300/q294.png)
+
 **Correct Answer:** **A. Plug-in profiler**
 
 ---
@@ -17355,7 +17428,11 @@ The correct mappings for the scenarios are:
 * **D. Plug-in Registration Tool:** Although the Plug-in Registration Tool (PRT) is the graphical host utility used to configure steps, the specific dedicated diagnostic tool/solution used to capture and enable the debugging workflow is the **Plug-in Profiler**.
 
 
+
 ## Q295
+
+![Q295](/dump-questions/question-images/q201-300/q295.png)
+
 The correct mappings are:
 
 * **Create a column:** **POST**
@@ -17396,6 +17473,9 @@ The correct mappings are:
 
 
 ## Q296
+
+![Q296](/dump-questions/question-images/q201-300/q296.png)
+
 The correct selections are:
 
 * **Statement 1:** *You can improve code performance by using the following code instead of retrieving individual fields: `new ColumnSet(true)*` $\rightarrow$ **No**
@@ -17440,7 +17520,12 @@ target["custom_field2"] = updatedValue;
 
 The platform will write the modified field to the database as part of the core operation without issuing a secondary `service.Update()` call.
 
+
+
 ## Q297
+
+![Q297](/dump-questions/question-images/q201-300/q297.png)
+
 The correct mappings are:
 
 * **Accounts receivable:** **OAuth 2.0**
@@ -17466,6 +17551,9 @@ The correct mappings are:
 
 
 ## Q298
+
+![Q298](/dump-questions/question-images/q201-300/q298.png)
+
 The correct selections are:
 
 * **Statement 1:** *The GenerateAccountNumber method runs if the plug-in step registration is changed to the PostOperation stage.* $\rightarrow$ **No**
@@ -17525,6 +17613,9 @@ causes the platform to automatically persist the modified values into the databa
 
 
 ## Q299
+
+![Q299](/dump-questions/question-images/q201-300/q299.png)
+
 **Correct Answer:** **D. PreOperation**
 
 ---
@@ -17550,6 +17641,9 @@ causes the platform to automatically persist the modified values into the databa
 
 
 ## Q300
+
+![Q300](/dump-questions/question-images/q201-300/q300.png)
+
 The correct selections for each scenario are:
 
 * **Enable connector to authenticate with Microsoft Azure Active Directory:** **Register Application and specify permissions**
