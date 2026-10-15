@@ -23615,6 +23615,8 @@ Under the **Registration form** section of the Bellows Sports case study:
 
 * **E. `formContext.data.isValid()`:** An evaluation method that returns a boolean (`true`/`false`) indicating whether all data validations on the form pass; it does not bind or trigger an event handler.
 
+
+
 ## Q402
 
 ![Q402](/dump-questions/question-images/adventure-works/q402.png)
