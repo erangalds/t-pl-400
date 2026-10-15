@@ -18055,6 +18055,10 @@ $$\text{New custom connector} \longrightarrow \text{Import an OpenAPI file (or U
 
 
 ## Q306
+
+![Q306](/dump-questions/question-images/q301-400/q306.png)
+
+
 The correct mappings are:
 
 * **Display an error message if there is no account associated with a quote and prevent changes to the quote:** **PreValidation**
@@ -18142,6 +18146,9 @@ Look under the **Web API** section:
 
 
 ## Q308
+
+![alt text](/dump-questions/question-images/q301-400/q308.png)
+
 **Correct Answers:**
 
 * **B. Return the first 5,000 records and use the @odata.nextLink in the response to return the remaining records.**
@@ -18173,7 +18180,14 @@ The `Row count` parameter (equivalent to `$top` in OData) in the List rows actio
 * **C. Create the query by using FetchXML and set the top parameter to 10,000:**
 In Dataverse FetchXML, the `top` attribute specifies the number of records to return, but it has a hard limit: **it cannot exceed 5,000 records**. Attempting to pass `top="10000"` is invalid and will fail or be truncated to 5,000. FetchXML requires explicit paging cookies to fetch records beyond 5,000.
 
+
+
+
 ## Q309
+
+![Q309](/dump-questions/question-images/q301-400/q309.png)
+
+
 **Correct Answer:** **D. Set the HTTP connection KeepAlive property to false.**
 
 ---
@@ -18208,7 +18222,12 @@ Running external web calls synchronously blocks the user interface and database 
 * **C. Register the plug-in step once for each web service request:**
 Plug-in steps are bound to Dataverse pipeline messages (e.g., `Create`, `Update`, `Delete` of a table), not individual external HTTP requests made inside the C# code.
 
+
+
 ## Q310
+
+![alt text](/dump-questions/question-images/q301-400/q310.png)
+
 The correct selections are:
 
 * **Plug-in deployment:** **Server**
@@ -18249,6 +18268,9 @@ The correct selections are:
 
 
 ## Q311
+
+![Q311](/dump-questions/question-images/city-power/q311.png)
+
 **Correct Answers:**
 
 * **C. pac pcf push**
@@ -18346,6 +18368,9 @@ The correct sequence of actions is:
 
 
 ## Q313
+
+![Q313](/dump-questions/question-images/q301-400/q313.png)
+
 ### Are we building an app with a UI using .NET?
 
 Not necessarily a UI app.
@@ -18414,6 +18439,9 @@ contact["interests"] = interests;
 ```
 
 ## Q314
+
+![Q314](/dump-questions/question-images/q301-400/q314.png)
+
 **Correct Answer:** **D. Set the HTTP connection timeout value explicitly to limit how long each connection can remain open.**
 
 ---
@@ -18450,6 +18478,8 @@ Plug-in steps in Dataverse are bound to database message events (such as `Create
 
 
 ## Q315
+![Q315](/dump-questions/question-images/q301-400/q315.png)
+
 The correct mappings are:
 
 * **Update using a REST API:** **Power Automate**
@@ -18484,6 +18514,9 @@ This displays a red alert icon and message inline directly next to the invalid c
 
 
 ## Q316
+
+![Q316](/dump-questions/question-images/q301-400/q316.png)
+
 **Correct Answer:** **B. Set the HTTP connection KeepAlive property to false.**
 
 ---
@@ -18516,6 +18549,9 @@ Plug-in classes are cached as **stateless singletons** shared across multiple co
 
 
 ## Q317
+
+![Q317](/dump-questions/question-images/q301-400/q317.png)
+
 **Correct Answer:** **C. Set the HTTP connection timeout value explicitly to limit how long each connection can remain open.**
 
 ---
@@ -18550,6 +18586,9 @@ Plug-in steps are registered against Dataverse messages (such as `Create`, `Upda
 
 
 ## Q318
+
+![Q318](/dump-questions/question-images/q301-400/q318.png)
+
 **Correct Answer:** **D. Power Apps (V2)**
 
 ---
@@ -18595,6 +18634,9 @@ Plug-in steps are registered against Dataverse messages (such as `Create`, `Upda
 
 
 ## Q319
+
+![Q319](/dump-questions/question-images/q301-400/q319.png)
+
 **Correct Answers:**
 
 * **A. Configure the send email step to run when the previous step fails.**
@@ -18645,6 +18687,9 @@ Disabling retries does not send an email notification. While retry policy config
 
 
 ## Q320
+
+![Q320](/dump-questions/question-images/q301-400/q320)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -18675,6 +18720,9 @@ Disabling retries does not send an email notification. While retry policy config
 Because registering a standard webhook and waiting for it to automatically retry does not satisfy the requirement, the solution does **not** meet the goal.
 
 ## Q321
+
+![Q321](/dump-questions/question-images/q301-400/q321.png)
+
 The correct selections are:
 
 * **Trigger type:** **When a Dataverse record is selected**
@@ -18713,6 +18761,9 @@ The correct selections are:
 
 
 ## Q322
+
+![Q322](/dump-questions/question-images/q301-400/q322.png)
+
 **Correct Answer:** **A. Initiate the iOrganizationService by passing the ID of a user with permissions to create rows in the custom table.**
 
 ---
@@ -18746,8 +18797,6 @@ IOrganizationService service = serviceFactory.CreateOrganizationService(userId);
 * Passing a specific `Guid` (the ID of a dedicated service account or user with the required permissions on the custom table) allows the plug-in to impersonate that privileged identity **only for that specific operation**.
 
 
-
-
 * This enforces **least privilege** because general users do not need to be granted direct table permissions, elevated administrative roles, or broad system privileges; only the isolated internal service call assumes elevated rights.
 
 
@@ -18769,6 +18818,9 @@ Setting the plug-in step to "Calling User" runs the entire plug-in under the per
 
 
 ## 323
+
+![Q323](/dump-questions/question-images/q301-400/q323.png)
+
 The correct four actions in sequence are:
 
 1. **Open the Plug-in Registration tool.**
@@ -18805,6 +18857,10 @@ The correct four actions in sequence are:
 
 
 ## Q324
+
+![Q324](/dump-questions/question-images/q301-400/q324.png)
+
+
 **Correct Answers:**
 
 * **B. Enable the Async OnSave app setting.**
@@ -18860,6 +18916,9 @@ Calling `preventDefault()` cancels the save operation for the current record, di
 
 
 ## Q325
+
+![Q325](/dump-questions/question-images/q301-400/q325.png)
+
 The correct selections are:
 
 * **OnLoad:** **TabStateChange events on tabs B and C**
@@ -18909,6 +18968,9 @@ The correct selections are:
 
 
 ## Q326
+
+![Q326](/dump-questions/question-images/q301-400/q326.png)
+
 The correct answers are:
 
 * **If the last name is an alternate key and there are no contacts with the last name Smith, the stored value of the last name is Smith:** **No**
@@ -18988,6 +19050,8 @@ In **both** create and update scenarios, the stored value of `lastname` will be 
 
 
 ## Q327
+![Q327](/dump-questions/question-images/q301-400/q327.png)
+
 The correct selections are:
 
 * **Outbound synchronous calls to a third-party Web API service:** **Webhook**
@@ -19041,6 +19105,9 @@ The correct selections are:
 
 
 ## Q328
+
+![Q328](/dump-questions/question-images/q301-400/q328.png)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -19073,6 +19140,9 @@ The correct selections are:
 
 
 ## Q329
+
+![Q329](image.png)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -19115,6 +19185,9 @@ The correct selections are:
 
 
 ## Q330
+
+![Q330](/dump-questions/question-images/q301-400/q330.png)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -19144,6 +19217,9 @@ Because a simple 5-minute timer polling window cannot prevent data loss during i
 
 
 ## Q331
+
+![Q331](/dump-questions/question-images/q301-400/q331.png)
+
 The correct five actions in sequence are:
 
 1. **Create an Azure Function app.**
@@ -19210,6 +19286,9 @@ Bind the registered webhook to the specific entity and message event (e.g., `Cre
 
 
 ## Q332
+
+![Q332](/dump-questions/question-images/q301-400/q332.png)
+
 The correct mappings are:
 
 * **Notify the infrastructure team when a new virtual machine is created:** **Event subscription**
@@ -19244,6 +19323,9 @@ To understand how Microsoft maps these requirements, consider the foundational c
 
 
 ## Q333
+
+![Q333](/dump-questions/question-images/q301-400/q333.png)
+
 The correct selections are:
 
 * **Ensure the BOMs can include necessary subcomponents:** **Configure entity relationships.**
@@ -19291,6 +19373,9 @@ The correct selections are:
 
 
 ## Q334
+
+![Q334](/dump-questions/question-images/q301-400/q334.png)
+
 **Correct Answer:** **A. Yes**
 
 ---
@@ -19324,6 +19409,9 @@ Because this architecture decouples the producer and consumer with a resilient b
 
 
 ## Q335
+
+![Q335](/dump-questions/question-images/q301-400/q335.png)
+
 The correct selections are:
 
 * **How is uniqueness enforced based on the definition of AlternateKey1?**
@@ -19361,6 +19449,10 @@ The correct selections are:
 
 
 ## Q336
+
+![alt text](/dump-questions/question-images/q301-400/q336v1.png)
+![alt text](/dump-questions/question-images/q301-400/q336v2.png)
+
 The correct selections are:
 
 * **The Patch statement populates the identity column when a record is created:** **No**
@@ -19438,6 +19530,9 @@ Patch(
 
 
 ## Q337
+
+![Q337](image.png)
+
 **Correct Answers:**
 
 * **B. Create an export profile that specifies all the entities that must be replicated.**
@@ -19488,6 +19583,10 @@ Server-based integration is used specifically for integrating Dynamics 365 with 
 
 
 ## Q338
+![Q338](/dump-questions/question-images/q301-400/q338v1.png)
+![Q338](/dump-questions/question-images/q301-400/q338v2.png)
+
+
 The correct selections are:
 
 * **The first call to ProcessAccountChanges at line 2 adds changes made to account records to the storage queues:** **Yes**
@@ -19512,16 +19611,11 @@ The correct selections are:
 * During this execution, lines 16–22 iterate through each item, construct a queue message, and invoke `changeQueue.AddMessage(changemessage)`. Therefore, records/changes are pushed to the queue during the first call.
 
 
-
-
 * **Line 4 (Subsequent Delta Call with returned `token`):**
 * Passing the previously saved `token` into `request.DataVersion` tells Dataverse to return only delta changes (records created, modified, or deleted) that occurred after that token was generated.
 
 
 * If changes occurred between line 2 and line 4, they are processed and pushed to `changeQueue` or `deleteQueue`. Hence, the second call also adds changes to the storage queues.
-
-
-
 
 
 ---
@@ -19532,12 +19626,8 @@ The correct selections are:
 * **Yes**. In the Dataverse Change Tracking API, the initial request returns all existing records as `NewOrUpdated` entries, which are added to `changeQueue` via line 21.
 
 
-
-
 * **Statement 2: "The second call to ProcessAccountChanges at line 4 adds changes made to account records to the storage queues."**
 * **Yes**. The second call passes the watermark token retrieved from line 2 and processes all subsequent delta modifications, adding any detected record changes to the respective queue.
-
-
 
 
 * **Statement 3: "The messages in changeQueue specify whether the accounts are new or updated."**
@@ -19716,7 +19806,52 @@ new CloudQueueMessage(newOrChangedEntity.Id.ToString());
 
 * Dataverse tracks net deltas between tokens. Because the record was both created and deleted within the same interval, the net result is zero. It is omitted from the delta response entirely, so nothing gets sent to `deleteQueue`.
 
+
+
+
 ## Q339
+
+![Q339](/dump-questions/question-images/q301-400/q339.png)
+
+**Correct Answer:** **A. ReceiveMode**
+
+---
+
+### Step-by-Step Breakdown
+
+#### 1. The Core Requirement
+
+* An integration reads messages from an **Azure Service Bus** queue.
+* When a message is retrieved, it **must be deleted as soon as it is read** (clearing the queue immediately without requiring a separate "complete" call).
+
+#### 2. Understanding Azure Service Bus Message Retrieval Modes
+
+Azure Service Bus provides two primary receive modes via the **`ReceiveMode`** enumeration:
+
+* **`ReceiveMode.ReceiveAndDelete`**:
+* In this single-phase mode, the Service Bus broker marks the message as consumed and **deletes it immediately** as soon as it sends the message to the client.
+* This is best for high-throughput or non-critical scenarios where at-most-once delivery is acceptable and you want the queue cleared right away.
+
+
+* **`ReceiveMode.PeekLock` (Default)**:
+* In this two-phase mode, the broker hides/locks the message for a set period.
+* The message is only deleted after the client successfully processes it and explicitly calls `.Complete()`. If the receiver crashes or fails, the lock expires and the message becomes visible again for another worker.
+
+
+
+Because controlling whether the message is deleted immediately upon reading is configured through **`ReceiveMode`** (`ReceiveAndDelete`), Option **A** is the correct choice.
+
+---
+
+### Why the Other Options are Incorrect
+
+* **B. BrokeredMessage:**
+`BrokeredMessage` is the class representing the data contract/payload and metadata of an individual message in the Service Bus SDK. It does not govern the queue receiver's consumption/deletion behavior.
+* **C. EventHubReceiver / D. EventHubSender:**
+These classes are part of **Azure Event Hubs**, which is an entirely separate event-streaming platform. Event Hubs do not have queues that delete individual messages once read; they use partition offsets over an immutable append-only log.
+
+
+
 **Correct Answer:** **A. ReceiveMode**
 
 ---
@@ -19755,45 +19890,11 @@ Because controlling whether the message is deleted immediately upon reading is c
 These classes are part of **Azure Event Hubs**, which is an entirely separate event-streaming platform. Event Hubs do not have queues that delete individual messages once read; they use partition offsets over an immutable append-only log.
 
 
-
-**Correct Answer:** **A. ReceiveMode**
-
----
-
-### Step-by-Step Breakdown
-
-#### 1. The Core Requirement
-
-* An integration reads messages from an **Azure Service Bus** queue.
-* When a message is retrieved, it **must be deleted as soon as it is read** (clearing the queue immediately without requiring a separate "complete" call).
-
-#### 2. Understanding Azure Service Bus Message Retrieval Modes
-
-Azure Service Bus provides two primary receive modes via the **`ReceiveMode`** enumeration:
-
-* **`ReceiveMode.ReceiveAndDelete`**:
-* In this single-phase mode, the Service Bus broker marks the message as consumed and **deletes it immediately** as soon as it sends the message to the client.
-* This is best for high-throughput or non-critical scenarios where at-most-once delivery is acceptable and you want the queue cleared right away.
-
-
-* **`ReceiveMode.PeekLock` (Default)**:
-* In this two-phase mode, the broker hides/locks the message for a set period.
-* The message is only deleted after the client successfully processes it and explicitly calls `.Complete()`. If the receiver crashes or fails, the lock expires and the message becomes visible again for another worker.
-
-
-
-Because controlling whether the message is deleted immediately upon reading is configured through **`ReceiveMode`** (`ReceiveAndDelete`), Option **A** is the correct choice.
-
----
-
-### Why the Other Options are Incorrect
-
-* **B. BrokeredMessage:**
-`BrokeredMessage` is the class representing the data contract/payload and metadata of an individual message in the Service Bus SDK. It does not govern the queue receiver's consumption/deletion behavior.
-* **C. EventHubReceiver / D. EventHubSender:**
-These classes are part of **Azure Event Hubs**, which is an entirely separate event-streaming platform. Event Hubs do not have queues that delete individual messages once read; they use partition offsets over an immutable append-only log.
 
 ## Q340
+
+![Q340](/dump-questions/question-images/q301-400/q340.png)
+
 **Correct Answers:**
 
 * **A. Use change tracking on the orders and run the integration to retrieve new orders and the orders that have the total amount changed in the last month.**
@@ -19858,6 +19959,9 @@ These classes are part of **Azure Event Hubs**, which is an entirely separate ev
 
 
 ## Q341
+
+![Q341](/dump-questions/question-images/q301-400/q341.png)
+
 **Correct Answer:** **B. RemoteExecutionContext in JSON format**
 
 ---
@@ -19900,6 +20004,9 @@ Dataverse webhooks do not post XML; the payload format is strictly JSON.
 
 
 ## Q342
+
+![Q342](/dump-questions/question-images/q301-400/q342.png)
+
 The correct selections are:
 
 * **Check the inventory table before retrieving the inventory record:** **IsOptimisticConcurrencyEnabled**
@@ -19965,6 +20072,9 @@ The correct selections are:
 
 
 ## Q343
+
+![Q343](/dump-questions/question-images/q301-400/q343.png)
+
 The correct selections are:
 
 * **Package:** **pac solution init --publisher-name Contoso --publisher-prefix cto** *(or **pac solution add-reference --path c:\downloads\mysamplecomponent**)*
@@ -19998,6 +20108,9 @@ In a complete multi-step manual packaging pipeline, you first run `pac solution 
 
 
 ## Q344
+
+![Q344](/dump-questions/question-images/q301-400/q344.png)
+
 **Correct Answer:** **A. RemoteExecutionContext**
 
 ---
@@ -20041,6 +20154,9 @@ The base interface implemented by the in-memory execution contexts (`IPluginExec
 
 
 ## Q345
+
+![Q345](/dump-questions/question-images/q301-400/q345.png)
+
 **Correct Answer:** **A. Prefer: odata.track-changes**
 
 ---
@@ -20081,7 +20197,12 @@ This request header is used when creating or updating entity records to specify 
 * **C. Prefer: odata.include-annotations:**
 This header controls which OData annotations and metadata are returned in the response payload (for example, formatted values via `Prefer: odata.include-annotations="OData.Community.Display.V1.FormattedValue"` or lookup targets via `Microsoft.Dynamics.CRM.lookuplogicalname`). It does not initiate or control change tracking.
 
+
+
 ## Q346
+
+![Q346](/dump-questions/question-images/q301-400/q346.png)
+
 The correct selections are:
 
 * **Move program data to the public website:** **Create a plug-in that uses a secure connection** *(or **Create an Azure Function app**)*
@@ -20114,6 +20235,9 @@ The correct selections are:
 
 
 ## Q347
+
+![Q347](/dump-questions/question-images/q301-400/q347.png)
+
 **Correct Answer:** **D. Client secret**
 
 ---
@@ -20157,6 +20281,9 @@ An Azure B2B guest account represents an external human user identity requiring 
 
 
 ## Q348
+
+![Q348](/dump-questions/question-images/q301-400/q348.png)
+
 **Correct Answers:**
 
 * **C. Microsoft Azure Active Directory Authentication Libraries (ADAL)**
@@ -20296,7 +20423,12 @@ The correct three actions in sequence are:
 * **Add an initialize variable step and set the value to the DataId from the Dataverse account record:**
 * Variables in Power Automate are typically initialized at the root/beginning of a flow. In standard action expressions, dynamic content like `DataId` from the trigger record can be passed directly as a parameter into the custom connector action without needing an intermediate variable initialization step.
 
+
+
 ## Q350
+
+![alt text](/dump-questions/question-images/q301-400/q350.png)
+
 **Correct Answer:** **C. X.509 certificate** (or **D. OAuth 2.0**, depending on Microsoft's specific question-variant key)
 
 ---
@@ -20345,7 +20477,12 @@ Conditional Access enforces access control policies (e.g., location, device comp
 * **B. Azure guest account:**
 A guest account (B2B collaboration) represents an external human identity that requires credentials and interactive authentication, violating the requirement that user credentials must not be required.
 
+
+
 ## Q351
+
+![Q351](/dump-questions/question-images/q301-400/q351.png)
+
 The correct selections are:
 
 * **The code performs the validation for any value of the account number:** **No**
@@ -20450,7 +20587,12 @@ throw new InvalidPluginExecutionException($"Record with Account Number '{account
 
 * The exception only mentions the duplicate `accountNumber` string value. It contains no count or information about how many duplicates exist.
 
+
+
 ## Q352
+
+![Q352](/dump-questions/question-images/q301-400/q352.png)
+
 **Correct Answer:** **A. Yes**
 
 ---
@@ -20490,6 +20632,9 @@ Because throwing an `InvalidPluginExecutionException` is the standard and suppor
 
 
 ## Q353
+
+![Q353](/dump-questions/question-images/q301-400/q353.png)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -20526,6 +20671,9 @@ Because throwing an `InvalidPluginExecutionException` is the standard and suppor
 
 
 ## Q354
+
+![Q354](/dump-questions/question-images/q301-400/q354.png)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -20568,6 +20716,9 @@ Because throwing an `InvalidPluginExecutionException` is the standard and suppor
 
 
 ## Q355
+
+![Q355](/dump-questions/question-images/q301-400/q355.png)
+
 **Correct Answer:** **B. No**
 
 ---
@@ -20600,6 +20751,9 @@ Because throwing an `InvalidPluginExecutionException` is the standard and suppor
 
 
 ## Q356
+
+![Q356](/dump-questions/question-images/q301-400/q356.png)
+
 **Correct Answers:**
 
 * **A. UpdateRequest**
@@ -20749,6 +20903,9 @@ Initializes a Dataverse solution project (`cdsproj`) used to package components 
 
 
 ## Q358
+
+![Q358](/dump-questions/question-images/q301-400/q358.png)
+
 The correct four actions in sequence are:
 
 1. **Create developer environments.**
@@ -20835,6 +20992,9 @@ The correct four actions in sequence are:
 
 
 ## Q359
+
+![Q359](/dump-questions/question-images/q301-400/q359.png)
+
 The correct four actions to perform in sequence (with allowed variations in ordering) are:
 
 1. **Add a role assignment to Key Vault** *(can also be performed immediately after creating the environment variable)*
@@ -20891,6 +21051,9 @@ Connection references bind flows and apps to connections at runtime, but the req
 
 
 ## Q360
+
+![Q360](/dump-questions/question-images/q301-400/q360.png)
+
 **Correct Answer:** **A. Plug-in secure configuration**
 
 ---
@@ -21028,6 +21191,9 @@ While plug-in secure configuration is the classic SDK approach evaluated in cert
 
 
 ## Q361
+
+![Q361](/dump-questions/question-images/q301-400/q361.png)
+
 The correct mappings are:
 
 * **Plug-in failure:** **Message is not sent and will not retry.**
@@ -21061,6 +21227,9 @@ The delivery attempt failed, so the **message is not sent and will retry continu
 
 
 ## Q362
+
+![Q362](/dump-questions/question-images/q301-400/q362.png)
+
 **Correct Answer:** **D. Set the HTTP connection timeout value explicitly to limit how long each connection can remain open.**
 
 ---
@@ -21107,6 +21276,10 @@ The delivery attempt failed, so the **message is not sent and will retry continu
 
 
 ## Q363
+
+![Q363](/dump-questions/question-images/q301-400/q363.png)
+
+
 **Correct Answer:** **B. No**
 
 ---
@@ -21156,6 +21329,9 @@ The delivery attempt failed, so the **message is not sent and will retry continu
 
 
 ## Q364
+
+![Q364](/dump-questions/question-images/q301-400/q364.png)
+
 **Correct Answer:** **A. Yes**
 
 ---
@@ -21192,6 +21368,9 @@ throw new InvalidPluginExecutionException(OperationStatus.Retry);
 
 
 ## Q365
+
+![Q365](/dump-questions/question-images/q301-400/q365.png)
+
 **Correct Answer:** **A. Yes**
 
 ---
@@ -21234,6 +21413,9 @@ Because this architecture reliably decouples the integration, enables automatic 
 
 
 ## Q366
+
+![Q366](/dump-questions/question-images/q301-400/q366.png)
+
 **Correct Answer:** **A. basic authentication**
 
 ---
@@ -21275,6 +21457,9 @@ Among the provided options, **basic authentication** is the only authentication 
 
 
 ## Q367
+
+![Q367](/dump-questions/question-images/q301-400/q367.png)
+
 **Correct Answers:**
 
 * **A. Send the BypassCustomPluginExecution as an optional parameter with the create request.**
@@ -21348,7 +21533,13 @@ crmServiceClient.BypassPluginExecution = true;
 * **B. Send the SuppressCallbackRegistrationExpanderJob as an optional parameter with the request:**
 * `SuppressCallbackRegistrationExpanderJob` is an internal parameter used to suppress asynchronous jobs that update callback registrations (typically associated with Power Automate automated flows triggered by Dataverse events), not for bypassing custom plug-ins.
 
+
+
 ## Q368
+
+![Q368](/dump-questions/question-images/q301-400/q368.png)
+
+
 **Correct Answer:** **A. basic authentication**
 
 ---
@@ -21397,6 +21588,9 @@ Therefore, **basic authentication** is the only selectable authentication method
 
 
 ## Q369
+
+![Q369](/dump-questions/question-images/q301-400/q369.png)
+
 **Correct Answer:** **D. Install the Field Service application in test.**
 
 ---
@@ -21447,6 +21641,10 @@ Therefore, **basic authentication** is the only selectable authentication method
 
 
 ## Q370
+
+
+![Q370](/dump-questions/question-images/q301-400/q370.png)
+
 **Correct Answer:** **D. generic OAuth authentication**
 
 ---
@@ -21495,6 +21693,9 @@ Among the listed choices, **generic OAuth authentication** is the only supported
 
 
 ## Q371
+
+![Q371](/dump-questions/question-images/q301-400/q371.png)
+
 **Correct Answer:** **A. IServiceEndpointNotificationService**
 
 ---
@@ -21558,6 +21759,9 @@ string response = cloudService.Execute(serviceEndpointReference, context);
 * Similar to `IWebHttpServiceEndpointPlugin`, this interface defines the WCF service contract implemented by an external listener application for one-way or two-way Service Bus relay contracts. It is not used inside the Dataverse plug-in to post notifications.
 
 ## Q372
+
+![Q372](/dump-questions/question-images/q301-400/q372.png)
+
 The correct feature mappings are:
 
 * **Create or update a record by using the primary value:** **UpsertRequest**
@@ -21684,6 +21888,9 @@ Both of those require building, compiling, and maintaining custom C# code. The p
 
 
 ## Q373
+![Q373](/dump-questions/question-images/q301-400/q373.png)
+
+
 **Correct Answer:** **A. Yes** (with notable caveats in practice)
 
 ---
@@ -21805,6 +22012,9 @@ Would you like to look at the differences between **Owner Teams** and **Access T
 
 
 ## Q374
+
+![Q374](/dump-questions/question-images/q301-400/q374.png)
+
 The correct four actions in sequence are:
 
 1. **Create a code component project**
@@ -21866,6 +22076,9 @@ This triggers Webpack in production/release mode to minify and optimize the Java
 
 
 ## Q375
+
+![Q375](/dump-questions/question-images/q301-400/q375.png)
+
 The correct four actions in sequence are:
 
 1. **Select a test suite**
@@ -21910,6 +22123,9 @@ Navigate to a fresh browser session (or private/incognito window), paste the cop
 
 
 ## Q376
+
+![Q376](image.png)
+
 The correct selections for each dropdown are:
 
 * **Debug the component in Microsoft Edge:** **F12 and select component**
@@ -21944,6 +22160,8 @@ When developing a Power Apps Component Framework (PCF) control, local testing an
 
 
 ## Q377
+
+![Q377](image.png)
 **Correct Answer:** **D. Add columns in each JavaScript file as a dependency.**
 
 ---
@@ -21992,6 +22210,9 @@ When developing a Power Apps Component Framework (PCF) control, local testing an
 
 
 ## Q378
+
+![Q378](/dump-questions/question-images/q301-400/q378.png)
+
 **Correct Answer:** **D. Add the Command Checker button to the page.**
 
 ---
@@ -22037,6 +22258,9 @@ When developing a Power Apps Component Framework (PCF) control, local testing an
 
 
 ## Q379
+
+![Q379](/dump-questions/question-images/q301-400/q379.png)
+
 **Correct Answer:** **D. Create a plug-in that uses the CalculateRollupFieldRequest method for the rollup field. Configure a step on the Create event for the policy entity for this plug-in.**
 
 ---
@@ -22101,7 +22325,12 @@ var response = (CalculateRollupFieldResponse)service.Execute(request);
 * **C. Create a plug-in that uses the update method for the rollup fields...:**
 * Rollup fields are platform-managed, read-only columns in the Dataverse schema. Direct programmatic `Update` calls targeting rollup attributes are blocked or overwritten by the rollup calculation engine. You must instruct the engine to compute it using `CalculateRollupFieldRequest`.
 
+
+
 ## Q380
+
+![Q380](/dump-questions/question-images/q301-400/q380.png)
+
 **Correct Answers:**
 
 * **B. Listen**
@@ -22182,6 +22411,9 @@ Would you like to explore how Azure role-based access control (Azure RBAC with M
 
 
 ## Q381
+
+![Q381](/dump-questions/question-images/q301-400/q381.png)
+
 The correct feature mappings are:
 
 * **Send required emails:** **Power Automate flow**
@@ -22238,6 +22470,9 @@ The correct feature mappings are:
 
 
 ## Q382
+
+![Q382](/dump-questions/question-images/q301-400/q382.png)
+
 The correct selections for each dropdown are:
 
 * **Who owns the connector?** **Contoso, Ltd.**
@@ -22293,6 +22528,9 @@ The correct selections for each dropdown are:
 
 
 ## Q383
+
+![Q383](/dump-questions/question-images/q301-400/q383.png)
+
 **Correct Answer:** **C. Turn on the Debug published app setting in the canvas app**
 
 ---
@@ -22339,6 +22577,9 @@ The correct selections for each dropdown are:
 
 
 ## Q384
+
+![Q384](/dump-questions/question-images/q301-400/q384.png)
+
 The correct role assignments based on the **principle of least privilege** are:
 
 * **Create customizations in the system:** **System Customizer only**
@@ -22386,6 +22627,9 @@ In Microsoft Dataverse, both roles share identical rights when it comes to custo
 
 
 ## Q385
+
+![Q385](/dump-questions/question-images/q301-400/q385.png)
+
 The correct stage mappings are:
 
 * **Mandatory drug screening is completed:** **PreValidation**
@@ -22435,6 +22679,8 @@ The Dataverse event execution pipeline processes plug-ins across distinct execut
 
 
 ## Q386
+![alt text](/dump-questions/question-images/q301-400/q386.png)
+
 Here is a simple, step-by-step breakdown of Question 386.
 
 ---
