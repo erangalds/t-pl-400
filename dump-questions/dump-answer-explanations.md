@@ -20280,7 +20280,7 @@ Microsoft 365 credentials represent interactive user logins (delegated permissio
 An Azure B2B guest account represents an external human user identity requiring an interactive sign-in flow and explicit licensing or authentication, violating the requirement for anonymous public submission without user credentials.
 
 
-## Q348
+## Q348 
 
 ![Q348](/dump-questions/question-images/q301-400/q348.png)
 

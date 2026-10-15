@@ -839,10 +839,6 @@ The policy template is just the behind-the-scenes engine that rewrites website U
 
 ### Question
 
-• A tester attempts to connect to the production instance of the Web API with a DataId that should return data. The tester receives an error stating that the remote name could not be resolved.
-
-• A missing component causes an error to occur when importing the solution that contains the Power Automate flow to update account records in a test environment.
-
 You need to configure security for the Azure Function and custom connector.
 
 Which security tool should you configure for each item? To answer, select the appropriate options in the answer area.
@@ -850,7 +846,6 @@ Which security tool should you configure for each item? To answer, select the ap
 **NOTE:** Each correct selection is worth one point.
 
 ---
-
 ### Answer Area
 
 | Item | Security |
@@ -999,10 +994,6 @@ $$\text{New custom connector} \longrightarrow \text{Import an OpenAPI file (or U
 ![Q307](/dump-questions/question-images/northwind-traders/q307.png)
 
 ### Question
-
-• A tester attempts to connect to the production instance of the Web API with a DataId that should return data. The tester receives an error stating that the remote name could not be resolved.
-
-• A missing component causes an error to occur when importing the solution that contains the Power Automate flow to update account records in a test environment.
 
 You need to determine the cause of the 404 error when connecting to the production instance of the Web API.
 
