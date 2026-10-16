@@ -3842,7 +3842,7 @@ The packaging workflow using the Power Platform CLI (`pac`) and MSBuild follows 
 
 ## Q67
 
-![Q67](/dump-questions/question-images/q1-100/q66.png)
+![Q67](/dump-questions/question-images/q1-100/q67.png)
 
 
 ### Answer
