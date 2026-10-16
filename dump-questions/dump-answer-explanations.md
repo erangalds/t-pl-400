@@ -4401,7 +4401,7 @@ The system recurring job frequency cannot be reduced below 1 hour in Dataverse, 
 
 ## Q75
 
-![Q75](image.png)
+![Q75](/dump-questions/question-images/q1-100/q75.png)
 
 
 ### Answer
@@ -4449,7 +4449,7 @@ The system recurring job frequency cannot be reduced below 1 hour in Dataverse, 
 
 ## Q76
 
-![Q76](image.png)
+![Q76](/dump-questions/question-images/q1-100/q76.png)
 
 **C. The web resources were not added to the solution before exporting.**
 
