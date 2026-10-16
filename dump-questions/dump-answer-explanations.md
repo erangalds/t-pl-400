@@ -9202,7 +9202,7 @@ $$\text{Patch}( \textit{DataSource}, \text{Defaults}( \textit{DataSource} ), \{ 
 
 ## Q156
 
-![Q156](image.png)
+![Q156](/dump-questions/question-images/q101-200/q156.png)
 
 
 The correct selections for the hot area are:
