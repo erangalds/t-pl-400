@@ -16049,7 +16049,7 @@ If you were to assign **Power Fx** to the SQL Server requirement, you would be f
 
 ## Q266
 
-![Q266](image.png)
+![Q266](/dump-questions/question-images/q201-300/q266.png)
 
 The correct answer is **B. property**.
 
