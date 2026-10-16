@@ -3295,7 +3295,7 @@ In Microsoft ALM and Dataverse deployment patterns, multi-solution and configura
 
 ## Q58
 
-![Q58](/dump-questions/question-images/q1-100/q57.png)
+![Q58](/dump-questions/question-images/q1-100/q58.png)
 
 ### Correct Answers
 
