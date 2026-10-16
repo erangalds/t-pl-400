@@ -9774,7 +9774,7 @@ In Dataverse ALM, there is a strict technical distinction between **Solution Com
 
 ## Q164
 
-![Q164](image.png)
+![Q164](/dump-questions/question-images/q101-200/q164.png)
 
 The correct answer is **C. Enable field security for the balance field and grant the customer service team read permissions.**
 
