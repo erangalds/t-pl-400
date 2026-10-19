@@ -4852,7 +4852,7 @@ Client-side scripting (`setVisible(false)`) is purely cosmetic UI obfuscation. T
 
 ## Q84
 
-![Q84](image.png)
+![Q84](/dump-questions/question-images/q1-100/q84.png)
 
 ### Correct Selections
 
@@ -16016,18 +16016,10 @@ Look at the four items and four capabilities:
 
 | Requirement | Available Choices | Why the pairing locks in |
 | --- | --- | --- |
-| **Run logic when saving** | Client scripting | `OnSave` form event requires JavaScript.
-
- |
-| **Render a consistent header** | Canvas components | Reusable UI components across custom pages.
-
- |
-| **Run a custom API** | Power Fx | Custom APIs can be invoked directly in Power Fx without writing custom JS request pipelines.
-
- |
-| **Display data from Azure SQL Server** | PCF control | Custom UI visualization component for external database data on model-driven surfaces.
-
- |
+| **Run logic when saving** | Client scripting | `OnSave` form event requires JavaScript.|
+| **Render a consistent header** | Canvas components | Reusable UI components across custom pages.|
+| **Run a custom API** | Power Fx | Custom APIs can be invoked directly in Power Fx without writing custom JS request pipelines.|
+| **Display data from Azure SQL Server** | PCF control | Custom UI visualization component for external database data on model-driven surfaces.|
 
 If you were to assign **Power Fx** to the SQL Server requirement, you would be forced to assign **Client scripting** to run the Custom API (which requires writing boilerplate `Xrm.WebApi.online.execute` code with structured request prototypes—violating the *"minimal development effort"* instruction).
 
@@ -18688,7 +18680,7 @@ Disabling retries does not send an email notification. While retry policy config
 
 ## Q320
 
-![Q320](/dump-questions/question-images/q301-400/q320)
+![Q320](/dump-questions/question-images/q301-400/q320.png)
 
 **Correct Answer:** **B. No**
 
@@ -19141,7 +19133,8 @@ The correct selections are:
 
 ## Q329
 
-![Q329](image.png)
+![Q329](/dump-questions/question-images/q301-400/q329.png)
+
 
 **Correct Answer:** **B. No**
 
@@ -19531,7 +19524,7 @@ Patch(
 
 ## Q337
 
-![Q337](image.png)
+![Q337](/dump-questions/question-images/q301-400/q337.png)
 
 **Correct Answers:**
 
@@ -22124,7 +22117,7 @@ Navigate to a fresh browser session (or private/incognito window), paste the cop
 
 ## Q376
 
-![Q376](image.png)
+![Q376](/dump-questions/question-images/q301-400/q376.png)
 
 The correct selections for each dropdown are:
 
@@ -22161,7 +22154,7 @@ When developing a Power Apps Component Framework (PCF) control, local testing an
 
 ## Q377
 
-![Q377](image.png)
+![Q377](/dump-questions/question-images/q301-400/q377.png)
 **Correct Answer:** **D. Add columns in each JavaScript file as a dependency.**
 
 ---
@@ -23404,6 +23397,9 @@ The Model-Driven App does **not** call the API on a timer by itself (model-drive
 
 
 ## Q398
+
+![Q398](/dump-questions/question-images/q301-400/q398.png)
+
 ### Which Case Study Is This Part Of?
 
 This question is a **standalone scenario question** (often categorized under the *Extend the platform / Azure API Management & Integration* domain of the PL-400 exam), rather than Bellows Sports or Northwind Electric Cars.
