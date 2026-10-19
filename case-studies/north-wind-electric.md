@@ -131,6 +131,197 @@ AV29     }
 AV30 );
 ```
 
+
+### Core Architecture & Business Requirements Summary
+
+The **Northwind Electric Cars** case study focuses on automating a three-stage sequential background verification process for ride-sharing driver candidates within a Model-Driven App:
+
+1. **Address Verification:** Real-time validation triggered from a form button.
+
+
+2. **Driving Record Verification:** Long-running check (>1 minute) executed automatically only after an address is verified and committed to Dataverse.
+
+
+3. **Background Check Verification:** Asynchronous, multi-stage process taking hours or days that requires recurring status polling.
+
+
+
+The core architectural requirements and challenges include:
+
+* **Overcoming Browser CORS & Same-Origin Policy:** All three third-party APIs have Cross-Origin Resource Sharing (CORS) disabled. Client-side browser JavaScript cannot call external REST endpoints directly without encountering `The Same Origin Policy disallows reading the remote resource`.
+
+
+* **Handling Non-Standard Legacy Endpoints:** The background check service is an older SOAP/WSDL API exposed via a raw IP address (not an FQDN) requiring an SSL client certificate (mTLS).
+
+
+* **Minimizing Operational API Costs:** Each external verification service charges per call. Logic must prevent redundant executions (e.g., verifying an address only when modified, checking driving records only once, and running checks only if predecessor stages pass).
+
+
+* **Delegating Maintenance to Business Users (HR):**
+* HR must update periodically expiring passwords for the driving record service without developer or deployment overhead.
+
+
+* HR must manage dynamic stage values without modifying Dataverse schema metadata (since IT performs all customizations).
+
+
+
+
+* **Environment Diagnostics (ALM):** Development requires code stepping and runtime variable inspection; Production strictly forbids debug solutions while requiring trace telemetry access.
+
+
+
+---
+
+### Core Technologies Matrix
+
+| Technology Domain | PL-400 Technical Concept | Application in Northwind Electric Cars |
+| --- | --- | --- |
+| **Server-Side Integration** | Custom Action / Custom API + Synchronous Plug-in | Invoking `northwind_ValidateAddress` from JavaScript to bypass browser CORS and return immediate validation results.
+
+ |
+| **Azure Services** | Azure Function (Facade/Bridge) | Connecting to a SOAP/WSDL endpoint using a raw IP address and client SSL certificates where custom connectors fail.
+
+ |
+| **Long-Running Automation** | Asynchronous Cloud Flow | Triggering the driving record check after the address validation field is saved to Dataverse to handle long (>1 min) response latencies.
+
+ |
+| **Custom Connectors** | Basic Auth & Connection Delegation | Wrapping the driving record OpenAPI document with **Basic** auth; prompting for credentials on first use so HR maintains the password.
+
+ |
+| **Data Modeling** | Lookup vs. Choice for User Maintenance | Modeling background check stages as a **Lookup** to a master table so non-customizer HR staff can update stages as business data.
+
+ |
+| **Integration Architecture** | Pull / Polling Pattern | Periodically querying Dataverse candidates and polling external background check status (hourly) via an **Update** operation.
+
+ |
+| **Client Scripting & UX** | `Xrm.WebApi.online.execute` & Command Bar | Passing the request object to `execute()`, handling `error.message`, and using **Enable Rules** with `onChange` field resets.
+
+ |
+| **ALM & Diagnostics** | Plug-in Profiler vs. Trace Log | Installing the **Plug-in Profiler** solution in Development; configuring **Enable trace log** in Production.
+
+ |
+
+---
+
+### How to Use These Technologies for the Scenario
+
+#### 1. Real-Time Address Validation & CORS Bypass
+
+* **Root Problem:** Directly invoking `fetch` or `XMLHttpRequest` in client JavaScript causes browser CORS failures because CORS is disabled on the vendor's server.
+
+
+* **Implementation:**
+1. Define a Dataverse **Custom Action / Custom API** named `northwind_ValidateAddress` with input string parameters (`Line1In`) and output parameters.
+
+
+2. Register a C# plug-in step **Synchronously** on the `northwind_ValidateAddress` message in the Post-Operation stage.
+
+
+3. The plug-in executes server-to-server outbound HTTP calls to the address vendor (immune to browser CORS), parses the formatted address, and sets output parameters.
+
+
+4. In `AddressVerificationAPI.js`, construct the request contract and pass the **request object** directly to `execute()`:
+
+
+```javascript
+var contoso_ValidateAddressRequest = {
+    Line1In: parameters.Line1In,
+    getMetadata: function () {
+        return {
+            boundParameter: null,
+            parameterTypes: { "Line1In": { "typeName": "Edm.String", "structuralProperty": 1 } },
+            operationType: 0,
+            operationName: "northwind_ValidateAddress"
+        };
+    }
+};
+
+// Line AV22: Pass the request object, NOT the string name
+Xrm.WebApi.online.execute(contoso_ValidateAddressRequest).then(
+    function success(result) { /* replace address on form */ },
+    function error(error) { /* Line AV28: display error.message */ }
+);
+
+```
+
+
+
+
+* **Command Bar Governance:**
+* Configure an **Enable Rule** on the ribbon button so it is enabled only when the address is marked unverified.
+
+
+* Attach an `onChange` client script/rule to the address fields that clears the verified indicator whenever any address attribute is modified, forcing re-verification.
+
+
+
+
+
+#### 2. Driving Record Verification (Long-Running REST Integration)
+
+* **Trigger Point:** The verification takes over a minute. It must execute **asynchronously after the candidate record is saved to Dataverse** (not while the user edits fields on screen, which avoids billing for unsaved/aborted forms).
+
+
+* **Flow & Connector Configuration:**
+1. Import the vendor's OpenAPI file to create a **Custom Connector**.
+
+
+2. Under the **Security** tab, choose **Basic** authentication (Username and Password).
+
+
+3. Select **Prompt when the connector is used for the 1st time**.
+
+
+4. **Share the custom connector** with the HR/talent team. When the periodic password expiration occurs, an HR member updates the credentials under their **Data > Connections** tab without altering workflows or requiring IT intervention.
+
+
+5. Build an automated **Cloud Flow** triggered on *When a row is added or modified* (filtered to when the address verification status changes to verified), which calls the connector and updates the driving check outcome (Approved/Rejected).
+
+
+
+
+
+#### 3. Background Check Verification (SOAP, Client Certificates, Raw IP)
+
+* **Handling Endpoint Incompatibilities:** Power Platform Custom Connectors and sandbox plug-ins cannot reliably connect directly to endpoints defined strictly by a **raw IP address** or require outbound client certificates (mTLS) with SOAP/WSDL contracts.
+
+
+* **Azure Function Facade:**
+* Deploy a .NET **Azure Function** configured with the vendor's SSL client certificate loaded into its TLS environment.
+
+
+* The Azure Function communicates with the SOAP service over the raw IP address and exposes a clean, secure REST interface to Power Platform.
+
+
+
+
+* **Recurring Hourly Polling:**
+* Because the external system does not publish webhooks, configure an automated **Pull** pattern.
+
+
+* Deploy an hourly scheduled Cloud Flow (or timer-triggered Azure Function) that queries candidates with incomplete background checks, fetches the latest stage using the submission ID, and performs a Dataverse **Update** on the candidate's stage fields.
+
+
+
+
+* **Stage Administration via Lookups:**
+* Because IT performs all system customizations, the ten dynamic stages must not be implemented as a metadata Choice/Picklist column.
+
+
+* Implement the stage field as a **Lookup** pointing to a custom `Background Check Stage` table. This allows HR staff to add, update, or rename stage records as operational business data directly within the Model-Driven App.
+
+
+
+
+
+#### 4. Environment Diagnostics & ALM Configuration
+
+* **Development Environment:** Install the **Plug-in Profiler** solution via the Plug-in Registration Tool. This allows capturing pipeline context profiles and replaying executions inside Visual Studio to step through lines of code and inspect variable values.
+
+
+* **Production Environment:** Do not install debug or profiler solutions. In System Settings / Power Platform Admin Center, set **Enable trace log** (Plug-in and custom workflow activity tracing) to *All* or *Exception* so operations teams can review runtime tracing entries written by `ITracingService.Trace()`.
+
+
 ## Q397
 
 ![Q397](/dump-questions/question-images/northwind-electric-cars/q397.png)

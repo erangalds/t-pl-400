@@ -187,8 +187,186 @@ The company has the following requirements for a reporting solution:
 * You deploy the customizations for the data model. Users report that the email address of the user who created the appointment is missing and that searches on the description information do not return any results.
 
 
+---
+
+### Core Architecture & Business Requirements Summary
+
+The **City Power & Light (Get Energy Fit)** case study focuses on modernizing a legacy field-service and energy subsidy process. The program replaces an Excel spreadsheet (**Planning Hub**) and a paper/React-based workflow with an integrated Power Platform solution.
+
+The critical architectural requirements and scenarios break down into six core pillars:
+
+1. **PII Security & Out-of-the-Box (OOB) Data Modeling:** Domestic customer records contain sensitive financial and identity details. Per the architectural constraint to prioritize OOB capabilities, individual customer data must leverage the standard **Contact** table rather than custom tables. Securing sensitive fields without blocking entire records requires **Column Security Profiles** (Field-Level Security).
+
+
+2. **Pro-Dev Component Modernization (PCF):** Field assessors operate tablets running iOS/Android. Their existing React app must be rebuilt as modular, reusable components using the **Power Apps Component Framework (PCF)**.
+
+
+3. **Application Lifecycle Management (ALM) & Component Deletion:** Moving changes from Development to Test/Production requires managed solution exports. Deleting an unwanted column in downstream environments requires deploying an **Upgrade** (as an "Update" is strictly additive and leaves deleted components orphaned).
+
+
+4. **Environment-Specific Configuration & Secrets:** The external REST Claim Submission Portal has separate test and production API endpoints. Deploying hardcoded endpoints to production caused test system pollution. Decoupling environment endpoints requires **Environment Variables**, while sensitive tokens (`Authentication: <key>`) require **Azure Key Vault**.
+
+
+5. **View Configuration & Relational Quick Find:** Model-driven views require columns from related records (e.g., retrieving the creator's email via the `Created By (User)` lookup under the **Related** tab). Enabling text search across non-primary fields requires explicitly adding columns (like `Description`) to **Find by table columns** in the Quick Find view.
+
+
+6. **Integration & Automated Approvals:** Replacing Excel with automated workflows requires standard connectors: **Dataverse** for CRUD/status tracking, **Approvals** for interactive Microsoft Teams review cards, and a **Custom Connector** using **API Key** authentication (shared with citizen makers) for claim uploads.
+
+
 
 ---
+
+### Core Technologies Matrix
+
+| Technology Domain | PL-400 Technical Concept | Application in City Power & Light |
+| --- | --- | --- |
+| **Dataverse Security** | Column-Level Security (CLS) | Protecting customer PII on the standard **Contact** table via **Column Security Profiles** for team leaders/managers.
+
+ |
+| **Power Platform CLI (`pac`)** | PCF Lifecycle Commands | Initializing React controls with `pac pcf init`, bumping manifest versions with `pac pcf version --strategy manifest`, and testing via `pac pcf push`.
+
+ |
+| **Azure Services** | Secret Management | Securely storing API authentication tokens and credentials in **Azure Key Vault**.
+
+ |
+| **ALM & Solutions** | Managed Solutions & Solution Actions | Exporting unmanaged solutions as **managed**, and using **Upgrade** to purge removed columns in Production.
+
+ |
+| **Application Configuration** | Environment Variables | Parameterizing REST endpoint URLs between Dev/Test and Production to prevent data landing in the test system.
+
+ |
+| **Model-Driven Views** | Quick Find & Related Entity Columns | Traversing lookup relationships (`Created By -> Email`) and adding search attributes to **Edit find table columns**.
+
+ |
+| **Cloud Flows** | Native Dataverse & Approvals Actions | Querying customer records via **Dataverse**, orchestrating Teams review via **Approvals**, and updating API statuses in **Dataverse**.
+
+ |
+| **Custom Connectors** | API Key in Header & Connector Sharing | Wrapping the Claim Submission Portal REST API with header-based API key auth (`Authentication: <token>`) and sharing it with citizen developers.
+
+ |
+
+---
+
+### How to Use These Technologies for the Scenario
+
+#### 1. Dataverse Schema & PII Protection
+
+* **Table Selection:** Leverage the standard **Contact** table to represent domestic customers.
+
+
+* **Securing Sensitive Fields:**
+1. Open the **Contact** table in the maker portal.
+
+
+2. Select and modify the specific PII column (e.g., financial info, ID number).
+
+
+3. Expand **Advanced options** and check **Enable column security**.
+
+
+4. Create a **Column Security Profile** granting `Read` permissions, and assign Team Leaders and Senior Managers (or their Azure AD security groups) to this profile.
+
+
+
+
+
+#### 2. Pro-Dev PCF Component Lifecycle
+
+Field assessors need a modular React-based UI on mobile tablets:
+
+* **Scaffolding:** Run `pac pcf init --namespace CityPower --name SuitabilityAssessment --template field --framework react` to generate the TypeScript/React scaffold.
+
+
+* **Inner-Loop Dev Deployment:** Use `pac pcf push --publisher-prefix dev` to build and test the component directly inside the Dataverse development sandbox without manual solution packaging.
+
+
+* **Fixing Cache & Version Issues:** When newly deployed code changes do not render on client devices due to browser/platform bundle caching, run:
+```bash
+pac pcf version --strategy manifest
+pac pcf push
+
+```
+
+
+Incrementing the version in `ControlManifest.Input.xml` forces Dataverse to bust the client cache and serve the new bundle.
+
+
+
+#### 3. Enterprise ALM & Managed Solution Deletions
+
+* **Environment Pipeline:** Never export as unmanaged for downstream deployment. Always export the unmanaged Development solution as **managed** for Test and Production.
+
+
+* **Purging Removed Columns:** When a column is removed in Dev and deployed to Production:
+* An **Update** import only applies additive changes; the removed column remains in Production.
+
+
+* Select **Upgrade** (or import as **Stage for Upgrade** followed by **Apply Upgrade**) to flatten solution patches and delete managed columns that no longer exist in the source solution.
+
+
+
+
+
+#### 4. Environment Variables & External Endpoint Routing
+
+* **Issue Resolution:** Hardcoding the Claim Submission Portal API endpoint inside components causes Production transactions to push data to the test system.
+
+
+* **Remediation:** Create an **Environment Variable** of type `String` (or `JSON`) within the solution. Define the default/Dev URL in the Development environment, and configure the target Production Claim Portal URL during managed solution import into Production. Store API keys/secrets securely in **Azure Key Vault**.
+
+
+
+#### 5. Model-Driven View & Quick Find Configuration
+
+* **Displaying Related User Email:**
+* Open the view designer for **Quick Find All Appointments**.
+
+
+* In the left **Table columns** pane, switch to the **Related** tab.
+
+
+* Expand the `Created By (User)` relationship and drag the `Primary Email` column onto the view grid.
+
+
+
+
+* **Enabling Description Search:**
+* In the right properties pane of the view designer, locate the **Find by...** section.
+
+
+* Click **Edit find table columns...**, select the **Description** column, and save/publish customizations to add it to the search index.
+
+
+
+
+
+#### 6. Power Automate Workflow & Custom Connector Configuration
+
+* **Automation Workflow Orchestration:**
+* **Trigger & Ingestion:** Use the **Dataverse** connector (*When an action is performed* or *When a row is modified* with status `Submit`) to trigger the flow and retrieve customer/improvement rows.
+
+
+* **Teams Approval:** Use the **Approvals** connector (*Start and wait for an approval*) targeting senior managers. This automatically generates interactive adaptive cards in Microsoft Teams.
+
+
+* **Status Logging:** Use the **Dataverse** connector (*Update a row*) with configured run-after branches (including 30-second delay retries) to record the API transmission status directly on the funding record.
+
+
+
+
+* **Custom Connector Setup:**
+1. Open Power Apps Maker Portal $\rightarrow$ **Custom Connectors** $\rightarrow$ **New custom connector from blank** (wizard).
+
+
+2. Under the **Security** tab, select **API Key** authentication.
+
+
+3. Set Parameter label to `Authentication`, Parameter name to `Authentication`, and Parameter location to `Header`.
+
+
+4. Save the connector and select **Share** to grant citizen developers access to build automated flows against the endpoint.
+
+
 ## Questions 
 
 ## Q36
@@ -284,7 +462,7 @@ B. view
 C. component library   
 D. form
 
-**C. component library**
+**A. component library**
 
 
 ### Answer 
@@ -304,29 +482,16 @@ The requirements for the **Suitability Assessment Tool** state:
 
 
 
-#### 1. Why a Component Library is the Solution
+#### 1. Why a Power App Component Framework (PCF) is the Solution
 
 * The requirement *"Must be optimized for use on tablet devices"* specifies building a **Canvas app** for the field assessors (who use iOS and Android tablet devices).
 
 
-* The requirement *"Must be developed by using modular components that can be used by other applications"* is the direct, standard definition of a **Canvas Component Library** in Power Apps.
+* The requirement *"Must be developed by using modular components that can be used by other applications"* is the direct, standard definition of a **PCF** in Power Apps.
 
 
-* Component libraries act as centralized, reusable repositories of low-code UI components across multiple canvas apps within a tenant or solution, satisfying the reusability requirement while staying within native, out-of-the-box Power Platform capabilities.
+* PCF Component libraries act as centralized, reusable repositories of low-code UI components across multiple canvas apps within a tenant or solution, satisfying the reusability requirement while staying within native, Platform capabilities.
 
-
-### Why the other options are incorrect
-
-* **A. Power App Component Framework (PCF) control:**
-* While PCF allows pro-developers to write code components using TypeScript and React, the business requirements explicitly state: *"The company requires out-of-the-box solutions, when possible."*
-
-* PCF controls are custom code components rather than an out-of-the-box modular canvas design feature.
-
-* **B. view:**
-* A view is simply a grid presentation mechanism for Dataverse tabular records, not an interactive application architecture or modular reusable UI unit.
-
-* **D. form:**
-* Standard Dataverse forms are tied to individual model-driven table records and cannot be modularly exported and shared across multiple independent applications in this manner.
 
 ## Q38
 

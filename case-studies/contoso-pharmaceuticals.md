@@ -89,6 +89,195 @@ The graphs must be interactive, and users must be able to drill down on any dime
 
 ---
 
+
+### Core Architecture & Business Requirements Summary
+
+The **Contoso Pharmaceuticals** case study focuses on implementing Dynamics 365 Sales and Finance to replace manual, paper-based, and fragmented processes (such as Excel drug lists and Cerner medical databases). The solution must be packaged as an ISV product sold to external pharmacies, locking components against customer modification while adhering to a strict constraint: **minimize custom code and custom connectors**.
+
+The primary requirements span five core architectural areas:
+
+1. **Commercial Distribution & Packaging (ALM):** The solution must be distributed to independent pharmacy instances without allowing modifications and ensuring error-free deployment. This requires **Managed Solutions** deployed via **Package Deployer**.
+
+
+2. **Multi-Tier Security & Least Privilege:**
+* Restricting access to granular field attributes (phone numbers in Accounts visible only to supervisors) requires **Field-Level Security (Column Security Profiles)**.
+
+
+* Enforcing user-owned data boundaries (sales reps accessing only their own records) relies on **Security Roles** with User-level access.
+
+
+* Creator/management rights are partitioned between **Environment Maker** (UserA), **System Administrator** (UserB), **System Customizer** (UserC), and **Basic User / Common Data Service User** (all general employees).
+
+
+
+
+3. **Data Modeling & Low-Code Calculated Fields:**
+* Validating entities relationally across tables (e.g., verifying a doctor on the customer record against an existing custom `Doctor` entity) requires a **Lookup** field.
+
+
+* The doctor's primary name on the `Doctor` record itself is standard **Text**.
+
+
+* Calculating future prescription refill dates dynamically without code is handled via **Calculated** columns.
+
+
+* Evaluating elapsed time for automation (triggering `Priority = 1` after 10 days) requires a calculated column utilizing **`DIFFINDAYS(Createdon, now())`**.
+
+
+
+
+4. **Interactive Reporting & Dashboards:** Charting orders by facility type (Research Facilities, Hospitals) and revenue thresholds ($>\$100,000$ and $<\$100,000$) requires adding the **Facility field** to the form and configuring **filter criteria on the Annual Revenue field** across underlying views.
+
+
+5. **Mobile Canvas Search Patterns:** Searching for pharmacy clients by name in a mobile app where multiple branch locations share the same name requires the Power Fx **`Filter`** function (which returns a multi-record table for a gallery) rather than `LookUp` (which returns only the first record).
+
+
+
+---
+
+### Core Technologies Matrix
+
+| Technology Domain | PL-400 Technical Concept | Application in Contoso Pharmaceuticals |
+| --- | --- | --- |
+| **Solution Packaging & ALM** | Managed Solutions & Package Deployer | Locking customizations from modification using **Managed Solutions**, and distributing solutions/data across separate tenant instances via **Package Deployer**.
+
+ |
+| **Dataverse Security** | Multi-Tier Security Hierarchy | Securing specific columns via **Field-Level Security**, scoping record ownership via **Security Roles**, and managing maker access via **Environment Security**.
+
+ |
+| **Out-of-the-Box (OOB) Roles** | Role Privilege Granularity | Assigning **Environment Maker** (UserA), **System Administrator** (UserB), **System Customizer** (UserC), and **Basic User** (end users).
+
+ |
+| **Calculated & Rollup Columns** | Low-Code Date Math | Computing future dates with `ADDDAYS` (prescription refill) and dynamic elapsed day counters with `DIFFINDAYS(Createdon, now())` (`Priority_Trigger`).
+
+ |
+| **Relational Data Modeling** | Foreign Keys vs. Scalar Columns | Implementing a **Lookup** column for doctor validation on customer records and a primary **Text** column on the `Doctor` table.
+
+ |
+| **Model-Driven Charting** | Views & Aggregations | Filtering annual revenue thresholds and exposing the **Facility** choice field on forms to power drill-down charts.
+
+ |
+| **Power Fx (Canvas Apps)** | Table-Valued Query Expressions | Using **`Filter`** over `LookUp` to return multiple matching pharmacy branches to a mobile gallery.
+
+ |
+
+---
+
+### How to Use These Technologies for the Scenario
+
+#### 1. ISV Application Distribution & Lifecycle Management
+
+* **Protecting Intellectual Property:** Export the core solution as a **Managed Solution**. Managed properties prevent external pharmacies from altering business logic, schemas, forms, or flows.
+
+
+* **Automating Tenant Deployments:** Instead of manually importing solution `.zip` files into every pharmacy's Dynamics 365 Sales instance, build an installer package using **Dynamics 365 Package Deployer**.
+
+
+* Package Deployer bundles one or more managed solutions, seed/configuration data (extracted with the Configuration Migration tool), and execution safety checks into an executable deployment pipeline.
+
+
+
+
+
+#### 2. Configuring Dataverse Security Mechanisms
+
+* **Field-Level Security (Column Security Profiles):**
+* Locate the `Telephone` attribute on the Account entity.
+
+
+* Enable **Column Security** on the column properties.
+
+
+* Create a **Column Security Profile** granting `Read` permissions and assign only the Supervisors group to it, ensuring general sales reps cannot view customer phone numbers.
+
+
+
+
+* **Record-Level Security (Security Roles):**
+* Configure the custom Sales Representative role with **User-level (Basic)** read and write depth on the `Account` and `Lead` entities to ensure reps only see records they own.
+
+
+
+
+* **Environment Roles:**
+* Assign **Environment Maker** to app builders who do not need data or admin access (UserA).
+
+
+* Assign **System Customizer** to users who must modify schema, tables, and roles without administering tenant resources (UserC).
+
+
+* Assign **System Administrator** to full platform owners who provision environments and manage licenses (UserB).
+
+
+* Assign **Basic User** to standard employees to enable running apps.
+
+
+
+
+
+#### 3. Low-Code Dataverse Modeling & Calculated Formulas
+
+* **Doctor Relational Integrity:**
+* Define a single line of **Text** for the primary name field in the custom `Doctor` entity.
+
+
+* On the customer (Account/Contact) entity, create a **Lookup** field pointing to the `Doctor` table to enforce validation against existing doctor records.
+
+
+
+
+* **Automated Refill Date Calculation:**
+* Create a **Calculated** column (`RefillDate`) of type *Date Only*.
+
+
+* Configure the action formula using built-in date math (e.g., `ADDDAYS(30, PrescriptionDate)`).
+
+
+
+
+* **Priority Trigger Elapsed Counter:**
+* Create a calculated column named `Priority_Trigger` of type *Whole Number*.
+
+
+* Set the formula to:
+
+$$\text{DIFFINDAYS(Createdon, now())}$$
+
+
+* A background cloud flow or business rule triggers when `Priority_Trigger >= 10`, setting the `Priority` column to `1`.
+
+
+
+
+
+#### 4. Model-Driven Charts & Analytics
+
+* **Form Schema Alignment:** Ensure the `Facility` field (Choice column: Retail Pharmacy, Wholesale Pharmacy, Research Facility, Hospital) is explicitly placed on the Account form.
+
+
+* **View Filters for Revenue Tiers:**
+* Create two distinct system views filtered by the `Annual Revenue` field: one with filter `Annual Revenue > 100,000` and another with `Annual Revenue <= 100,000`.
+
+
+* Build the four drill-down charts against these views and the `Facility` dimension to satisfy the interactive reporting requirement.
+
+
+
+
+
+#### 5. Mobile Search Pattern Implementation
+
+* In the mobile Canvas app, bind the search gallery `Items` property to a **`Filter`** expression:
+```powerappsfl
+Filter(Pharmacies, StartsWith(Name, SearchInput.Text))
+
+```
+
+
+* Do not use `LookUp`, which short-circuits on the first record encountered and drops duplicate pharmacy brand names located at different addresses.
+
+
+
 ## Questions:
 
 ## Q25

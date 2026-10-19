@@ -117,6 +117,193 @@ Northwind Traders uses Microsoft Dynamics 365 Sales to manage its sales process.
 
 
 
+### Core Architecture & Business Requirements Summary
+
+The **Northwind Traders** case study focuses on integrating an external .NET RESTful Web API (hosted on an Azure Function) with Microsoft Dataverse to enrich customer `Account` records using data stored in an Azure SQL Database.
+
+The primary business considerations and architectural challenges break down into five core pillars:
+
+1. **Application Lifecycle Management (ALM) & Solution Dependencies:** The company maintains three environments (Development, Test, Production). Custom connectors used by automated flows must be packaged directly into solutions; omitting the custom connector from the solution causes dependency failures on import into Test. Furthermore, endpoints cannot be hardcoded and must vary dynamically across environments.
+
+
+2. **Custom Connector Configuration & Dynamic Routing:** The Web API URL follows a dynamic pattern: `https://dataservice-[ENVIRONMENTNAME].azurewebsites.net/enrich/[DATAID]`. Incorporating the environment name and record ID dynamically requires **Custom Connector Policy Templates** (`Set host URL` and `Route request`).
+
+
+3. **Auditing & Enterprise Security Delegation:** The Azure Function Web API is secured with **Microsoft Entra ID (Azure Active Directory)**, and the custom connector uses **OAuth 2.0** so users authenticate as themselves for auditing. However, because a synchronous plug-in can reassign newly created accounts to other owners, background flow updates to Dataverse must execute under a **Service Principal** (Application User) to prevent permission failures for researchers who no longer own the record.
+
+
+4. **Resilient Automated Batch Processing:** Power Automate cloud flows update accounts whenever `new_dataid` is populated or modified. The trigger uses OData row filtering (`new_dataid ne null`). Because the API returns `404 Not Found` when a `DataId` lacks research data, the flow must handle status codes gracefully without terminating or failing downstream jobs.
+
+
+5. **Logic Encapsulation & Query Reusability:** Researchers frequently execute identical, complex, parameterized Dataverse queries across multiple flows. To eliminate manual duplication, avoid errors, and maintain centralized governance, this query logic is encapsulated inside a **Custom Process Action** that executes a **Custom Workflow Activity (CWA)**, called dynamically via the Dataverse connector.
+
+
+
+---
+
+### Core Technologies Matrix
+
+| Technology Domain | PL-400 Technical Concept | Application in Northwind Traders |
+| --- | --- | --- |
+| **Custom Connectors** | Low-Code Creation & OpenAPI | Creating the connector by adding an **OpenAPI definition** in Azure and selecting **Import an OpenAPI file** in Power Apps.
+
+ |
+| **Connector Policy Templates** | URL Rewriting & Parameter Injection | Using `Set host URL` for `EnvironmentName` and `Route request` for `DataId` path routing.
+
+ |
+| **Connector UX & Accessibility** | Field Descriptions & Metadata | Providing user hints for `DataId` by editing the **description in the UI** or adding `description`/`x-ms-summary` in the **OpenAPI document**.
+
+ |
+| **Identity & Authentication** | Delegated vs. App-Only Security | Protecting the Azure Function with **Entra ID** + **OAuth 2.0**; updating reassigned Dataverse accounts via a **Service Principal** connection.
+
+ |
+| **Cloud Flow Triggers & Logic** | OData Filtering & Run-After Handling | Triggering on Change Type **Added or Modified** with row filter **`new_dataid ne null`**; inspecting `response code == 200` to avoid 404 failures.
+
+ |
+| **Process Encapsulation** | Custom Process Actions & CWAs | Encapsulating reusable parameterized queries inside a **Custom Process Action** powered by a **Custom Workflow Activity**.
+
+ |
+| **Solution Architecture & ALM** | Dependency Management | Resolving solution import errors by including the **Custom Connector** component alongside dependent flows.
+
+ |
+| **Application Configuration** | Environment Variables | Using **Environment Variables** to pass the active environment name to custom connectors across Dev, Test, and Prod.
+
+ |
+
+---
+
+### How to Use These Technologies for the Scenario
+
+#### 1. Custom Connector Setup & Dynamic URL Routing
+
+* **Low-Code Definition Generation:**
+1. In the Azure Function App settings, enable the built-in **API definition (OpenAPI / Swagger)** to expose the API contract.
+
+
+2. In Power Apps Maker Portal $\rightarrow$ **Custom Connectors**, select **Import an OpenAPI file** (or URL).
+
+
+
+
+* **Incorporating Environment Name and DataId without Hardcoding:**
+The target endpoint is `https://dataservice-[ENVIRONMENTNAME].azurewebsites.net/enrich/[DATAID]`. Use **Policy Templates** inside the connector builder:
+
+
+1. *Host Customization:* Add a policy using the **Set host URL** template, setting the subdomain/host to:
+```text
+dataservice-@connectionParameters('EnvironmentName')
+
+```
+
+
+*(The dynamic environment value is supplied via an **Environment Variable** bound to the connection parameter)*.
+
+
+2. *Path Routing:* Add a second policy using the **Route request** template, setting the URL path template to:
+```text
+enrich/@queryParameters('DataId')
+
+```
+
+
+
+
+* **Providing Visual Field Hints:**
+To ensure non-developers understand what to input into the `DataId` parameter box, either update the parameter **Description** in the Custom Connector UI or extend the OpenAPI definition directly by setting `description` and `x-ms-summary` on the `DataId` path parameter.
+
+
+
+#### 2. Authentication & Identity Management
+
+* **Azure Function Endpoint:** Configure authentication to use **Azure Active Directory (Microsoft Entra ID)**.
+
+
+* **Custom Connector Security:** Configure the security type to **OAuth 2.0** with Azure Active Directory as the identity provider, enabling users to access data as themselves to maintain audit trails.
+
+
+* **Dataverse Service Principal Connection:**
+* When a researcher creates an account, a synchronous plug-in can reassign the record to another owner.
+
+
+* If the automated Power Automate flow updates the account using an interactive user connection, the operation fails because researchers only have rights to update records they own.
+
+
+* Configure the **Update a row** action's Dataverse connection using a **Service Principal** tied to the environment's Application User, guaranteeing the enrichment update succeeds regardless of record ownership.
+
+
+
+
+
+#### 3. Power Automate Cloud Flow Implementation
+
+* **Trigger Configuration:**
+* Trigger: **When a row is added, modified or deleted** (Dataverse connector).
+
+
+* Change Type: **Added or Modified** (catches new records with data IDs and existing records updated with data IDs later).
+
+
+* Filter rows: **`new_dataid ne null`** (prevents the flow from firing on unresearched accounts).
+
+
+
+
+* **Resilient API Handling Pattern:**
+* Per API design, if an account's data is not found in the Azure SQL Database, the Web API returns a `404 Not Found`.
+
+
+* To satisfy the requirement that errors do not cause downstream failures:
+
+
+1. Call the custom connector action.
+
+
+2. Add an **Initialize variable** action to capture the HTTP response code returned by the custom connector.
+
+
+3. Add a **Condition** action checking: `variable equals 200`.
+
+
+4. In the *If yes* branch, add a Dataverse **Update a row** action to write the enrichment data to the account.
+
+
+5. Leave the *If no* branch empty (or log an informational note), preventing a 404 from terminating the flow with a Failed state.
+
+
+
+
+
+
+
+#### 4. Reusable Parameterized Queries Architecture
+
+* **The Problem:** Researchers repeatedly construct identical multi-step Dataverse queries across different flows, altering only the query parameters (e.g., date ranges, priorities, types).
+
+
+* **Implementation:**
+1. Build a C# **Custom Workflow Activity (CWA)** compiled into an assembly that executes the parameterized Dataverse query logic.
+
+
+2. In Dataverse, create a **Custom Process Action** and embed the Custom Workflow Activity as an internal step.
+
+
+3. Define formal **Input Parameters** on the Action corresponding to the dynamic query criteria.
+
+
+4. In Power Automate, invoke the process using the Dataverse connector's **Perform an unbound action** (or *Perform a bound action*). Power Automate dynamically renders the action's defined input parameters, allowing any researcher to reuse the logic without code duplication.
+
+
+
+
+
+#### 5. ALM & Diagnostics
+
+* **Resolving Solution Import Failures:** If deploying a solution containing the enrichment flow fails in downstream environments due to a missing dependency, add the **Custom Connector** component into the solution package before export.
+
+
+* **Troubleshooting DNS Failures:** If a tester encounters *"remote name could not be resolved"*, the error indicates a host/DNS failure (such as an invalid `[ENVIRONMENTNAME]` prefix in the dynamic URL), whereas a `404` status code indicates that the host was found but the service lacked data for the requested `DataId`.
+
+
 ## Questions
 
 
