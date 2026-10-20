@@ -76,6 +76,131 @@ When someone performs an action in Dataverse, the request passes through the **E
 
 ---
 
+
+In Microsoft Dataverse, operations like `Create`, `Update`, `Delete`, and `Retrieve` are referred to as **Messages** (or requests), while the pipeline points where plug-in logic executes are called **Stages**.
+
+### Direct Answer: `Create` in the Pre-Operation Stage
+
+A plug-in registered on the `Create` message in the **Pre-Operation stage (Stage 20) is strictly Synchronous only**.
+
+You cannot register an asynchronous step in Stage 20. In Dataverse, **asynchronous plug-in execution is only supported in the Post-Operation stage (Stage 40)**.
+
+---
+
+### Pipeline Stages & Execution Modes
+
+| Stage Number | Stage Name | Supported Execution Mode | Notes / Why |
+| --- | --- | --- | --- |
+| **Stage 10** | **Pre-Validation** | **Synchronous Only** | Runs *before* the database transaction begins. Executes immediately to validate parameters or permissions before resources are committed. |
+| **Stage 20** | **Pre-Operation** | **Synchronous Only** | Runs *inside* the database transaction, right before the engine writes to the database. It must be synchronous so any modifications you make to the target record are written to the database in the same transaction. |
+| **Stage 30** | **MainOperation** | Internal Only (Synchronous) | Reserved for Dataverse internal platform services (executing the core SQL create/update/delete/select logic). Custom plug-ins cannot be registered here. |
+| **Stage 40** | **Post-Operation** | **Both (Synchronous & Asynchronous)** | Runs after the database transaction has committed (for async) or just before completion within the transaction (for sync). This is the **only** stage where asynchronous execution can be chosen. |
+
+---
+
+### Available Messages (Functions) Across Stages
+
+Dataverse supports both standard CRUD messages and specialized/custom messages:
+
+#### 1. Core CRUD Messages
+
+* **`Create`**:
+* *Stage 10 (Sync):* Verify business rules, external API checks, or validation before touching the DB.
+* *Stage 20 (Sync):* Modify fields on `Target` (e.g., auto-calculate numbers, populate lookup fields).
+* *Stage 40 (Sync or Async):* Create related child records, notify external webhooks, or log history.
+
+
+* **`Update`**:
+* *Stage 10 (Sync):* Check if fields being updated violate rules.
+* *Stage 20 (Sync):* Alter the `Target` payload before the SQL `UPDATE` statement executes.
+* *Stage 40 (Sync or Async):* Trigger secondary updates on related records, process workflows, or synchronize data downstream.
+
+
+* **`Delete`**:
+* *Stage 10 (Sync):* Prevent deletion if child constraints exist outside cascade rules.
+* *Stage 20 (Sync):* Read record details before the actual database row is removed.
+* *Stage 40 (Sync or Async):* Perform external clean-up tasks or logging.
+
+
+* **`Retrieve` & `RetrieveMultiple**`:
+* Available in **Stage 10, Stage 20, and Stage 40**, but **strictly Synchronous only**.
+* Query operations cannot be asynchronous because the calling client requires an immediate response with the retrieved data. In Stage 20 or 40, they are frequently used for virtual entities, custom masking, or record-level filtering.
+
+
+
+#### 2. Advanced / Relational Messages
+
+* **`Associate` / `Disassociate**`: Triggered when linking N:N or 1:N records (Stage 10, 20, 40 Sync; Stage 40 Async).
+* **`SetState` / `SetStateDynamicEntity**`: Triggered on active/inactive status changes (typically handled via `Update` on modern Dataverse versions).
+* **`Custom API` / `Custom Process Action**`: User-defined messages exposed to the pipeline. Can execute in Stages 10, 20, and 40 (with Stage 40 supporting both sync and async).
+
+---
+
+### Entity Images in Dataverse Plug-ins
+
+When an operation triggers a plug-in, the execution context’s `InputParameters["Target"]` contains **only the fields submitted with that specific request**. For an `Update` message, if a user changes only the *Phone Number*, the `Target` contains only the *Record ID* and the *Phone Number*—every other column on that row is absent.
+
+**Entity Images** are point-in-time snapshots of specified record columns automatically captured by the Dataverse execution pipeline. They allow you to inspect the record’s state without issuing expensive and redundant `IOrganizationService.Retrieve` database round-trips.
+
+---
+
+### The Two Types of Entity Images
+
+1. **Pre-Entity Image (`PreImage`):**
+* **What it is:** A snapshot of selected record columns **before** the core database engine executes the requested operation.
+* **Access in Code:** `context.PreEntityImages["ImageAlias"]`
+* **Primary Uses:**
+* Comparing an old value against a new value (e.g., verifying if an *Account Credit Limit* was decreased).
+* Reading record details during a `Delete` message before the row is permanently removed from the database.
+
+
+
+
+2. **Post-Entity Image (`PostImage`):**
+* **What it is:** A snapshot of selected record columns **after** the core database engine executes the operation and commits the write to the database.
+* **Access in Code:** `context.PostEntityImages["ImageAlias"]`
+* **Primary Uses:**
+* Reading platform-calculated or server-generated fields (e.g., auto-numbering, created timestamps, rollups, or columns modified by Stage 20 plug-ins).
+* Passing complete, fully updated record data to external systems or services from a Post-Operation step without querying Dataverse again.
+
+
+
+
+
+---
+
+### Image Availability Across Pipeline Stages
+
+The platform enforces strict rules on image availability based on whether the data exists in the database at that point in time:
+
+| Stage | Pre-Image Supported? | Post-Image Supported? | Why? |
+| --- | --- | --- | --- |
+| **Stage 10: Pre-Validation** | **Yes** | **No** | The record exists in the DB prior to the transaction, so a pre-snapshot can be captured. However, the core write has not occurred yet, making a Post-Image impossible. |
+| **Stage 20: Pre-Operation** | **Yes** | **No** | Same as Stage 10. The core database write occurs at Stage 30 (`MainOperation`), so Post-Images do not exist yet. |
+| **Stage 40: Post-Operation** | **Yes** | **Yes** | Both are available. The engine retains the pre-operation snapshot taken before Stage 30, and it captures the post-operation state right after Stage 30 writes to the database. |
+
+---
+
+### Image Availability Across Core Messages
+
+A pipeline stage may support an image type in theory, but the message itself determines if that image can exist:
+
+| Message | Pre-Image | Post-Image | Notes & Constraints |
+| --- | --- | --- | --- |
+| **`Create`** | **No** | **Yes** (Stage 40 only) | A record does not exist before creation, so a Pre-Image is impossible. A Post-Image is useful to capture generated auto-numbers or default values. |
+| **`Update`** | **Yes** (Stages 10, 20, 40) | **Yes** (Stage 40 only) | Ideal for tracking field deltas. Pre-Image provides original values; Post-Image provides the merged final state. |
+| **`Delete`** | **Yes** (Stages 10, 20, 40) | **No** | Once deleted at Stage 30, the row is gone; therefore, no Post-Image exists. A Pre-Image is the only way to audit what data was deleted. |
+| **`Retrieve` / `RetrieveMultiple**` | **No** | **No** | Query messages read data directly into the response payload (`BusinessEntity` / `BusinessEntityCollection`); they do not modify state, so images are not supported. |
+
+---
+
+### Key Best Practices
+
+* **Always Specify Attributes:** In the Plug-in Registration Tool, select only the columns your logic specifically requires. Never leave an image configured to "All Attributes" in production, as this forces Dataverse to load the entire row into memory unnecessarily.
+* **Avoid Post-Image in Pre-Operation:** Attempting to retrieve `context.PostEntityImages` in Stage 10 or 20 will throw a `KeyNotFoundException` (or return null), because the database record has not yet been processed by the core operation.
+
+--- 
+
 ## 2. Custom APIs & Custom Process Actions
 
 ### Concept & How It Works
@@ -139,6 +264,57 @@ You define inputs, outputs, and the business contract. Anyone calling Dataverse�
 
 * **Scenario:** Before an auto loan application can transition to "Pre-Approved", an external credit bureau API must be checked.
 * **Implementation:** A Custom API named `custom_CheckCreditEligibility`. It receives customer identification, queries the credit bureau, evaluates the credit policy rules, and updates the application status column in Dataverse.
+
+---
+
+No, they are **not the exact same thing**, although they solve a similar fundamental problem: creating a custom Dataverse message with custom request/response parameters that can execute custom logic.
+
+**Custom API** is the modern, code-first successor to **Custom Process Action** (often referred to simply as "Custom Action" or "Process Action").
+
+---
+
+### Core Comparison
+
+| Feature | Custom Action (Process Action) | Custom API |
+| --- | --- | --- |
+| **Architecture** | Legacy XAML-based workflow engine | Modern, lightweight Dataverse message registration engine |
+| **Creation Interface** | Classic Workflow designer UI (`/tools/process/list.aspx`) | Power Apps Maker Portal, API, CLI (`pac`), or code |
+| **Logic Implementation** | Can define logic directly using no-code workflow steps **or** trigger a plug-in step | Requires a **Custom Plug-in** for logic (or acts as a pure contract/event hook) |
+| **Custom Privilege Support** | No (relies on underlying entity privileges) | **Yes** (can bind execution to a custom Dataverse privilege) |
+| **Function vs. Action (OData)** | Exposes only as OData **Actions** (`POST`) | Can be defined as either **Action** (`POST`) or side-effect-free **Function** (`GET`) |
+| **Private Messages** | No (always visible in metadata) | **Yes** (can mark `IsPrivate = true` to hide from metadata/external discovery) |
+| **Solution Lifecycle & ALM** | Legacy workflow XML; error-prone merge conflicts | Full modern ALM support via first-class Dataverse tables (`customapi`, `customapirequestparameter`, `customapiresponseproperty`) |
+
+---
+
+### Key Technical Differences
+
+#### 1. Implementation Model
+
+* **Custom Process Action:** Created as a workflow process (`category = 3`). Even if you write a plug-in to handle it, the Action itself exists as a workflow definition in the solution. You have the choice of adding no-code declarative steps inside the workflow builder, or leaving it blank and binding a plug-in step to it.
+* **Custom API:** Pure metadata defining an API contract (unique name, allowed HTTP method, binding type, input parameters, output properties). You link your plug-in type directly to the Custom API record via the `PluginType` lookup.
+
+#### 2. Performance & Overhead
+
+* **Custom Process Action:** Carries the overhead of the workflow runtime engine. Every invocation spins up the workflow tracking/context pipeline before handing off to synchronous plug-ins.
+* **Custom API:** Directly injects the message into the Dataverse Event Execution Pipeline. It executes at native platform speed with virtually zero overhead.
+
+#### 3. OData Semantics (GET vs. POST)
+
+* **Custom Process Action:** Can only be invoked as a `POST` request (Action) in Web API, regardless of whether it alters data or merely performs a read query.
+* **Custom API:** Allows setting `IsFunction = true`. When set to a Function, it must be invoked via an HTTP `GET` request, adhering to REST and OData v4 standards for non-state-altering queries.
+
+#### 4. Security & Access Control
+
+* **Custom Process Action:** Inherits standard security role mechanics; you cannot easily restrict who can run a specific action without custom validation logic inside the action or plug-in.
+* **Custom API:** Supports the `CustomProcessPrivilege` property. You can link the API to an existing privilege or generate a custom privilege, enabling fine-grained security role assignment through the standard Power Platform security UI.
+
+---
+
+### Modern Best Practice
+
+* For all new development, **use Custom API**.
+* **Custom Process Actions** remain supported for backward compatibility, but Microsoft considers them legacy architecture.
 
 ---
 
