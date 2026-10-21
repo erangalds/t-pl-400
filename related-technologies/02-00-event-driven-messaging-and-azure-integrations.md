@@ -365,6 +365,298 @@ In summary: **Post-Operation Asynchronous** is the standard default for decoupli
 
 ---
 
+In enterprise architectures, closing the loop—writing the downstream result, external ID, tracking number, or status back into Dataverse—is a standard requirement.
+
+### How the Return Path Works
+
+Azure Service Bus is a passive messaging broker; it never calls back into Dataverse on its own. Instead, the **downstream compute service** (such as an Azure Function, Container App, or Logic App) processes the message, interacts with the external system, and then calls the **Dataverse Web API** (`PATCH /api/data/v9.2/<table>(<id>)`) or the SDK using Azure AD (Entra ID) Service Principal authentication to update the original record.
+
+The critical architectural detail is **preventing infinite trigger loops**:
+When the Azure Function calls Dataverse to write the result back (`Update`), that `Update` triggers the Dataverse Event Execution Pipeline again. If you have an `Update` step registered on that table, the platform will dispatch the message right back to Service Bus in an endless cycle.
+
+To break this loop, architects use two primary techniques:
+
+1. **Attribute Filtering:** Ensure the Service Endpoint step only fires when specific business fields change, excluding callback fields (like `external_tracking_number` or `processing_status`).
+2. **Dedicated Status / State Transition Checks:** Verify the record status before triggering or processing.
+
+---
+
+### Redrawn End-to-End Diagram: Closing the Loop
+
+This diagram illustrates the full round-trip lifecycle, including the asynchronous dispatch and the authenticated callback.
+
+```
+[ Client / User ]
+       │ 1. Create/Update Record
+       ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ DATAVERSE CORE ENGINE (Transaction 1)                                  │
+│ - Stage 30: Writes original record with status = "Pending Processing"  │
+│ - Stage 40 (Async): Drops job into [asyncoperation] queue              │
+│ - Returns HTTP 201/200 directly to Client (Client is free)             │
+└──────┬─────────────────────────────────────────────────────────────────┘
+       │
+       │ 2. Background Async Service picks up job & posts RemoteExecutionContext
+       ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ Azure Service Bus (Queue / Topic)                                      │
+└──────┬─────────────────────────────────────────────────────────────────┘
+       │
+       │ 3. Pulls message containing PrimaryEntityId & Context data
+       ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ Downstream Consumer (Azure Function / Container App)                   │
+│                                                                        │
+│ 4. Calls external systems (Payment Gateway, Warehouse, ERP, AI Model) │
+│ 5. Receives external response (e.g., Tracking #, Receipt, Result)      │
+└──────┬─────────────────────────────────────────────────────────────────┘
+       │
+       │ 6. CALLBACK TO DATAVERSE (Transaction 2)
+       │    HTTP PATCH /api/data/v9.2/<table>(<PrimaryEntityId>)
+       │    Auth: Bearer Token via Entra ID App Registration (App User)
+       ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ DATAVERSE WEB API (Independent Pipeline Run)                           │
+│ - Updates record: status = "Completed", tracking_number = "TRK-9842"   │
+│ - Filtered out of outbound Service Bus trigger (No loop)               │
+└────────────────────────────────────────────────────────────────────────┘
+
+```
+
+---
+
+### Redrawn Real-Life Scenarios with Return Paths
+
+#### Scenario 1: E-Commerce Order Fulfillment (With Shipping Label & Tracking Callback)
+
+* **Initial State:** Order created with `statuscode = Submitted`.
+* **Outbound Trigger:** Stage 40 Asynchronous Step fires on `Create` of `salesorder`.
+* **Inbound Callback:** The worker generates a carrier label and updates the `salesorder` record with the shipping label URL, carrier name, tracking code, and sets `statuscode = Fulfilled`.
+
+```
+[ Power Pages Checkout ]
+       │  1. Create Order
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse                                    │
+│ - Status: "Submitted"                        │
+│ - Stage 40: Emits Async Job                  │
+└──────┬───────────────────────────────────────┘
+       │  2. Order Confirmed (Instant screen response)
+       ▼
+[ User / Shopper ]
+
+─── (Decoupled Background Processing) ───────────
+       │
+       ▼  3. Async Service posts payload
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus: [orders-queue]            │
+└──────┬───────────────────────────────────────┘
+       │  4. Pulls message with OrderId
+       ▼
+┌──────────────────────────────────────────────┐
+│ Azure Container App Worker                   │
+│ - Allocates stock in 3PL Warehouse           │
+│ - Calls FedEx API ──> Gets Tracking: "FX-102"│
+└──────┬───────────────────────────────────────┘
+       │
+       │  5. CALLBACK: HTTP PATCH /api/data/v9.2/salesorders(OrderId)
+       │     Payload: { "trackingnumber": "FX-102", "statuscode": 100001 }
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse (Updated Record)                   │
+│ - Tracking Number: FX-102                    │
+│ - Status: "Fulfilled"                        │
+└──────────────────────────────────────────────┘
+
+```
+
+---
+
+#### Scenario 2: Resilient Payment Refund Settlement (With Settlement Confirmation Callback)
+
+* **Initial State:** Customer service rep clicks "Refund" on an Invoice. Status sets to `Refund Requested`.
+* **Outbound Trigger:** Stage 40 Asynchronous Step fires on `Update` of `invoice` (Filtered to attribute `statuscode = Refund Requested`).
+* **Inbound Callback:** The function executes the bank gateway transaction. Upon receiving an authorization code or settlement failure, it calls Dataverse to record the transaction reference and update the invoice state.
+
+```
+[ Customer Service Agent ]
+       │  1. Triggers Refund (Sets status = "Refund Requested")
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse                                    │
+│ - Invoice status: "Refund Requested"         │
+│ - Stage 40: Enqueues System Job              │
+└──────┬───────────────────────────────────────┘
+       │  2. UI confirms "Refund Queued for Settlement"
+       ▼
+[ CS Agent: Continues normal workflow ]
+
+─── (Decoupled Background Processing) ───────────
+       │
+       ▼  3. Outbound dispatch
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus: [refund-settlement]       │
+└──────┬───────────────────────────────────────┘
+       │  4. Delivery to consumer
+       ▼
+┌──────────────────────────────────────────────┐
+│ Azure Function Consumer                      │
+│ - Calls Stripe / Bank Gateway API            │
+│ - Receives Gateway Ref: "ch_3N8xL2...K"      │
+│ - (If failed after retries: DLQ alerted)     │
+└──────┬───────────────────────────────────────┘
+       │
+       │  5. CALLBACK: HTTP PATCH /api/data/v9.2/invoices(InvoiceId)
+       │     Payload: {
+       │       "gateway_ref": "ch_3N8xL2...K",
+       │       "statuscode": 200001 /* Refund Settled */
+       │     }
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse (Updated Record)                   │
+│ - Status: "Refund Settled"                   │
+│ - Gateway Reference: ch_3N8xL2...K           │
+└──────────────────────────────────────────────┘
+
+```
+
+---
+
+### Two New Scenarios Built Specifically Around Round-Trip Callbacks
+
+#### Scenario 5: Asynchronous Document AI / KYC Verification Pipeline
+
+* **Business Need:** A retail banking app onboards customers who upload scans of passports or national ID cards into Dataverse. Running optical character recognition (OCR) and anti-fraud facial matching takes 15 to 45 seconds—far too long for a synchronous request or client timeout.
+* **Outbound Setup:** In the Plug-in Registration Tool, register an asynchronous step on `Create` of the `kyc_submission` table.
+* **Return Callback:** The consumer runs Azure AI Document Intelligence, extracts identity fields, assesses a fraud risk score, and writes the structured results directly back to the customer's record in Dataverse.
+
+```
+[ Mobile Onboarding App ]
+       │  1. Uploads ID Image & Details
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse                                    │
+│ - Creates kyc_submission row                 │
+│ - Status: "Under Verification"               │
+│ - Stage 40: Asynchronous Service Endpoint    │
+└──────┬───────────────────────────────────────┘
+       │  2. HTTP 201 Created ("Application submitted, processing...")
+       ▼
+[ Mobile App User ]
+
+─── (Decoupled Background Processing) ───────────
+       │
+       ▼  3. Async Service sends context to Bus
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus Queue: [kyc-processing]    │
+└──────┬───────────────────────────────────────┘
+       │  4. Trigger
+       ▼
+┌──────────────────────────────────────────────┐
+│ Azure Function (AI Orchestrator)             │
+│ - Sends document to Azure AI Document Intel. │
+│ - Extracts: Name, DOB, National ID Number    │
+│ - Confidence Score: 98.4%                    │
+└──────┬───────────────────────────────────────┘
+       │
+       │  5. CALLBACK: HTTP PATCH /api/data/v9.2/kyc_submissions(Id)
+       │     Payload: {
+       │       "id_number": "198320491024",
+       │       "confidence_score": 98.4,
+       │       "statuscode": 3 /* Verified */
+       │     }
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse (Updated Record)                   │
+│ - Status: "Verified"                         │
+│ - ID Number populated                        │
+│ - Verification Score: 98.4%                  │
+└──────────────────────────────────────────────┘
+
+```
+
+---
+
+#### Scenario 6: Long-Running Enterprise Credit Rating & Risk Analysis
+
+* **Business Need:** When a commercial enterprise requests a credit limit expansion exceeding $500,000, Dataverse must query multiple credit bureaus (Experian, Dun & Bradstreet) and run an actuarial credit scoring matrix. This process can take several minutes due to legacy bureau rate limits.
+* **Outbound Setup:** Register an asynchronous step on `Update` of the `credit_application` table, filtered strictly to the column `approval_stage = Bureau_Review`.
+* **Return Callback:** A workflow engine collects and averages the bureau responses, computes the internal rating, and updates the record with the approved limit and bureau report IDs.
+
+```
+[ Credit Officer in Model-Driven App ]
+       │  1. Submits application for Bureau Review
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse                                    │
+│ - approval_stage = "Bureau_Review"           │
+│ - Stage 40: Async Step to Service Bus        │
+└──────┬───────────────────────────────────────┘
+       │  2. Form confirms: "Sent for Bureau Assessment"
+       ▼
+[ Credit Officer: Free to review other files ]
+
+─── (Decoupled Background Processing) ───────────
+       │
+       ▼  3. Async Service queues message
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus Topic: [credit-evaluations]│
+└──────┬───────────────────────────────────────┘
+       │  4. Pull
+       ▼
+┌──────────────────────────────────────────────┐
+│ Azure Logic App (Workflow Orchestrator)      │
+│ - Queries Dun & Bradstreet API (45s)         │
+│ - Queries Experian Commercial API (30s)      │
+│ - Runs risk scoring matrix formula           │
+│ - Result: Score = 810, Max Limit = $750,000  │
+└──────┬───────────────────────────────────────┘
+       │
+       │  5. CALLBACK: HTTP PATCH /api/data/v9.2/credit_applications(AppId)
+       │     Payload: {
+       │       "approved_limit": 750000,
+       │       "risk_score": 810,
+       │       "approval_stage": "Assessment_Complete"
+       │     }
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse (Updated Record)                   │
+│ - Approved Limit: $750,000                   │
+│ - Risk Score: 810                            │
+│ - Stage: "Assessment_Complete"               │
+│ - Status Reason: Ready for Final Sign-Off    │
+└──────────────────────────────────────────────┘
+
+```
+
+---
+
+### Implementation Essentials for the Callback Step
+
+When building the return path into Dataverse from Azure:
+
+1. **Authentication:** Register an App Registration in Microsoft Entra ID, grant it `user_impersonation` on the Dynamics CRM / Dataverse API, and add it as an **Application User** inside the Power Platform Admin Center with a security role granting Write/Update permissions on the target table.
+2. **Obtain Access Token:** The Azure Function retrieves an OAuth2 bearer token from `[https://login.microsoftonline.com/](https://login.microsoftonline.com/){tenantId}/oauth2/v2.0/token` using the client credentials grant (`client_id` + `client_secret` or Certificate / Managed Identity).
+3. **Execute the Patch:** Send an HTTP `PATCH` request targeting:
+```http
+PATCH https://<your-org>.api.crm.dynamics.com/api/data/v9.2/<entitysetname>(<record-guid>)
+Authorization: Bearer <token>
+Content-Type: application/json
+If-Match: *
+
+{
+  "statuscode": 100002,
+  "external_reference_id": "EXT-992140"
+}
+
+```
+
+
+4. **Infinite Loop Prevention:** In the Plug-in Registration Tool, ensure your outbound asynchronous Step has **Filtering Attributes** configured. Never leave it listening to "All Attributes" on an `Update` message, or the callback `PATCH` will re-trigger the Service Bus message indefinitely.
+
+---
+
 ## 2. Azure Event Hubs
 
 ### Concept & How It Works
