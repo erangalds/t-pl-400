@@ -83,6 +83,288 @@ Dataverse connects to Service Bus through the native **Azure-Aware Event Executi
 
 ---
 
+### How Asynchronous Execution Works with Azure Service Bus
+
+In Microsoft Dataverse, you do not write custom asynchronous threading code in C# to achieve this integration. Instead, the asynchronous decoupling is configured directly at the platform pipeline level:
+
+1. **Service Endpoint Registration:** In the Plug-in Registration Tool (PRT), you register a **Service Endpoint** pointing to your Azure Service Bus namespace (SAS or Managed Identity).
+2. **Step Registration (Where "Asynchronous" is declared):** You register a step under that Service Endpoint. On that step:
+* **Message:** `Create` or `Update`
+* **Stage:** `Post-Operation` (Stage 40)
+* **Execution Mode:** You explicitly toggle this from *Synchronous* to **Asynchronous**.
+
+
+
+When `Execution Mode = Asynchronous`, the core transaction writes and commits the record to SQL immediately. Dataverse drops a job into its internal **System Job (`asyncoperation`) queue** and immediately returns HTTP `200 OK` / `201 Created` to the client. The Dataverse **Async Service** picks up the system job in the background, serializes the full `RemoteExecutionContext`, and posts it to Azure Service Bus.
+
+---
+
+### Architectural Flow: The Complete Transaction
+
+```
+[ Client / Caller ]
+        │  1. HTTP POST (Create/Update Record)
+        ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ DATAVERSE CORE TRANSACTION ENGINE (Synchronous)                        │
+│                                                                        │
+│   Stage 10: Pre-Validation (Security / Permission checks)             │
+│        │                                                               │
+│   === DB Transaction Starts ===                                        │
+│        │                                                               │
+│   Stage 20: Pre-Operation (Modify target attributes)                  │
+│        │                                                               │
+│   Stage 30: Main Operation (SQL INSERT / UPDATE committed)            │
+│        │                                                               │
+│   Stage 40: Post-Operation (Sync steps run)                            │
+│        │                                                               │
+│   === DB Transaction Ends ===                                          │
+│        │                                                               │
+│   Enqueue Async Job: System inserts row into [asyncoperation] table    │
+└────────┬───────────────────────────────────────────────────────────────┘
+         │
+         │  2. HTTP 200/201 Success Response (Client unblocked immediately)
+         ▼
+[ Client / UI / Caller ]
+
+──────────────────────────────────────────────────────────────────────────
+BACKGROUND / ASYNCHRONOUS DECOUPLED BOUNDARY
+──────────────────────────────────────────────────────────────────────────
+         │
+         │  3. Async Service polls and picks up pending asyncoperation job
+         ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ Dataverse Asynchronous Processing Service                              │
+│ - Serializes full RemoteExecutionContext (Target, PostImage, etc.)     │
+│ - Formats payload (JSON / .NET Binary)                                 │
+└────────┬───────────────────────────────────────────────────────────────┘
+         │
+         │  4. Outbound AMQP / HTTPS POST
+         ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ Azure Service Bus (Queue / Topic / Sessions / DLQ)                     │
+└────────┬───────────────────────────────────────────────────────────────┘
+         │
+         │  5. Pull / Push / Trigger
+         ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ Downstream Consumers                                                   │
+│ (Azure Functions, Container Apps, Logic Apps, Microservices, ERPs)     │
+└────────────────────────────────────────────────────────────────────────┘
+
+```
+
+---
+
+### Above Scenarios with Detailed Component Interaction
+
+#### 1. High-Volume E-Commerce Order Fulfillment (Queue)
+
+* **Where Async is declared:** In PRT, register a Step on the Service Endpoint with `Message = Create`, `Entity = salesorder`, `Stage = 40 (Post-Operation)`, and **`Execution Mode = Asynchronous`**.
+* **PostImage Configuration:** Configure a `PostImage` containing total amount, line item summary, customer lookup, and shipping address.
+
+```
+[ Power Pages Checkout ]
+       │  1. Submit Order (HTTP POST)
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse Pipeline                           │
+│ - Stage 30: Commits Order row to DB          │
+│ - Stage 40: Queues System Job (Async)        │
+└──────┬───────────────────────────────────────┘
+       │  2. Order Confirmation (User experience stays fast)
+       ▼
+[ Customer Screen: "Order Confirmed" ]
+
+─── (Background Async Service) ─────────────────
+       │
+       ▼  3. Async Service posts RemoteExecutionContext
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus: [orders-queue]            │
+│ (Buffers 5,000 orders/min flash sale spike)   │
+└──────┬───────────────────────────────────────┘
+       │  4. Controlled Pull (Throttled at 10 requests/sec)
+       ▼
+┌──────────────────────────────────────────────┐
+│ Azure Container App (Worker)                 │
+│ - Calls Warehouse Allocation API             │
+│ - Calls Shipping Label Generator             │
+│ - Calls ERP Inventory Reservation            │
+└──────────────────────────────────────────────┘
+
+```
+
+---
+
+#### 2. Multi-System Master Data Synchronization (Topic)
+
+* **Where Async is declared:** Register two Steps under the Service Endpoint: one for `Message = Create` and one for `Message = Update`, both targeted at the `account` entity, `Stage = 40 (Post-Operation)`, **`Execution Mode = Asynchronous`**.
+* **PostImage Configuration:** For the `Update` step, attach a `PostImage` including billing addresses, account numbers, and status codes so downstream consumers do not need to query Dataverse back for missing columns.
+
+```
+[ CRM User / Power Apps Form ]
+       │  1. Create or Update Account
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse Pipeline                           │
+│ - Stage 30: SQL Commit (Account updated)     │
+│ - Stage 40: Emits Async System Job           │
+└──────┬───────────────────────────────────────┘
+       │  2. Returns immediate UI Save Success
+       ▼
+[ CRM User: Editing Complete ]
+
+─── (Background Async Service) ─────────────────
+       │
+       ▼  3. Posts Context once to Topic
+┌──────────────────────────────────────────────────────────┐
+│ Azure Service Bus Topic: [account-events]                │
+├───────────────────┬───────────────────┬──────────────────┤
+│ Subscription: SAP │ Subscription: Mktg│ Subscription: DB │
+└─────────┬─────────┴─────────┬─────────┴─────────┬────────┘
+          │                   │                   │
+          ▼ 4a. (Dead/Down)   ▼ 4b. Immediate     ▼ 4c. Immediate
+    ┌───────────┐       ┌───────────┐       ┌───────────┐
+    │ SAP ERP   │       │ SFMC Sync │       │ Licensing │
+    │ (Buffers) │       │ (Active)  │       │ Microserv │
+    └───────────┘       └───────────┘       └───────────┘
+
+```
+
+---
+
+#### 3. Strict Sequential Financial Ledger Processing (Sessions / FIFO)
+
+* **Where Async is declared:** Register a Step on `Message = Create` or `Update` on the custom `transaction_entry` table, `Stage = 40 (Post-Operation)`, **`Execution Mode = Asynchronous`**.
+* **Session Handling:** In the Service Endpoint configuration, map the Service Bus **SessionId** to the borrower's identifier (`AccountId` or `ContactId`). This ensures Azure Service Bus groups all transactions for borrower *X* into a dedicated FIFO session lock.
+
+```
+[ Loan Management System ]
+       │  1. Post Balance Adjustments / Fee / Repayment
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse Pipeline                           │
+│ - Stage 30: Commits Transaction row          │
+│ - Stage 40: Emits Async Job (SessionId set)  │
+└──────┬───────────────────────────────────────┘
+       │  2. HTTP 200 OK (Calling service finishes)
+       ▼
+
+─── (Background Async Service) ─────────────────
+       │
+       ▼  3. Posts message with SessionId = "ACCT-1004"
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus Queue (RequiresSession=true)│
+│                                              │
+│ Session: ACCT-1004                           │
+│ ┌──────────────────────────────────────────┐ │
+│ │ Msg 1: Principal Debit ($500)            │ │
+│ │ Msg 2: Late Fee Assessment ($25)         │ │
+│ │ Msg 3: Partial Repayment ($200)          │ │
+│ └──────────────────────────────────────────┘ │
+└──────┬───────────────────────────────────────┘
+       │  4. Single consumer locks Session ACCT-1004
+       ▼
+┌──────────────────────────────────────────────┐
+│ Azure Function (Session Consumer)            │
+│ Processes Msg 1 ──> Msg 2 ──> Msg 3 in exact │
+│ mathematical sequence without race conditions│
+└──────────────────────────────────────────────┘
+
+```
+
+---
+
+#### 4. Resilient Payment Gateway Settlement Webhooks
+
+* **Where Async is declared:** Triggered via a Custom API or standard `Update` on an `invoice` record (e.g., setting `status = Pending Refund`). In PRT, the Service Endpoint Step is configured on `Message = Update`, `Entity = invoice`, `Stage = 40 (Post-Operation)`, **`Execution Mode = Asynchronous`**.
+* **Dead-Letter Queue (DLQ) Safeguard:** Because execution is asynchronous, third-party payment gateway outages or HTTP 429 rate limits do not disrupt the customer service agent. Dataverse passes the message to Service Bus; if all consumer retry loops exhaust, Service Bus moves the payload to the DLQ.
+
+```
+[ Customer Service Agent ]
+       │  1. Clicks "Issue Refund" on Invoice
+       ▼
+┌──────────────────────────────────────────────┐
+│ Dataverse Pipeline                           │
+│ - Stage 30: Marks Invoice "Refund Queued"    │
+│ - Stage 40: Enqueues Async System Job        │
+└──────┬───────────────────────────────────────┘
+       │  2. Form refreshes immediately with "Refund Queued"
+       ▼
+[ CS Agent: Unblocked, handles next customer ]
+
+─── (Background Async Service) ─────────────────
+       │
+       ▼  3. Outbound Message
+┌──────────────────────────────────────────────┐
+│ Azure Service Bus Queue: [refund-settlement] │
+│ - MaxDeliveryCount = 10                      │
+└──────┬───────────────────────────────────────┘
+       │  4. Retries failed delivery with exponential backoff
+       ▼
+┌──────────────────────────────┐    Gateway down (HTTP 503)
+│ Azure Function Consumer      │ ─────────────────────────────┐
+│ (Calls Payment Gateway API)  │                              │
+└──────────────────────────────┘                              ▼
+       │                                        ┌───────────────────────────┐
+       │ (Exceeds 10 retry attempts)            │ External Payment Gateway  │
+       ▼                                        │ (Offline / Rate-limiting) │
+┌─────────────────────────────────────────────┐ └───────────────────────────┘
+│ Dead-Letter Queue (DLQ)                     │
+│ Message stored with reason: MaxRetriesReached│
+│ Monitored by Ops team / Alert triggered     │
+└─────────────────────────────────────────────┘
+
+```
+
+---
+
+Registering `Azure Service Bus` based connections in `asynchronous` mode of operation is  **not a strict requirement**. While registering in the **Post-Operation stage as Asynchronous is by far the recommended best practice** for 95% of architectures, Dataverse officially supports both **Synchronous** and **Asynchronous** execution modes for Azure Service Bus Service Endpoints.
+
+---
+
+### Supported Registration Modes for Azure Service Bus
+
+| Execution Mode | Supported Stages | How It Behaves |
+| --- | --- | --- |
+| **Asynchronous** *(Standard)* | **Stage 40 (Post-Operation only)** | Decoupled via the internal Dataverse Async Service. The end user or calling application gets an immediate `200/201 OK`, and the message is dispatched to the Service Bus in the background. |
+| **Synchronous** *(Specialized)* | **Stage 10 (Pre-Validation)**<br>
+
+<br>**Stage 20 (Pre-Operation)**<br>
+
+<br>**Stage 40 (Post-Operation)** | Executes inline within the live user transaction. The Dataverse pipeline connects to Azure Service Bus directly and halts execution until the message post confirms success or times out. |
+
+---
+
+### Why Register Synchronously?
+
+You would choose **Synchronous** execution only in specific, high-criticality enterprise scenarios:
+
+1. **Transactional Rollback on Bus Failure:**
+* If a message *must* arrive on the Service Bus before Dataverse commits the record to the database, a Synchronous step in Stage 20 or Stage 40 guarantees this.
+* If the Azure Service Bus namespace is unreachable, throttled, or returns an error, the plug-in throws an `InvalidPluginExecutionException`, and the entire Dataverse database transaction rolls back. No orphaned record is created in Dataverse.
+
+
+2. **Two-Way Messaging (Relay / Response Required):**
+* If your Service Endpoint uses **Azure Relay (WCF / Two-Way)** rather than a standard Queue/Topic, Dataverse can synchronously wait for a response string from the listener on-premises/in Azure and parse the response body directly back into the pipeline context.
+
+
+
+---
+
+### Trade-Offs: Synchronous vs. Asynchronous
+
+| Factor | Synchronous Service Endpoint | Asynchronous Service Endpoint |
+| --- | --- | --- |
+| **User/Caller Latency** | **High:** Caller must wait for an outbound HTTPS/TLS handshake and AMQP connection across networks before the record saves. | **Near Zero:** Returns control to the caller as soon as SQL commits. |
+| **2-Minute Timeout Risk** | **High:** If Azure Service Bus experiences transient network lag, the user’s UI freezes and risks hitting the 2-minute sandbox timeout. | **None:** Runs isolated inside the Dataverse background Async Service. |
+| **Failure Handling** | Fails the save operation directly in the user's face with an unhandled exception. | Retries automatically up to 10 times via the built-in Dataverse Async Engine before marking the System Job as failed. |
+| **Data Consistency** | Guarantees strict dual-write parity (either both Dataverse and Service Bus succeed, or neither does). | Eventual consistency: Dataverse commits first, and the bus receives the message shortly after. |
+
+In summary: **Post-Operation Asynchronous** is the standard default for decoupling, buffering, and event publishing, but **Synchronous** remains a fully supported configuration when strict transactional parity or immediate confirmation is a hard business requirement.
+
+---
+
 ## 2. Azure Event Hubs
 
 ### Concept & How It Works
