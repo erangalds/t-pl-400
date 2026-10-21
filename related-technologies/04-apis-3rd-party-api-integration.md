@@ -43,7 +43,7 @@ A Custom Connector is an abstraction wrapper around a REST or SOAP API described
 
 * **Maker Experience:** Once deployed, the connector surfaces in Power Apps and Power Automate designers like any first-class Microsoft connector, showing friendly action names, dynamic dropdowns, and strongly typed parameter cards.
 * **Pro-Dev Extensibility (C# Policy Templates):**
-* Custom Connectors support custom **C# Scripting** or declarative **Policy Templates** that execute in-flight before the request leaves Microsoft's cloud or before the response returns to the maker.
+* Custom Connectors support [custom **C# Scripting** or declarative **Policy Templates**](/related-technologies/further-explanations/custom-c#-code-policy-templates.md) that execute in-flight before the request leaves Microsoft's cloud or before the response returns to the maker.
 * *Capabilities:* Route requests dynamically, strip or inject custom headers, convert legacy XML/SOAP payloads into clean JSON, and sanitize error messages.
 
 
@@ -55,7 +55,7 @@ A Custom Connector is an abstraction wrapper around a REST or SOAP API described
 
 Azure API Management sits as a reverse proxy between the Power Platform and backend APIs.
 
-* **One-Click Export:** APIM features native integration with the Power Platform. An enterprise architect can select an API inside the Azure portal and click **"Create Power Platform Connector"**, automatically provisioning a fully configured connector into selected Dataverse environments.
+* [**One-Click Export:**](/related-technologies/further-explanations/one-click-export.md) APIM features native integration with the Power Platform. An enterprise architect can select an API inside the Azure portal and click **"Create Power Platform Connector"**, automatically provisioning a fully configured connector into selected Dataverse environments.
 * **Centralized Governance:**
 * **Rate Limiting & Throttling (`rate-limit-by-key`):** Prevents low-code loops or mass users from overwhelming legacy ERPs.
 * **Response Caching (`cache-lookup`):** Caches slow, repetitive queries (like country code lists or tax rates) in an internal Redis instance, eliminating backend roundtrips.
